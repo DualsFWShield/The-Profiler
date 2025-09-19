@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+        Profiler Hyper Complet — MBTI • Ennéagramme • Dark Triad •
+        TDA/H
+    </title>
+    <meta name="robots" content="noindex,nofollow">
+    <style>
+        /* Mobile-first responsive styling (sizes relative to viewport/device width) */
+        :root {
+            --bg: #0b1220;
+            --card: #07102b;
+            --muted: #94a3b8;
+            --accent: #60a5fa;
+            --good: #10b981;
+            --warn: #f59e0b;
+            --bad: #fb7185;
+            --surface: #0f1724;
+            --glass: rgba(255, 255, 255, 0.03);
+
+            /* Relative sizing */
+            --maxw: 1100px;          /* max centered container width */
+            --gutter: 4vw;           /* page side padding relative to viewport */
+            --radius: 1.25rem;       /* border radius */
+            --card-pad: 1rem;        /* card inner padding */
+            --gap: 0.8rem;           /* generic gap between elements */
+            --shadow: 0 0.8rem 2.4rem rgba(2,6,23,0.55);
+            --btn-h: 2.6rem;
+        }
+
+        /* Base typography scales with viewport (clamped for predictability) */
+        html {
+            font-size: clamp(14px, 1.8vw, 18px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(180deg, #041025 0%, #07102b 100%);
+            color: #e6eef6;
+            min-height: 100vh;
+            line-height: 1.35;
+        }
+
+        /* Centered wrapper with fluid width but capped */
+        .wrap {
+            width: min(96%, var(--maxw));
+            margin: 0 auto;
+            padding: calc(var(--gutter) / 2);
+        }
+
+        /* Headings and lead text scale relatively */
+        header { margin-bottom: calc(var(--gap) * 1.5); }
+        h1 {
+            font-size: clamp(1.05rem, 3.2vw, 1.25rem);
+            margin: 0 0 0.35rem;
+            font-weight: 700;
+        }
+        p.lead {
+            margin: 0;
+            color: var(--muted);
+            font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+        }
+
+        /* Cards use relative padding & radius */
+        form.card,
+        .panel.card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding: var(--card-pad);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: calc(var(--gap) * 1.25);
+        }
+
+        /* Section title */
+        .section-title {
+            font-weight: 700;
+            margin: 0.35rem 0 0.5rem;
+            font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+            color: var(--accent);
+        }
+
+        /* Question block */
+        .q {
+            background: var(--glass);
+            padding: calc(var(--gap) * 0.9);
+            border-radius: calc(var(--radius) / 1.6);
+            margin: 0.6rem 0;
+        }
+
+        /* Option labels */
+        label.opt {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0.25rem;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 1.9vw, 1rem);
+        }
+
+        /* Options stack vertically by default */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        /* Inputs scaled slightly for touch */
+        input[type="radio"],
+        input[type="checkbox"] {
+            transform: scale(1.05);
+            flex-shrink: 0;
+        }
+
+        /* Range inputs stretch to available width */
+        input[type="range"] {
+            width: 100%;
+            max-width: 100%;
+            margin: 0.35rem 0;
+        }
+
+        /* Buttons responsive: full width on narrow, inline on wide */
+        button.btn {
+            appearance: none;
+            border: 0;
+            padding: 0.5rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.4);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: block;
+            width: 100%;
+            height: var(--btn-h);
+            font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+        }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            color: var(--muted);
+        }
+
+        /* Layout grid: single column on small, two-column on larger screens */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: calc(var(--gap) * 1.15);
+            align-items: start;
+        }
+
+        /* Aside behaves like a block on small screens */
+        .aside { display: block; }
+
+        /* Result areas */
+        .results {
+            white-space: pre-wrap;
+            font-size: clamp(0.88rem, 1.6vw, 0.95rem);
+            background: rgba(255,255,255,0.02);
+            padding: 0.6rem;
+            border-radius: calc(var(--radius) / 1.4);
+        }
+
+        .mini {
+            font-size: clamp(0.82rem, 1.6vw, 0.9rem);
+            color: var(--muted);
+        }
+
+        /* Progress bars scale with parent width */
+        .bar {
+            height: clamp(0.45rem, 0.8vh, 0.6rem);
+            background: rgba(255,255,255,0.04);
+            border-radius: calc(var(--radius) / 2.8);
+            overflow: hidden;
+            margin-top: 0.45rem;
+        }
+        .bar > i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+            transition: width 0.3s ease;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .tag {
+            background: rgba(255,255,255,0.02);
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            font-size: clamp(0.78rem, 1.4vw, 0.9rem);
+        }
+
+        /* Muted text */
+        .muted { color: var(--muted); }
+
+        /* Footer */
+        footer {
+            margin-top: 0.9rem;
+            font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+            color: var(--muted);
+        }
+
+        /* JSON area */
+        pre.jsonOut {
+            background: #021024;
+            padding: 0.6rem;
+            border-radius: calc(var(--radius) / 1.4);
+            overflow: auto;
+            font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Prevent overflow from long strings */
+        .q, .options, label.opt, .results, pre.jsonOut {
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Larger screens: use a two-column layout with the aside at ~34% width */
+        @media (min-width: 760px) {
+            .grid {
+                grid-template-columns: 1fr minmax(280px, 34%);
+                gap: calc(var(--gap) * 1.2);
+            }
+
+            /* Make certain controls inline where useful */
+            .options { gap: 0.5rem; }
+            button.btn { width: 100%; }
+        }
+
+        /* Wide desktops: refine spacing and make aside sticky */
+        @media (min-width: 980px) {
+            html { font-size: clamp(15px, 1.5vw, 18px); }
+
+            .wrap { padding: calc(var(--gutter) / 1.4); }
+
+            .grid {
+                grid-template-columns: 1fr 30%;
+                gap: calc(var(--gap) * 1.4);
+            }
+
+            .aside {
+                position: sticky;
+                top: 1rem;
+                align-self: start;
+            }
+
+            /* Allow buttons in the form to share horizontal space */
+            .form-buttons { display: flex; gap: 0.6rem; }
+            button.btn, button.ghost { width: 100%; }
+        }
+
+        /* Utility: ensure file input and small controls are usable on all sizes */
+        input[type="file"] { width: 100%; padding: 0.3rem 0; }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <h1>Profiler Hyper Complet</h1>
+            <p class="lead">
+                Application locale — données conservées
+                uniquement côté client. Indices comportementaux et de
+                personnalité —
+                <strong>pas de diagnostic</strong>.
+            </p>
+        </header>
+        <div class="grid">
+            <form id="profilerForm" class="card" onsubmit="event.preventDefault(); runAll();">
+                <!-- MBTI -->
+                <div>
+                    <div class="section-title">
+                        MBTI — 12 questions (≈2–3
+                        min)
+                    </div>
+                    <div id="mbtiContainer">
+                        <!-- MBTI items generated by JS -->
+                    </div>
+                </div>
+                <!-- Enneagram -->
+                <div style="margin-top:10px">
+                    <div class="section-title">
+                        Ennéagramme — motivation &
+                        instinct
+                    </div>
+                    <div id="enneaContainer"></div>
+                </div>
+                <!-- Dark Triad -->
+                <div style="margin-top:10px">
+                    <div class="section-title">
+                        Dark Triad — échelle
+                        1..5
+                    </div>
+                    <div id="darkContainer"></div>
+                </div>
+                <!-- Attachment -->
+                <div style="margin-top:10px">
+                    <div class="section-title">Style d'attachement</div>
+                    <div id="attachContainer"></div>
+                </div>
+                <!-- TDA/H -->
+                <div style="margin-top:10px">
+                    <div class="section-title">
+                        TDA/H (screening ASRS-style —
+                        indicatif)
+                    </div>
+                    <div id="adhdContainer"></div>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                    <button type="submit" class="btn">
+                        Analyser (générer
+                        profil)
+                    </button>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button type="button" class="ghost btn" onclick="clearForm()" style="flex:1">Réinitialiser</button>
+                    <button type="button" class="ghost btn" onclick="exportJson()" style="flex:1">
+                        Exporter
+                        JSON
+                    </button>
+                    <input id="importFile" type="file" accept=".json" style="flex:1">
+                </div>
+            </form>
+            <aside class="aside">
+                <div class="panel card">
+                    <div class="section-title">Résultats rapides</div>
+                    <div class="mini">MBTI :</div>
+                    <div id="mbtiResult" style="font-weight:800;font-size:18px;margin:6px 0">—</div>
+                    <div class="mini">Ennéagramme :</div>
+                    <div id="enneaResult" style="font-weight:700;margin:6px 0">—</div>
+                    <div class="mini">Dark Triad (estimation)</div>
+                    <div style="margin-top:6px">Mach :
+                        <span id="machPct">0%</span>
+                    </div>
+                    <div class="bar">
+                        <i id="machBar"></i>
+                    </div>
+                    <div style="margin-top:6px">Narc :
+                        <span id="narcPct">0%</span>
+                    </div>
+                    <div class="bar">
+                        <i id="narcBar"></i>
+                    </div>
+                    <div style="margin-top:6px">Psy :
+                        <span id="psyPct">0%</span>
+                    </div>
+                    <div class="bar">
+                        <i id="psyBar"></i>
+                    </div>
+                    <div style="margin-top:8px" class="mini">
+                        Attachement
+                        :
+                    </div>
+                    <div id="attachRes" style="font-weight:700;margin:6px 0">—</div>
+                    <div style="margin-top:8px" class="mini">
+                        TDA/H
+                        (screening) :
+                    </div>
+                    <div id="adhdRes" style="font-weight:700;margin:6px 0">—</div>
+                    <hr style="border-color:rgba(255,255,255,0.03)">
+                    <div class="section-title">Rapport détaillé</div>
+                    <div id="report" class="results">
+                        Clique sur "Analyser"
+                        pour générer le rapport détaillé.
+                    </div>
+                    <div class="tags" id="heuristicsTags"></div>
+                </div>
+                <div class="panel card" style="margin-top:12px">
+                    <div class="section-title">JSON (export)</div>
+                    <pre id="jsonOut" class="jsonOut">—</pre>
+                </div>
+            </aside>
+        </div>
+        <footer>
+            <p class="muted">
+                Rappel : ceci est un outil d'indices
+                comportementaux. Il ne remplace pas une évaluation clinique.
+                Si tu détectes un danger immédiat, contacte les services
+                d'urgence.
+            </p>
+        </footer>
+    </div>
+    <script>
+        /* =========================
+           Data definitions (questions)
+           ========================= */
+
+        const MBTI_ITEMS = [
+            { id: 'mb1', q: 'Après un événement social, je me sens : (A) Énergisé(e) et prêt(e) à poursuivre les échanges / (B) Fatigué(e) et j\'ai besoin de calme pour récupérer', A: 'E', B: 'I' },
+            { id: 'mb2', q: 'En groupe, je suis plutôt : (A) Celui/celle qui prend l\'initiative et lance la discussion / (B) Celui/celle qui écoute, observe et intervient peu', A: 'E', B: 'I' },
+            { id: 'mb3', q: 'Quand je réfléchis, je préfère : (A) Exprimer mes idées à voix haute pour les tester / (B) Réfléchir tranquillement en moi avant de les partager', A: 'E', B: 'I' },
+
+            { id: 'mb4', q: 'Je fais plus confiance à : (A) Ce qui est concret, observable et vérifiable / (B) Mon intuition et les concepts qui révèlent des tendances', A: 'S', B: 'N' },
+            { id: 'mb5', q: 'Quand j\'apprends, je préfère : (A) Des méthodes pratiques, des exemples et des étapes claires / (B) Comprendre la vision d\'ensemble et les principes abstraits', A: 'S', B: 'N' },
+            { id: 'mb6', q: 'Mon attention se porte sur : (A) Les détails et ce qui est présent maintenant / (B) Les possibilités futures et le contexte global', A: 'S', B: 'N' },
+
+            { id: 'mb7', q: 'Pour décider, je privilégie : (A) L\'analyse logique et les critères objectifs / (B) L\'impact humain et les valeurs personnelles', A: 'T', B: 'F' },
+            { id: 'mb8', q: 'On me perçoit plutôt comme : (A) Rationnel(le), direct(e) et axé(e) sur les faits / (B) Empathique, diplomate et attentif/attentive aux émotions', A: 'T', B: 'F' },
+            { id: 'mb9', q: 'La critique la plus difficile à entendre est : (A) "Vous êtes illogique" / (B) "Vous avez blessé des gens"', A: 'T', B: 'F' },
+
+            { id: 'mb10', q: 'Je préfère un style de vie : (A) Organisé, planifié et avec des décisions prises à l\'avance / (B) Flexible, spontané et ouvert aux changements', A: 'J', B: 'P' },
+            { id: 'mb11', q: 'Face à une tâche, j\'ai tendance à : (A) La planifier et la terminer tôt / (B) Mieux fonctionner sous pression et laisser des options ouvertes', A: 'J', B: 'P' },
+            { id: 'mb12', q: 'J\'aime : (A) Que les choses soient décidées et ordonnées / (B) Garder des options ouvertes et m\'adapter au fil du temps', A: 'J', B: 'P' }
+        ];
+
+        const ENNEA_MAIN = [
+            { id: 'en1', type: 1, text: 'Je veux être juste, moral, et parfait.' },
+            { id: 'en2', type: 2, text: 'Je veux être aimé et nécessaire.' },
+            { id: 'en3', type: 3, text: 'Je veux réussir et être valorisé.' },
+            { id: 'en4', type: 4, text: 'Je veux être unique et authentique.' },
+            { id: 'en5', type: 5, text: 'Je veux comprendre et conserver mes ressources.' },
+            { id: 'en6', type: 6, text: 'Je veux sécurité et soutien fiable.' },
+            { id: 'en7', type: 7, text: 'Je veux éviter douleur et maximiser plaisir.' },
+            { id: 'en8', type: 8, text: 'Je veux garder le contrôle et ne pas être dominé.' },
+            { id: 'en9', type: 9, text: 'Je veux paix et harmonie.' }
+        ];
+
+        const ENNEA_STRESS = [
+            { id: 'es1', type: 1, text: 'Tend à critiquer quand stressé.' },
+            { id: 'es2', type: 2, text: 'Tend à sur-protéger/sauver quand stressé.' },
+            { id: 'es3', type: 3, text: 'Surinvestit image/travail sous stress.' },
+            { id: 'es4', type: 4, text: 'Devient mélancolique/sensible sous stress.' },
+            { id: 'es5', type: 5, text: 'S\'isole et accumule info sous stress.' },
+            { id: 'es6', type: 6, text: 'Devient anxieux/méfiant sous stress.' },
+            { id: 'es7', type: 7, text: 'Cherche distractions excessives sous stress.' },
+            { id: 'es8', type: 8, text: 'Devient dominateur/agressif sous stress.' },
+            { id: 'es9', type: 9, text: 'S\'engourdit et évite sous stress.' }
+        ];
+        const INSTINCTS = [
+            { id: 'sp', text: 'Auto-préservation (sécurité, santé, confort)' },
+            { id: 'so', text: 'Social (statut, groupe, coopération)' },
+            { id: 'sx', text: 'Sexuel (intensité, tête-à-tête, passion)' }
+        ];
+
+        const DARK_ITEMS = [
+            { id: 'dt1', text: 'Je manipule parfois les autres pour obtenir ce que je veux.' },
+            { id: 'dt2', text: 'J\'utilise la flatterie pour obtenir des avantages.' },
+            { id: 'dt3', text: 'Je profite des autres si cela me sert.' },
+            { id: 'dt4', text: 'J\'aime être admiré.' },
+            { id: 'dt5', text: 'Je veux souvent être au centre de l\'attention.' },
+            { id: 'dt6', text: 'Je pense mériter un traitement spécial.' },
+            { id: 'dt7', text: 'Je ressens peu de remords pour mes actes.' },
+            { id: 'dt8', text: 'Je suis parfois indifférent aux émotions des autres.' },
+            { id: 'dt9', text: 'Je cherche des sensations fortes et prends des risques.' }
+        ];
+
+        const ATTACH_ITEMS = [
+            { id: 'att_secure', val: 'secure', text: 'Je suis à l\'aise avec l\'intimité et l\'indépendance.' },
+            { id: 'att_anxious', val: 'anxious', text: 'Je désire proximité mais crains l\'abandon.' },
+            { id: 'att_avoidant', val: 'avoidant', text: 'Je préfère l\'indépendance et garde mes distances.' },
+            { id: 'att_fearful', val: 'fearful', text: 'Je veux être proche mais j\'ai peur d\'être blessé.' }
+        ];
+
+        const ADHD_ITEMS = [
+            { id: 'ad1', text: 'J\'ai souvent du mal à me concentrer sur ce qui est demandé.' },
+            { id: 'ad2', text: 'J\'ai du mal à me souvenir de choses nécessaires au quotidien.' },
+            { id: 'ad3', text: 'Je procrastine ou évite les tâches demandant effort mental soutenu.' },
+            { id: 'ad4', text: 'Je suis souvent agité, je bouge plus que les autres.' },
+            { id: 'ad5', text: 'J\'interromps souvent les autres ou parle excessivement.' },
+            { id: 'ad6', text: 'J\'ai du mal à attendre mon tour ou à rester calme dans des files/attentes.' }
+        ];
+
+        /* ========== Build UI dynamically ========== */
+        function el(tag, opts = {}) { const e = document.createElement(tag); Object.assign(e, opts); return e; }
+        function build() {
+            // MBTI
+            const mbt = document.getElementById('mbtiContainer');
+            MBTI_ITEMS.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                const mainQuestion = it.q.split(' : ')[0];
+                const optionsText = it.q.split(' : ')[1] || '';
+                const [optAText, optBText] = optionsText.split(' / ').map(t => t.replace(/\((A|B)\)\s*/, ''));
+
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + mainQuestion, style: 'font-weight:700;margin-bottom:6px' }));
+                const opts = el('div', { className: 'options' });
+
+                const lblA = el('label', { className: 'opt' });
+                lblA.innerHTML = `<input type="radio" name="${it.id}" value="A"> <span>${optAText}</span>`;
+                opts.appendChild(lblA);
+
+                const lblB = el('label', { className: 'opt' });
+                lblB.innerHTML = `<input type="radio" name="${it.id}" value="B"> <span>${optBText}</span>`;
+                opts.appendChild(lblB);
+
+                q.appendChild(opts); mbt.appendChild(q);
+            });
+
+            // Ennea
+            const en = document.getElementById('enneaContainer');
+            en.appendChild(el('div', { innerHTML: '<strong>Motivation / Peur centrale (choisir la plus proche)</strong>', style: 'margin-bottom:6px' }));
+            ENNEA_MAIN.forEach(it => {
+                const lbl = el('label', { className: 'opt' });
+                lbl.innerHTML = `<input type="radio" name="ennea_main" value="${it.type}"> <span>${it.text}</span>`;
+                en.appendChild(lbl);
+            });
+            en.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Comportements sous stress (cocher si observé)</strong>' }));
+            ENNEA_STRESS.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="checkbox" name="ennea_stress" value="${it.type}"> <span>${it.text}</span>`; en.appendChild(lbl); });
+            en.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Instinct dominant</strong>' }));
+            INSTINCTS.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="instinct" value="${it.id}"> <span>${it.text}</span>`; en.appendChild(lbl); });
+
+            // Dark
+            const dk = document.getElementById('darkContainer');
+            DARK_ITEMS.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                const row = el('div', { className: 'options' });
+                row.innerHTML = `1 <input type="range" name="${it.id}" min="1" max="5" value="3"> 5`;
+                q.appendChild(row); dk.appendChild(q);
+            });
+
+            // Attachment
+            const att = document.getElementById('attachContainer');
+            ATTACH_ITEMS.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="attachment" value="${it.val}"> <span>${it.text}</span>`; att.appendChild(lbl); });
+
+            // ADHD
+            const ad = document.getElementById('adhdContainer');
+            ad.appendChild(el('div', { innerHTML: 'Répondez sur la fréquence : 0=Jamais, 1=Rarement, 2=Parfois, 3=Souvent, 4=Très souvent', style: 'font-size:12px;color:var(--muted);margin-bottom:6px' }));
+            ADHD_ITEMS.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                const row = el('div', { className: 'options' });
+                row.innerHTML = `0 <input type="range" name="${it.id}" min="0" max="4" value="0"> 4`;
+                q.appendChild(row); ad.appendChild(q);
+            });
+        }
+
+        /* ========== Analysis functions ========== */
+        function analyzeMBTI() {
+            const counts = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            MBTI_ITEMS.forEach(it => {
+                const sel = document.querySelector(`input[name="${it.id}"]:checked`);
+                if (sel) {
+                    const letter = sel.value === 'A' ? it.A : it.B;
+                    counts[letter] = (counts[letter] || 0) + 1;
+                }
+            });
+            function decide(a, b) {
+                const ca = counts[a] || 0, cb = counts[b] || 0;
+                const letter = ca > cb ? a : (cb > ca ? b : a);
+                const confidence = Math.round(Math.abs(ca - cb) / 3 * 100);
+                return { letter, confidence, ca, cb };
+            }
+            const ie = decide('I', 'E'), sn = decide('S', 'N'), tf = decide('T', 'F'), jp = decide('J', 'P');
+            const type = ie.letter + sn.letter + tf.letter + jp.letter;
+            const globalConf = Math.round((ie.confidence + sn.confidence + tf.confidence + jp.confidence) / 4);
+            return { type, breakdown: { ie, sn, tf, jp }, globalConf };
+        }
+
+        function analyzeEnnea() {
+            const main = document.querySelector('input[name="ennea_main"]:checked');
+            const type = main ? parseInt(main.value, 10) : null;
+            const stresses = Array.from(document.querySelectorAll('input[name="ennea_stress"]:checked')).map(n => parseInt(n.value, 10));
+            const scores = {};
+            for (let i = 1; i <= 9; i++) scores[i] = 0;
+            if (type) scores[type] += 3;
+            stresses.forEach(t => { if (scores[t] !== undefined) scores[t] += 1; });
+
+            const sorted = Object.keys(scores).map(k => ({ type: parseInt(k, 10), score: scores[k] })).sort((a, b) => b.score - a.score);
+            const top = sorted[0] || null;
+
+            let wing = null;
+            if (type) {
+                const wing1 = type === 1 ? 9 : type - 1;
+                const wing2 = type === 9 ? 1 : type + 1;
+                const score1 = scores[wing1] || 0;
+                const score2 = scores[wing2] || 0;
+                if (score1 > 0 || score2 > 0) {
+                    wing = score1 > score2 ? wing1 : wing2;
+                }
+            }
+
+            const inst = document.querySelector('input[name="instinct"]:checked');
+            const instMap = { sp: 'Auto-préservation', so: 'Social', sx: 'Sexuel (Tête-à-tête)' };
+            return { type, top, wing, instinct: inst ? instMap[inst.value] : null, scores };
+        }
+
+        function analyzeDark() {
+            const traits = { mach: 0, narc: 0, psy: 0 };
+            // mach: dt1..dt3, narc: dt4..dt6, psy: dt7..dt9
+            for (let i = 1; i <= 9; i++) {
+                const el = document.querySelector(`input[name="dt${i}"]`);
+                const v = el ? parseInt(el.value, 10) : 3;
+                if (i <= 3) traits.mach += v;
+                else if (i <= 6) traits.narc += v;
+                else traits.psy += v;
+            }
+            const machPct = Math.round((traits.mach - 3) / 12 * 100); // Score is from 3-15. Normalize to 0-12 range for pct.
+            const narcPct = Math.round((traits.narc - 3) / 12 * 100);
+            const psyPct = Math.round((traits.psy - 3) / 12 * 100);
+            return { raw: traits, mach: machPct, narc: narcPct, psy: psyPct };
+        }
+
+        function analyzeAttach() {
+            const sel = document.querySelector('input[name="attachment"]:checked');
+            const map = { secure: 'Sécure', anxious: 'Anxieux', avoidant: 'Évitant', fearful: 'Craintif-évitant' };
+            return { raw: sel ? sel.value : null, label: sel ? map[sel.value] : null };
+        }
+
+        function analyzeADHD() {
+            let total = 0;
+            for (let i = 1; i <= 6; i++) {
+                const el = document.querySelector(`input[name="ad${i}"]`);
+                const v = el ? parseInt(el.value, 10) : 0;
+                total += v;
+            }
+            const pct = Math.round(total / 24 * 100);
+            const positive = total >= 9; // Heuristic based on ASRS screening
+            return { score: total, pct, positive };
+        }
+
+        /* ========== Report generation ========== */
+        function generateReport(all) {
+            const lines = [];
+            lines.push(`--- Rapport généré le ${new Date().toLocaleString('fr-FR')} ---\n`);
+
+            const { mbti, ennea, dark, attach, adhd } = all;
+
+            lines.push(`MBTI : ${mbti.type} (confiance ${mbti.globalConf}%)`);
+            lines.push(mbtiProfile(mbti.type) + '\n');
+
+            if (ennea.type) {
+                const wingText = ennea.wing ? `w${ennea.wing}` : '';
+                lines.push(`Ennéagramme : Type ${ennea.type}${wingText} — instinct : ${ennea.instinct || 'non spécifié'}`);
+                lines.push(enneaProfile(ennea.type));
+                if (ennea.wing) lines.push(`Aile candidate : ${ennea.wing} (basé sur les réponses).`);
+            } else lines.push('Ennéagramme : non déterminé');
+            lines.push('');
+
+            lines.push('Dark Triad (estimation) :');
+            lines.push(`• Machiavélisme : ${dark.mach}%`);
+            lines.push(`• Narcissisme : ${dark.narc}%`);
+            lines.push(`• Psychopathie : ${dark.psy}%`);
+            lines.push('');
+
+            lines.push(`TDA/H (screening indicatif) : score ${adhd.score}/24 (${adhd.pct}%). ${adhd.positive ? 'Possibilité d’impulsivité/inattention significative — consulter un professionnel si cela impacte la vie quotidienne.' : 'Pas d\'alerte forte sur ce screening court.'}`);
+            lines.push('');
+
+            lines.push(`Style d'attachement estimé : ${attach.label || 'Non spécifié'}`);
+            lines.push('');
+
+            lines.push('Analyse synthétique & recommandations :');
+            const recs = [];
+            if (dark.psy >= 60 && dark.mach >= 50) {
+                lines.push('• Indices forts de froideur instrumentale et impulsivité.');
+                recs.push('Limiter accès à informations sensibles et finances; documenter interactions importantes.');
+            } else if (dark.mach >= 60) {
+                lines.push('• Indice fort de manipulation stratégique.');
+                recs.push('Vérifier les récits et demandes inhabituelles.');
+            } else if (dark.narc >= 60) {
+                lines.push('• Indice de recherche d\'admiration.');
+                recs.push('Attention à la flatterie et aux promesses creuses.');
+            } else {
+                lines.push('• Pas d\'alerte majeure sur la Dark Triad.');
+            }
+            if (ennea.type === 8) {
+                lines.push('• Ennéagramme 8 détecté : assertif, protecteur et parfois confrontant.');
+                recs.push('Être direct, respecter le besoin d\'autonomie.');
+            }
+
+            lines.push('');
+            lines.push('Conseils d\'interaction (basés sur le MBTI) :');
+            mbtiTips(mbti.type).forEach(t => lines.push('• ' + t));
+            lines.push('');
+
+            if (recs.length) {
+                lines.push('Recommandations opérationnelles :');
+                recs.forEach(r => lines.push('• ' + r));
+            } else lines.push('Aucune recommandation de sécurité spécifique.');
+
+            lines.push('\n---\nNote : Ce rapport fournit des indices comportementaux non médicaux. Si vous suspectez un trouble ou un danger, consultez un professionnel qualifié.');
+            return lines.join('\n');
+        }
+
+        /* helper functions for descriptions */
+        function mbtiProfile(type) {
+            const map = {
+                'INTJ': 'Stratège indépendant, planifie long-terme, raisonne de façon logique et abstraite. Préfère autonomie; peut sembler froid mais efficace.', 'INTP': 'Analytique, curieux, cherche cohérence théorique; peut sembler distant socialement.', 'ENTJ': 'Leader stratégique, assertif; exige performance et efficacité.', 'ENTP': 'Innovateur, dialectique; aime débats et nouvelles idées.', 'INFJ': 'Idéaliste discret, guidé par valeurs profondes; empathie structurée.', 'INFP': 'Idéaliste créatif, fortement guidé par valeurs; sensible.', 'ENFJ': 'Leader empathique, mobilisateur social; bon pour motiver les autres.', 'ENFP': 'Enthousiaste, créatif, sociable; aime explorer possibilités.', 'ISTJ': 'Organisé, fiable; fort sens du devoir.', 'ISFJ': 'Protecteur attentionné; fidèle et pratique.', 'ESTJ': 'Organisateur pragmatique; impose structure et ordre.', 'ESFJ': 'Chaleureux, sociable; maintien harmonie sociale.', 'ISTP': 'Pratique et pragmatique; bon résolveur de problèmes concrets.', 'ISFP': 'Observateur sensible; orientation esthétique et valeurs.', 'ESTP': 'Direct, audacieux; aime défis et action.', 'ESFP': 'Sociable, vivant; focalisé sur plaisir et interaction.'
+            };
+            return map[type] || 'Profil MBTI identifié : ' + type;
+        }
+        function enneaProfile(t) {
+            const map = {
+                1: 'Type 1 — Perfectionniste : rigueur morale, sens de l’amélioration; risque d’autocritique.', 2: 'Type 2 — Aidant : orienté vers les autres; peut confondre aide et attente.', 3: 'Type 3 — Performeur : orienté image et accomplissement.', 4: 'Type 4 — Individualiste : profondeur émotionnelle et recherche d’authenticité.', 5: 'Type 5 — Observateur : retrait cognitif, curiosité, besoin d’autonomie.', 6: 'Type 6 — Loyal : vigilance, recherche sécurité, loyauté au groupe.', 7: 'Type 7 — Épicurien : recherche stimulation, évitement douleur.', 8: 'Type 8 — Challenger : besoin de contrôle et autonomie; protecteur mais confrontant.', 9: 'Type 9 — Pacificateur : évitement conflit, tendance à s’effacer pour harmonie.'
+            };
+            return map[t] || '';
+        }
+        function mbtiTips(type) {
+            const base = [];
+            if (type.includes('T')) base.push('Privilégier une communication directe et logique.');
+            else base.push('Privilégier une communication empathique et vérifier l\'impact émotionnel.');
+            if (type.includes('I')) base.push('Respecter le besoin d\'espace et de temps de réflexion.');
+            else base.push('Favoriser l\'interaction et la collaboration pour énergiser.');
+            if (type.includes('J')) base.push('Fournir des plans clairs et des échéances.');
+            else base.push('Être flexible et accepter les changements d’approche.');
+            return base;
+        }
+
+        /* ========== Runner & UI updates ========== */
+        function runAll() {
+            const mbtiAnswered = MBTI_ITEMS.every(it => document.querySelector(`input[name="${it.id}"]:checked`));
+            const enneaAnswered = !!document.querySelector('input[name="ennea_main"]:checked');
+            const instinctAnswered = !!document.querySelector('input[name="instinct"]:checked');
+            const attachAnswered = !!document.querySelector('input[name="attachment"]:checked');
+            if (!mbtiAnswered || !enneaAnswered || !instinctAnswered || !attachAnswered) {
+                alert('Veuillez répondre à toutes les questions des sections MBTI, Ennéagramme (type + instinct) et Attachement avant d\'analyser.');
+                return;
+            }
+
+            const mbti = analyzeMBTI();
+            const ennea = analyzeEnnea();
+            const dark = analyzeDark();
+            const attach = analyzeAttach();
+            const adhd = analyzeADHD();
+
+            document.getElementById('mbtiResult').innerText = mbti.type + ' (confiance ' + mbti.globalConf + '%)';
+            document.getElementById('enneaResult').innerText = 'Type ' + (ennea.type || '?') + (ennea.wing ? 'w' + ennea.wing : '') + ' • ' + (ennea.instinct || '');
+            document.getElementById('machPct').innerText = dark.mach + '%'; document.getElementById('machBar').style.width = dark.mach + '%';
+            document.getElementById('narcPct').innerText = dark.narc + '%'; document.getElementById('narcBar').style.width = dark.narc + '%';
+            document.getElementById('psyPct').innerText = dark.psy + '%'; document.getElementById('psyBar').style.width = dark.psy + '%';
+            document.getElementById('attachRes').innerText = attach.label || '—';
+            document.getElementById('adhdRes').innerText = adhd.score + '/24' + (adhd.positive ? ' — alerte possible' : '');
+
+            const all = { mbti, ennea, dark, attach, adhd };
+            const report = generateReport(all);
+            document.getElementById('report').innerText = report;
+
+            const tagsEl = document.getElementById('heuristicsTags'); tagsEl.innerHTML = '';
+            const addTag = (txt) => { const s = document.createElement('span'); s.className = 'tag'; s.innerText = txt; tagsEl.appendChild(s); };
+            if (dark.psy >= 60 && dark.mach >= 50) addTag('Indice fort : froideur instrumentale');
+            else if (dark.mach >= 60) addTag('Indice : manipulation stratégique');
+            if (ennea.type === 8) addTag('Ennéa 8 : assertif/protecteur');
+            addTag('MBTI: ' + mbti.type);
+            addTag('Attachement: ' + attach.label);
+
+            const out = { timestamp: (new Date()).toISOString(), mbti, ennea, dark, attach, adhd, report };
+            document.getElementById('jsonOut').innerText = JSON.stringify(out, null, 2);
+        }
+
+        function clearForm() {
+            document.getElementById('profilerForm').reset();
+
+            document.getElementById('mbtiResult').innerText = '—';
+            document.getElementById('enneaResult').innerText = '—';
+            document.getElementById('attachRes').innerText = '—';
+            document.getElementById('adhdRes').innerText = '—';
+            document.getElementById('machPct').innerText = '0%';
+            document.getElementById('narcPct').innerText = '0%';
+            document.getElementById('psyPct').innerText = '0%';
+            document.getElementById('machBar').style.width = '0%';
+            document.getElementById('narcBar').style.width = '0%';
+            document.getElementById('psyBar').style.width = '0%';
+            document.getElementById('report').innerText = 'Clique sur "Analyser" pour générer le rapport détaillé.';
+            document.getElementById('jsonOut').innerText = '—';
+            document.getElementById('heuristicsTags').innerHTML = '';
+        }
+
+        /* export / import */
+        function exportJson() {
+            const json = document.getElementById('jsonOut').innerText;
+            if (json === '—') {
+                alert("Veuillez d'abord générer une analyse avant d'exporter.");
+                return;
+            }
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `profil-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+        document.getElementById('importFile').addEventListener('change', (e) => {
+            const f = e.target.files[0]; if (!f) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (!data || !data.mbti) {
+                        alert('Fichier JSON invalide ou ne contenant pas de profil.');
+                        return;
+                    }
+                    // Note: Restoring form inputs is complex and not implemented here.
+                    // We will just display the results.
+                    document.getElementById('jsonOut').innerText = JSON.stringify(data, null, 2);
+                    document.getElementById('report').innerText = data.report || 'Aucun rapport trouvé dans le fichier.';
+                    alert('Importation réussie. Le rapport et les données JSON ont été affichés. Les réponses du formulaire ne sont pas restaurées.');
+                } catch (err) {
+                    alert('Erreur lors de la lecture du fichier JSON.');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(f);
+        });
+
+        // Ensures the DOM is loaded before building the UI
+        document.addEventListener('DOMContentLoaded', build);
+    </script>
+</body>
+
+</html>
