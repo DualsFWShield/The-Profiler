@@ -73,14 +73,65 @@
             .form-buttons { display: flex; gap: 0.6rem; }
             button.btn, button.ghost { width: 100%; }
         }
-        input[type="file"] { width: 100%; padding: 0.3rem 0; }
+        input[type="file"] {
+            display: inline-block;
+            width: 100%;
+            height: var(--btn-h);
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.4);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            border: 0;
+            font-weight: 700;
+            font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* Modern browsers: style the file selector button */
+        input[type="file"]::file-selector-button {
+            appearance: none;
+            border: 0;
+            margin-right: 8px;
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.6);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* WebKit legacy pseudo-element */
+        input[type="file"]::-webkit-file-upload-button {
+            appearance: none;
+            border: 0;
+            margin-right: 8px;
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.6);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Lang switch */
+        .lang-switch { float: right; margin-top: -2.2rem; }
+        .lang-switch select { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--muted); padding: 0.25rem 0.5rem; border-radius: 6px; }
     </style>
 </head>
 
 <body>
     <div class="wrap">
         <header>
-            <h1>Profiler Hyper Complet (Version Éducative)</h1>
+            <div class="lang-switch">
+                <label class="muted" for="langSelect" style="margin-right:6px;font-size:0.9rem;">Lang:</label>
+                <select id="langSelect" aria-label="Choisir la langue">
+                    <option value="index.html">Français</option>
+                    <option value="en-us.html">English</option>
+                    <option value="nl-be.html">Nederlands</option>
+                </select>
+            </div>
+            <h1>The Profiler</h1>
             <p class="lead">
                 Application locale — données conservées
                 uniquement côté client. Indices comportementaux et de
@@ -390,7 +441,7 @@
                 prevalence: "Environ 4%. Peut être plus élevé chez les garçons.",
                 scaleText: FREQUENCY_SCALE_TEXT,
                 items: [
-                    { id: 'ccd1', text: "Agressivité physique envers les pairs ou les animaux." },
+                    { id: 'ccd1', text: "Agressivité physique envers les peers ou les animaux." },
                     { id: 'ccd2', text: "Mensonges répétés pour éviter des obligations ou obtenir des faveurs." },
                     { id: 'ccd3', text: "Vols (à la maison, à l'école) sans confrontation." },
                     { id: 'ccd4', text: "Destruction délibérée de biens appartenant à autrui." },
@@ -1057,7 +1108,18 @@
             reader.readAsText(f);
         });
 
-        document.addEventListener('DOMContentLoaded', build);
+        // --- Langue ---
+        function initLangSelector() {
+            const sel = document.getElementById('langSelect');
+            if (!sel) return;
+            const fn = (window.location.pathname.split('/').pop() || '').toLowerCase();
+            if (fn.includes('en-us')) sel.value = 'en-us.html';
+            else if (fn.includes('nl-be')) sel.value = 'nl-be.html';
+            else sel.value = 'index.html';
+            sel.addEventListener('change', () => { const v = sel.value; window.location.href = v; });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { build(); initLangSelector(); });
     </script>
 </body>
 </html>

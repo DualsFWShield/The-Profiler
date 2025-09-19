@@ -1,0 +1,1091 @@
+<!doctype html>
+
+<html lang="nl-BE">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>
+De Profiler
+</title>
+<meta name="robots" content="noindex,nofollow">
+<!-- CDN for jsPDF and jsPDF-AutoTable for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+    /* CSS IDENTICAL TO ORIGINAL - NO CHANGES */
+    :root {
+        --bg: #0b1220;
+        --card: #07102b;
+        --muted: #94a3b8;
+        --accent: #60a5fa;
+        --good: #10b981;
+        --warn: #f59e0b;
+        --bad: #fb7185;
+        --surface: #0f1724;
+        --glass: rgba(255, 255, 255, 0.03);
+        --maxw: 1100px;
+        --gutter: 4vw;
+        --radius: 1.25rem;
+        --card-pad: 1rem;
+        --gap: 0.8rem;
+        --shadow: 0 0.8rem 2.4rem rgba(2,6,23,0.55);
+        --btn-h: 2.6rem;
+    }
+    html { font-size: clamp(14px, 1.8vw, 18px); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: inherit; }
+    body { margin: 0; font-family: Inter, system-ui, "Segoe UI", Arial, sans-serif; background: linear-gradient(180deg, #041025 0%, #07102b 100%); color: #e6eef6; min-height: 100vh; line-height: 1.35; }
+    .wrap { width: min(96%, var(--maxw)); margin: 0 auto; padding: calc(var(--gutter) / 2); }
+    header { margin-bottom: calc(var(--gap) * 1.5); }
+    h1 { font-size: clamp(1.05rem, 3.2vw, 1.25rem); margin: 0 0 0.35rem; font-weight: 700; }
+    p.lead { margin: 0; color: var(--muted); font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
+    form.card, .panel.card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding: var(--card-pad); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: calc(var(--gap) * 1.25); }
+    .section-title { font-weight: 700; margin: 0.35rem 0 0.5rem; font-size: clamp(0.95rem, 2.6vw, 1.05rem); color: var(--accent); }
+    .q { background: var(--glass); padding: calc(var(--gap) * 0.9); border-radius: calc(var(--radius) / 1.6); margin: 0.6rem 0; }
+    label.opt { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.25rem; cursor: pointer; font-size: clamp(0.9rem, 1.9vw, 1rem); }
+    .options { display: flex; flex-direction: column; gap: 0.35rem; }
+    input[type="radio"], input[type="checkbox"] { transform: scale(1.05); flex-shrink: 0; }
+    input[type="range"] { width: 100%; max-width: 100%; margin: 0.35rem 0; }
+    button.btn { appearance: none; border: 0; padding: 0.5rem 0.75rem; border-radius: calc(var(--radius) / 1.4); background: linear-gradient(90deg, var(--accent), #7dd3fc); color: #021024; font-weight: 700; cursor: pointer; margin-top: 0.5rem; display: block; width: 100%; height: var(--btn-h); font-size: clamp(0.95rem, 1.8vw, 1.05rem); }
+    button.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.04); color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: calc(var(--gap) * 1.15); align-items: start; }
+    .aside { display: block; }
+    .results { white-space: pre-wrap; font-size: clamp(0.88rem, 1.6vw, 0.95rem); background: rgba(255,255,255,0.02); padding: 0.6rem; border-radius: calc(var(--radius) / 1.4); }
+    .mini { font-size: clamp(0.82rem, 1.6vw, 0.9rem); color: var(--muted); }
+    .bar { height: clamp(0.45rem, 0.8vh, 0.6rem); background: rgba(255,255,255,0.04); border-radius: calc(var(--radius) / 2.8); overflow: hidden; margin-top: 0.45rem; }
+    .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #60a5fa); transition: width 0.3s ease; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .tag { background: rgba(255,255,255,0.02); padding: 0.35rem 0.6rem; border-radius: 999px; font-size: clamp(0.78rem, 1.4vw, 0.9rem); }
+    .muted { color: var(--muted); }
+    footer { margin-top: 0.9rem; font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: var(--muted); }
+    pre.jsonOut { background: #021024; padding: 0.6rem; border-radius: calc(var(--radius) / 1.4); overflow: auto; font-size: clamp(0.75rem, 1.4vw, 0.9rem); white-space: pre-wrap; word-break: break-word; }
+    .q, .options, label.opt, .results, pre.jsonOut { overflow-wrap: break-word; word-break: break-word; }
+    @media (min-width: 760px) {
+        .grid { grid-template-columns: 1fr minmax(280px, 34%); gap: calc(var(--gap) * 1.2); }
+        .options { gap: 0.5rem; }
+        button.btn { width: 100%; }
+    }
+    @media (min-width: 980px) {
+        html { font-size: clamp(15px, 1.5vw, 18px); }
+        .wrap { padding: calc(var(--gutter) / 1.4); }
+        .grid { grid-template-columns: 1fr 30%; gap: calc(var(--gap) * 1.4); }
+        .aside { position: sticky; top: 1rem; align-self: start; }
+        .form-buttons { display: flex; gap: 0.6rem; }
+        button.btn, button.ghost { width: 100%; }
+    }
+    input[type="file"] { width: 100%; padding: 0.3rem 0; }
+    .lang-switch { float: right; margin-top: -2.2rem; }
+    .lang-switch select { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--muted); padding: 0.25rem 0.5rem; border-radius: 6px; }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<header>
+    <div class="lang-switch">
+        <label class="muted" for="langSelect" style="margin-right:6px;font-size:0.9rem;">Taal:</label>
+        <select id="langSelect" aria-label="Taal kiezen">
+            <option value="index.html">Français</option>
+            <option value="en-us.html">English</option>
+            <option value="nl-be.html">Nederlands</option>
+        </select>
+    </div>
+<h1>De Profiler</h1>
+<p class="lead">
+Lokale applicatie — gegevens blijven enkel aan de cliëntkant. Gedrags- en persoonlijkheidsindicatoren — 
+<strong>geen diagnose</strong>.
+</p>
+</header>
+<div class="grid">
+<form id="profilerForm" class="card" onsubmit="event.preventDefault(); runAll();">
+
+            <!-- Module selection section -->
+            <div>
+                <div class="section-title">Moduleselectie</div>
+                <div id="moduleSelector" class="q">
+                    <!-- Checkboxes generated by JS -->
+                </div>
+            </div>
+
+            <!-- Containers for all questionnaires -->
+            <div id="allSectionsContainer">
+                <!-- Sections will be injected here by JS -->
+            </div>
+            
+            <div style="margin-top:12px;" class="form-buttons">
+                <button type="submit" class="btn">
+                    Analyseer (profiel genereren)
+                </button>
+                <button type="button" class="btn ghost" onclick="generatePDF()">Exporteren naar PDF</button>
+                <!-- Button added to fill in a complete example -->
+                <button type="button" class="btn ghost" onclick="fillExample()">Voorbeeld</button>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+                <button type="button" class="ghost btn" onclick="clearForm()" style="flex:1">Wissen</button>
+                <button type="button" class="ghost btn" onclick="exportJson()" style="flex:1">
+                    JSON exporteren
+                </button>
+                <input id="importFile" type="file" accept=".json" style="flex:1">
+            </div>
+        </form>
+        <aside class="aside">
+            <div class="panel card">
+                <div class="section-title">Gedetailleerd rapport</div>
+                <div id="report" class="results" style="max-height: 80vh; overflow-y: auto;">
+                    Selecteer modules, vul de vragenlijsten in en klik op "Analyseer".
+                </div>
+                <div class="tags" id="heuristicsTags"></div>
+            </div>
+            <div class="panel card" style="margin-top:12px">
+                <div class="section-title">JSON (export)</div>
+                <pre id="jsonOut" class="jsonOut" style="max-height: 200px; overflow: auto;">—</pre>
+            </div>
+        </aside>
+    </div>
+    <footer>
+        <p class="muted">
+            Herinnering: dit is een educatief hulpmiddel om gedragsindicatoren te verkennen.
+            Het vervangt op geen enkele manier een klinische evaluatie door een bevoegde professional.
+            Als u of iemand die u kent in nood is, raadpleeg een arts of psycholoog.
+        </p>
+    </footer>
+</div>
+<script>
+    /* ================================================= */
+    /* == DATA DEFINITIONS (QUESTIONS & DESCRIPTIONS) == */
+    /* ================================================= */
+
+    // Helper to create scale questions (0=Never, 4=Very often)
+    const FREQUENCY_SCALE_TEXT = 'Beoordeel de frequentie: 0=Nooit, 1=Soms zelden, 2=Soms, 3=Vaak, 4=Heel vaak';
+
+    const MODULES = {
+        base: {
+            title: "Persoonlijkheidsprofiel (MBTI, Enneagram, enz.)",
+            enabled: true,
+            sections: ['mbti', 'enneagram', 'dark', 'attachment', 'adhd']
+        },
+        adult: {
+            title: "Gedragsstoornissen (Volwassenen/Tieners)",
+            enabled: false,
+            sections: ['top', 'conduct', 'addiction', 'intermittent', 'antisocial', 'borderline', 'narcissistic', 'ocpd']
+        },
+        child: {
+            title: "Gedragsstoornissen (Kinderen)",
+            enabled: false,
+            sections: ['child_top', 'child_conduct', 'child_anxiety', 'child_eating']
+        },
+        specific: {
+            title: "Specifieke stoornissen (fobie, OCD, enz.)",
+            enabled: false,
+            sections: ['social_phobia', 'ocd', 'autism', 'eating_disorder']
+        }
+    };
+
+    const SECTIONS_DATA = {
+        // == BASE MODULE ==
+        mbti: {
+            title: 'MBTI — 12 vragen (≈2–3 min)',
+            items: [
+                { id: 'mb1', q: 'Na een sociale gebeurtenis voel ik me: (A) Energiek en klaar voor meer / (B) Moe en heb ik rust nodig', A: 'E', B: 'I' },
+                { id: 'mb2', q: 'In een groep ben ik meestal: (A) Degene die initiatief neemt / (B) Degene die luistert en observeert', A: 'E', B: 'I' },
+                { id: 'mb3', q: 'Om te denken geef ik de voorkeur aan: (A) Mijn ideeën hardop uiten / (B) Intern nadenken', A: 'E', B: 'I' },
+                { id: 'mb4', q: 'Ik vertrouw meer op: (A) Wat concreet en observeerbaar is / (B) Mijn intuïtie en concepten', A: 'S', B: 'N' },
+                { id: 'mb5', q: 'Ik leer beter met: (A) Praktische methoden, duidelijke stappen / (B) Het overzicht en abstracte principes', A: 'S', B: 'N' },
+                { id: 'mb6', q: 'Mijn aandacht gaat uit naar: (A) De details van het heden / (B) Mogelijkheden in de toekomst', A: 'S', B: 'N' },
+                { id: 'mb7', q: 'Bij beslissingen geef ik prioriteit aan: (A) Logische analyse, objectieve criteria / (B) Impact op mensen en waarden', A: 'T', B: 'F' },
+                { id: 'mb8', q: 'Mensen zien mij als: (A) Rationeel, direct / (B) Empathisch, diplomatisch', A: 'T', B: 'F' },
+                { id: 'mb9', q: 'De moeilijkste kritiek is: (A) "Je bent onlogisch" / (B) "Je hebt anderen gekwetst"', A: 'T', B: 'F' },
+                { id: 'mb10', q: 'Ik geef de voorkeur aan een levensstijl: (A) Georganiseerd, gepland / (B) Flexibel, spontaan', A: 'J', B: 'P' },
+                { id: 'mb11', q: 'Bij een taak heb ik de neiging: (A) Het te plannen en vroeg af te ronden / (B) Beter te presteren onder druk', A: 'J', B: 'P' },
+                { id: 'mb12', q: 'Ik houd van: (A) Dat dingen besloten zijn / (B) Opties open houden', A: 'J', B: 'P' }
+            ]
+        },
+        enneagram: {
+            title: 'Enneagram — motivatie & instinct',
+            items: {
+                main: [
+                    { id: 'en1', type: 1, text: 'Ik wil juist, moreel en perfect zijn.' },
+                    { id: 'en2', type: 2, text: 'Ik wil geliefd en nodig zijn.' },
+                    { id: 'en3', type: 3, text: 'Ik wil slagen en gewaardeerd worden.' },
+                    { id: 'en4', type: 4, text: 'Ik wil uniek en authentiek zijn.' },
+                    { id: 'en5', type: 5, text: 'Ik wil begrijpen en mijn bronnen behouden.' },
+                    { id: 'en6', type: 6, text: 'Ik wil veiligheid en betrouwbare steun.' },
+                    { id: 'en7', type: 7, text: 'Ik wil pijn vermijden en plezier maximaliseren.' },
+                    { id: 'en8', type: 8, text: 'Ik wil controle houden en niet gedomineerd worden.' },
+                    { id: 'en9', type: 9, text: 'Ik wil vrede en harmonie.' }
+                ],
+                stress: [
+                    { id: 'es1', type: 1, text: 'Neigt te bekritiseren onder stress.' },
+                    { id: 'es2', type: 2, text: 'Neigt te overbeschermen/te redden onder stress.' },
+                    { id: 'es3', type: 3, text: 'Investeert te veel in imago/werk bij stress.' },
+                    { id: 'es4', type: 4, text: 'Wordt melancholisch/gevoelig onder stress.' },
+                    { id: 'es5', type: 5, text: 'Trekt zich terug en hoopt informatie op bij stress.' },
+                    { id: 'es6', type: 6, text: 'Wordt angstig/achterdochtig onder stress.' },
+                    { id: 'es7', type: 7, text: 'Zoekt afleiding excessief onder stress.' },
+                    { id: 'es8', type: 8, text: 'Wordt dominant/agressief onder stress.' },
+                    { id: 'es9', type: 9, text: 'Wordt verdoofd en vermijdend onder stress.' }
+                ],
+                instincts: [
+                    { id: 'sp', text: 'Zelfbehoud (veiligheid, gezondheid, comfort)' },
+                    { id: 'so', text: 'Sociaal (status, groep, samenwerking)' },
+                    { id: 'sx', text: 'Seksueel (intensiteit, één-op-één, passie)' }
+                ]
+            }
+        },
+        dark: {
+            title: 'Dark Triad — schaal 1-5',
+            items: [
+                { id: 'dt1', text: 'Ik manipuleer soms anderen om te krijgen wat ik wil.' },
+                { id: 'dt2', text: 'Ik gebruik vleierij om voordelen te verkrijgen.' },
+                { id: 'dt3', text: 'Ik profiteer van anderen als het mij dient.' },
+                { id: 'dt4', text: 'Ik houd ervan bewonderd te worden.' },
+                { id: 'dt5', text: 'Ik wil vaak het middelpunt van de aandacht zijn.' },
+                { id: 'dt6', text: 'Ik denk dat ik speciale behandeling verdien.' },
+                { id: 'dt7', text: 'Ik voel weinig berouw over mijn daden.' },
+                { id: 'dt8', text: 'Ik ben soms ongevoelig voor de emoties van anderen.' },
+                { id: 'dt9', text: 'Ik zoek sensatie en neem risico\'s.' }
+            ]
+        },
+        attachment: {
+            title: "Hechtingsstijl",
+            items: [
+                { id: 'att_secure', val: 'secure', text: 'Ik voel me op mijn gemak met intimiteit en onafhankelijkheid.' },
+                { id: 'att_anxious', val: 'anxious', text: 'Ik verlang naar nabijheid maar vrees verlating.' },
+                { id: 'att_avoidant', val: 'avoidant', text: 'Ik geef de voorkeur aan onafhankelijkheid en houd afstand.' },
+                { id: 'att_fearful', val: 'fearful', text: 'Ik wil dichtbij zijn maar ben bang gekwetst te worden.' }
+            ]
+        },
+        adhd: {
+            title: 'ADHD (ASRS-achtige screening — indicatief)',
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ad1', text: 'Ik heb vaak moeite me te concentreren op wat gevraagd wordt.' },
+                { id: 'ad2', text: 'Ik heb moeite belangrijke dagelijkse dingen te onthouden.' },
+                { id: 'ad3', text: 'Ik stel uit of vermijd taken die langdurige mentale inspanning vereisen.' },
+                { id: 'ad4', text: 'Ik ben vaak rusteloos en beweeg meer dan anderen.' },
+                { id: 'ad5', text: 'Ik onderbreek anderen vaak of praat overdreven veel.' },
+                { id: 'ad6', text: 'Ik heb moeite mijn beurt af te wachten of rustig te blijven in rijen.' }
+            ]
+        },
+
+        // == ADULT / TEEN MODULE ==
+        top: {
+            title: 'Oppositioneel-Aggressieve Stoornis (ODD)',
+            description: "ODD wordt gekenmerkt door een aanhoudend patroon van prikkelbare stemming, opstandig/ruziemakend gedrag of wraakzuchtigheid.",
+            prevalence: "Treft ongeveer 1% tot 11% van de bevolking, gemiddeld rond 3,3%.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'top1', text: "De persoon verliest vaak zijn/haar geduld." },
+                { id: 'top2', text: "Is vaak prikkelbaar of gemakkelijk geïrriteerd door anderen." },
+                { id: 'top3', text: "Is vaak boos en wrokkig." },
+                { id: 'top4', text: "Gaat vaak in discussie met autoriteitsfiguren." },
+                { id: 'top5', text: "Tegengesteld of weigert actief te voldoen aan verzoeken of regels." },
+                { id: 'top6', text: "Plaagt anderen opzettelijk." },
+                { id: 'top7', text: "Geeft anderen vaak de schuld van zijn/haar fouten of wangedrag." },
+                { id: 'top8', text: "Is minstens twee keer wraakzuchtig geweest in de afgelopen 6 maanden." }
+            ]
+        },
+        conduct: {
+            title: 'Agressieve- en Ontwrichtingsstoornis (Conduct Disorder)',
+            description: "Herhaald en persistent patroon van gedrag waarbij de fundamentele rechten van anderen of grote maatschappelijke normen worden geschonden.",
+            prevalence: "Jaarprevalentie varieert van 2% tot meer dan 10%, mediaan rond 4%.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'cd1', text: "Agressie tegenover mensen en dieren (pesten, dreigen, fysieke wreedheid)." },
+                { id: 'cd2', text: "Heeft vaak fysieke gevechten begonnen." },
+                { id: 'cd3', text: "Heeft een wapen gebruikt dat ernstige lichamelijke schade kan veroorzaken." },
+                { id: 'cd4', text: "Vernietiging van eigendom (opzettelijk brandstichten, andermans eigendom vernielen)." },
+                { id: 'cd5', text: "Bedrog of diefstal (liegen om goederen te krijgen, stelen van waardevolle spullen zonder confrontatie)." },
+                { id: 'cd6', text: "Ernstige overtredingen van regels (s nachts buiten blijven ondanks verboden, van huis weglopen)." }
+            ]
+        },
+        intermittent: {
+            title: 'Intermitterende Explosieve Stoornis',
+            description: "Gekenmerkt door herhaalde gedragsuitbarstingen die een falen vertegenwoordigen in het beheersen van agressieve impulsen, die duidelijk buiten proportie zijn.",
+            prevalence: "Eenjarig voorkomen is ongeveer 2,7% in de algemene bevolking.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ie1', text: "Heeft verbale agressie (woede-uitbarstingen, ruzies) meerdere keren per week." },
+                { id: 'ie2', text: "Heeft gedragsuitbarstingen met materiële schade of fysieke aanvallen enkele keren per jaar." },
+                { id: 'ie3', text: "De intensiteit van de agressie is buiten proportie met de provocatie." },
+                { id: 'ie4', text: "De uitbarstingen zijn niet gepland en impulsief van aard." },
+                { id: 'ie5', text: "Deze uitbarstingen veroorzaken significante stress of functieverlies." }
+            ]
+        },
+        antisocial: {
+            title: 'Antisociale Persoonlijkheidsstoornis',
+            description: "Een algemeen patroon van minachting en schending van de rechten van anderen, beginnend in de kindertijd of vroege adolescentie.",
+            prevalence: "Tussen 0,2% en 3,3% van de algemene bevolking.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'as1', text: "Onvermogen om zich aan sociale en wettelijke normen te houden (herhaalde daden die tot arrestatie kunnen leiden)." },
+                { id: 'as2', text: "Bedrieglijkheid voor persoonlijk gewin of plezier (herhaaldelijk liegen, gebruik van aliassen, oplichten)." },
+                { id: 'as3', text: "Impulsiviteit of gebrek aan planning." },
+                { id: 'as4', text: "Prikkelbaarheid en agressiviteit (herhaalde fysieke gevechten of aanvallen)." },
+                { id: 'as5', text: "Roekeloos minachting voor de veiligheid van zichzelf of anderen." },
+                { id: 'as6', text: "Aanhoudende onverantwoordelijkheid (falen om consistent in werk te blijven of financiële verplichtingen na te komen)." },
+                { id: 'as7', text: "Gebrek aan berouw (onverschillig of rationaliserend na het schaden van anderen)." }
+            ]
+        },
+        borderline: {
+            title: 'Borderline Persoonlijkheidsstoornis',
+            description: "Een algemeen patroon van instabiliteit in interpersoonlijke relaties, zelfbeeld en affecten, met aanzienlijke impulsiviteit.",
+            prevalence: "Treft 1,6% tot 5,9% van de bevolking. Meer voorkomend in klinische populaties (10-20%).",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'bpd1', text: "Frenetieke pogingen om echte of ingebeelde verlating te vermijden." },
+                { id: 'bpd2', text: "Patroon van instabiele en intense interpersoonlijke relaties, wisselend tussen idealisatie en devaluatie." },
+                { id: 'bpd3', text: "Identiteitsstoornis: sterk en persistent instabiel zelfbeeld." },
+                { id: 'bpd4', text: "Impulsiviteit in ten minste twee mogelijk schadelijke domeinen (uitgaven, seks, middelenmisbruik, eetbuien)." },
+                { id: 'bpd5', text: "Herhaald suïcidaal gedrag, gebaren of bedreigingen, of automutilaties." },
+                { id: 'bpd6', text: "Affectinstabiliteit door sterke reactieve stemming (intense woede, prikkelbaarheid, angst)." },
+                { id: 'bpd7', text: "Chronische gevoelens van leegte." },
+                { id: 'bpd8', text: "Ongepaste, intense woede of moeite met het beheersen van woede." },
+                { id: 'bpd9', text: "Tijdelijke, stressgerelateerde paranoïde ideatie of ernstige dissociatieve symptomen." }
+            ]
+        },
+         narcissistic: {
+            title: 'Narcistische Persoonlijkheidsstoornis',
+            description: "Een algemeen patroon van grootheidsgevoel (in fantasie of gedrag), behoefte aan bewondering en gebrek aan empathie.",
+            prevalence: "Tot 6,2% in onderzoeken van de algemene bevolking.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'npd1', text: "Heeft een grootheidsgevoel over eigen belangrijkheid (overdrijft prestaties, verwacht als superieur erkend te worden)." },
+                { id: 'npd2', text: "Is geobsedeerd door fantasieën van onbeperkt succes, macht, genialiteit, schoonheid of ideale liefde." },
+                { id: 'npd3', text: "Gelooft bijzonder en uniek te zijn en alleen begrepen te worden door andere speciale mensen." },
+                { id: 'npd4', text: "Vraagt om buitensporige bewondering." },
+                { id: 'npd5', text: "Voelt zich entitled: verwacht bijzonder gunstige behandeling." },
+                { id: 'npd6', text: "Is interpersoonlijk exploitatief: gebruikt anderen om eigen doelen te bereiken." },
+                { id: 'npd7', text: "Mist empathie: is niet bereid gevoelens en behoeften van anderen te erkennen." },
+                { id: 'npd8', text: "Is vaak jaloers op anderen of gelooft dat anderen jaloers op hem/haar zijn." },
+                { id: 'npd9', text: "Toont arrogante, neerbuigende houdingen en gedrag." }
+            ]
+        },
+        ocpd: {
+            title: 'Obsessief-Compulsieve Persoonlijkheidsstoornis (OCPD)',
+            description: "Voortdurende preoccupatie met orde, perfectionisme en mentale en interpersoonlijke controle ten koste van flexibiliteit, openheid en efficiëntie. (Niet te verwarren met OCD).",
+            prevalence: "Een van de meest voorkomende, geschat tussen 2,1% en 7,9% van de algemene bevolking.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ocpd1', text: "Preoccupatie met details, regels, lijsten, organisatie of schema's, zodat het hoofddoel verloren gaat." },
+                { id: 'ocpd2', text: "Perfectionisme dat voltooiing van taken belemmert." },
+                { id: 'ocpd3', text: "Excessieve toewijding aan werk/productiviteit ten koste van vrije tijd en vriendschappen." },
+                { id: 'ocpd4', text: "Te consciëntieus, scrupuleus en inflexibel over moraal, ethiek of waarden." },
+                { id: 'ocpd5', text: "Onvermogen om versleten of waardeloze voorwerpen weg te gooien." },
+                { id: 'ocpd6', text: "Terughoudendheid om taken te delegeren tenzij anderen precies hun manier volgen." },
+                { id: 'ocpd7', text: "Gierig met geld; ziet het als iets om te hamsteren voor toekomstige rampspoed." },
+                { id: 'ocpd8', text: "Toont rigiditeit en koppigheid." }
+            ]
+        },
+        
+        // == CHILD MODULE ==
+        child_top: {
+            title: 'Oppositioneel gedrag (Kind)',
+            description: "Herhaald negatief, vijandig en opstandig gedrag tegenover autoriteitsfiguren dat niet passend is voor de leeftijd van het kind.",
+            prevalence: "Ongeveer 3,3%, maar kan variëren van 1% tot 11%. Diagnose moet rekening houden met ontwikkelingsstadium.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ctop1', text: "Het kind wordt vaak boos of is prikkelbaar." },
+                { id: 'ctop2', text: "Strijdt of trotseert actief verzoeken van volwassenen." },
+                { id: 'ctop3', text: "Plaagt opzettelijk anderen." },
+                { id: 'ctop4', text: "Geeft anderen de schuld van eigen fouten." },
+                { id: 'ctop5', text: "Is vaak prikkelbaar of snel geïrriteerd." }
+            ]
+        },
+        child_conduct: {
+            title: 'Agressieve stoornissen (Kind)',
+            description: "Ernstig en persistent gedrag dat de rechten van anderen of belangrijke sociale normen schaadt.",
+            prevalence: "Ongeveer 4%. Kan hoger zijn bij jongens.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ccd1', text: "Fysieke agressie tegen leeftijdsgenoten of dieren." },
+                { id: 'ccd2', text: "Herhaaldelijk liegen om verplichtingen te vermijden of gunsten te verkrijgen." },
+                { id: 'ccd3', text: "Diefstal (thuis, op school) zonder confrontatie." },
+                { id: 'ccd4', text: "Opzettelijke vernieling van andermans eigendom." },
+                { id: 'ccd5', text: "Ernstige overtredingen van regels (bv. weglopen, vroeg op school afwezig zijn)." }
+            ]
+        },
+        child_anxiety: {
+            title: 'Angst met vermijdingsgedrag (Kind)',
+            description: "Ernstige en aanhoudende angst die het kind ertoe aanzet specifieke situaties te vermijden (school, sociale interacties), met impact op ontwikkeling.",
+            prevalence: "Angststoornissen treffen ongeveer 7% van kinderen en adolescenten.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'canx1', text: "Weigert vaak naar school te gaan of toont intense stress bij dat idee." },
+                { id: 'canx2', text: "Vermijdt groepsactiviteiten of verjaardagsfeestjes." },
+                { id: 'canx3', text: "Klaagt vaak over buik- of hoofdpijn, vooral voor sociale of schoolactiviteiten." },
+                { id: 'canx4', text: "Isoleert zich of heeft zeer weinig hechte vrienden." },
+                { id: 'canx5', text: "Toont extreme verlegenheid die deelname in de klas belemmert." }
+            ]
+        },
+        child_eating: {
+            title: 'Eetproblemen vroeg (Kind)',
+            description: "Ongebruikelijke of restrictieve eetgewoonten die niet verklaard worden door medische oorzaken en die gezondheid of sociaal functioneren beïnvloeden.",
+            prevalence: "Moeilijk te schatten, maar problematisch eetgedrag is vaak bij jonge kinderen.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ceat1', text: "Extreme selectiviteit in voeding (accepteert zeer weinig voedingsmiddelen)." },
+                { id: 'ceat2', text: "Weigering te eten leidend tot gewichtsverlies of onvoldoende groei." },
+                { id: 'ceat3', text: "Intense angst om te stikken of te braken die eten belemmert." },
+                { id: 'ceat4', text: "Geen interesse in voedsel of eten." },
+                { id: 'ceat5', text: "Eten is een belangrijke bron van dagelijkse conflicten en stress." }
+            ]
+        },
+
+        // == SPECIFIC DISORDERS MODULE ==
+        social_phobia: {
+            title: 'Sociale fobie (Sociale angststoornis)',
+            description: "Grote angst of vrees voor sociale situaties waarin iemand mogelijk door anderen wordt beoordeeld.",
+            prevalence: "12-maands prevalentie ongeveer 7% in de VS en 2,3% in Europa. Levensprevalentie ongeveer 5% tot 12%.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'sp1', text: "Vreest situaties waarin ze negatief beoordeeld kunnen worden." },
+                { id: 'sp2', text: "Vermijdt praten met onbekenden of spreken in het openbaar." },
+                { id: 'sp3', text: "Sociale situaties wekken bijna altijd angst op." },
+                { id: 'sp4', text: "De angst is disproportioneel ten opzichte van de werkelijke bedreiging." },
+                { id: 'sp5', text: "Vermijding of angst verstoort dagelijks leven, werk of sociale activiteiten." }
+            ]
+        },
+        ocd: {
+            title: 'OCD (Obsessive-Compulsive Disorder)',
+            description: "Aanwezigheid van obsessies (opdringerige gedachten) en/of compulsies (herhaald gedrag of mentale handelingen) gericht op het neutraliseren van angst.",
+            prevalence: "Levensprevalentie geschat tussen 2% en 3%.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ocd1', text: "Heeft terugkerende intrusive gedachten, drang of beelden (obsessies)." },
+                { id: 'ocd2', text: "Probeert deze gedachten te negeren of te onderdrukken met andere gedachten/handelingen." },
+                { id: 'ocd3', text: "Voelt zich gedwongen repetitieve handelingen uit te voeren (handen wassen, controleren) of mentale rituelen als reactie op obsessies." },
+                { id: 'ocd4', text: "Obsessies/compulsies kosten veel tijd (meer dan een uur per dag)." },
+                { id: 'ocd5', text: "Deze symptomen veroorzaken klinisch significante stress of functiestoornis." }
+            ]
+        },
+        autism: {
+            title: 'Autisme (gedragsdimensie)',
+            description: "Gedragsindicatoren die met autismespectrumstoornis geassocieerd kunnen zijn: tekorten in sociale communicatie en repetitief, beperkt gedrag en interesses.",
+            prevalence: "Ongeveer 1% van de bevolking.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'aut1', text: "Moeite met starten of volhouden van een gesprek (sociale wederkerigheid)." },
+                { id: 'aut2', text: "Atypisch non-verbaal gedrag (slecht oogcontact, beperkte gezichtsuitdrukkingen)." },
+                { id: 'aut3', text: "Moeite begrijpen van relaties, sociale signalen of niet-letterlijke taal (ironie)." },
+                { id: 'aut4', text: "Stereotiepe of repetitieve bewegingen, gebruik van voorwerpen of spraak (stereotypieën, echolalie)." },
+                { id: 'aut5', text: "Rigide vasthouden aan routines; stress bij kleine veranderingen." },
+                { id: 'aut6', text: "Zeer beperkte, gefixeerde interesses van abnormale intensiteit." },
+                { id: 'aut7', text: "Hyper- of hypo-reactiviteit op zintuiglijke prikkels (ongevoelig voor pijn, fascinatie voor licht, afkeer van bepaalde geluiden/texturen)." }
+            ]
+        },
+        eating_disorder: {
+            title: 'Eetstoornissen (Anorexia, Boulimie, Eetbuistoornis)',
+            description: "Aanhoudende verstoring van eten of eetgedrag die leidt tot verstoring van inname/absorptie van voedsel en significante schade aan lichamelijke of psychosociale gezondheid.",
+            prevalence: "Verschilt per stoornis. Anorexia ≈0.4%, Boulimie ≈1-1.5%, Eetbuistoornis ≈1.6-3.5% (vrouwen).",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'ed1', text: "Beperking van energie-inname leidend tot significant laag lichaamsgewicht." },
+                { id: 'ed2', text: "Intense angst om aan te komen of persistent gedrag dat gewichtstoename verhindert." },
+                { id: 'ed3', text: "Verstoorde perceptie van eigen gewicht of lichaamsvorm." },
+                { id: 'ed4', text: "Herhaalde episoden van eetbuien met gevoel van controleverlies." },
+                { id: 'ed5', text: "Herhaald ongepast compenserend gedrag (braken, laxantia, excessief sporten)." }
+            ]
+        },
+         addiction: {
+            title: 'Verslavingsgerelateerde stoornissen',
+            description: "Cluster van cognitieve, gedrags- en fysiologische symptomen die aangeven dat een persoon middelen of gedrag blijft gebruiken ondanks significante problemen.",
+            prevalence: "Zeer variabel. Bijvoorbeeld alcoholgebruikstoornis: ≈5,3% van volwassenen.",
+            scaleText: FREQUENCY_SCALE_TEXT,
+            items: [
+                { id: 'add1', text: "Substantie/gedrag wordt vaak in grotere hoeveelheden of langer gebruikt dan bedoeld." },
+                { id: 'add2', text: "Aanhoudend verlangen of mislukte pogingen te minderen/controle krijgen." },
+                { id: 'add3', text: "Veel tijd besteed aan activiteiten om de substantie te verkrijgen, te gebruiken of te herstellen." },
+                { id: 'add4', text: "Craving of sterke drang om te gebruiken." },
+                { id: 'add5', text: "Herhaald gebruik leidt tot falen in belangrijke verantwoordelijkheden." },
+                { id: 'add6', text: "Continuering ondanks aanhoudende sociale/interpersoonlijke problemen veroorzaakt door gebruik." },
+                { id: 'add7', text: "Belangrijke sociale/werk/vrije-tijd activiteiten opgegeven of verminderd." },
+                { id: 'add8', text: "Behoefte aan steeds grotere hoeveelheden voor hetzelfde effect (tolerantie)." }
+            ]
+        },
+    };
+
+    /* ==================================== */
+    /* == UI BUILDING & EVENT LISTENERS  == */
+    /* ==================================== */
+
+    function el(tag, opts = {}) { const e = document.createElement(tag); Object.assign(e, opts); return e; }
+    
+    function build() {
+        buildModuleSelector();
+        buildAllSections();
+    }
+    
+    function buildModuleSelector() {
+        const selectorContainer = document.getElementById('moduleSelector');
+        selectorContainer.innerHTML = '';
+        for (const key in MODULES) {
+            const mod = MODULES[key];
+            const lbl = el('label', { className: 'opt' });
+            const checkbox = el('input', { 
+                type: 'checkbox', 
+                name: 'module', 
+                value: key, 
+                checked: mod.enabled,
+                onchange: () => toggleModule(key)
+            });
+            lbl.appendChild(checkbox);
+            lbl.appendChild(el('span', { innerText: mod.title }));
+            selectorContainer.appendChild(lbl);
+        }
+    }
+
+    function toggleModule(key) {
+        MODULES[key].enabled = !MODULES[key].enabled;
+        buildAllSections(); // Re-render all sections based on new selection
+    }
+
+    function buildAllSections() {
+        const container = document.getElementById('allSectionsContainer');
+        container.innerHTML = ''; // Clear previous sections
+
+        for (const key in MODULES) {
+            if (MODULES[key].enabled) {
+                MODULES[key].sections.forEach(sectionKey => {
+                    const sectionData = SECTIONS_DATA[sectionKey];
+                    if (sectionData) {
+                        const sectionDiv = el('div', { id: `${sectionKey}Container`, style: 'margin-top:10px' });
+                        sectionDiv.appendChild(el('div', { className: 'section-title', innerText: sectionData.title }));
+                        
+                        // Specific builder functions for complex sections
+                        if (sectionKey === 'mbti') buildMbti(sectionDiv, sectionData);
+                        else if (sectionKey === 'enneagram') buildEnneagram(sectionDiv, sectionData);
+                        else if (sectionKey === 'dark') buildDark(sectionDiv, sectionData);
+                        else if (sectionKey === 'attachment') buildAttachment(sectionDiv, sectionData);
+                        else if (sectionData.scaleText) buildScaleQuestions(sectionDiv, sectionData, sectionKey); // Generic builder for scale-based questions
+                        
+                        container.appendChild(sectionDiv);
+                    }
+                });
+            }
+        }
+    }
+
+    // Replace the broken buildMbti with robust parsing (handles ":", " : ", etc.)
+    function buildMbti(container, data) {
+        data.items.forEach((it, idx) => {
+            const q = el('div', { className: 'q' });
+            // robust split: split on first ":" then trim
+            const parts = it.q.split(':');
+            const mainQuestion = (parts[0] || '').trim();
+            const optionsText = parts.slice(1).join(':').trim(); // rest of string after first :
+            // try to split options by " / " otherwise fallback to whole optionsText
+            const optsParts = optionsText ? optionsText.split(' / ').map(t => t.replace(/\((A|B)\)\s*/g, '').trim()) : ['', ''];
+            const optAText = optsParts[0] || '';
+            const optBText = optsParts[1] || '';
+
+            q.appendChild(el('div', { innerText: (idx + 1) + '. ' + mainQuestion, style: 'font-weight:700;margin-bottom:6px' }));
+            const opts = el('div', { className: 'options' });
+
+            const lblA = el('label', { className: 'opt' });
+            lblA.innerHTML = `<input type="radio" name="${it.id}" value="A"> <span>${optAText}</span>`;
+            opts.appendChild(lblA);
+
+            const lblB = el('label', { className: 'opt' });
+            lblB.innerHTML = `<input type="radio" name="${it.id}" value="B"> <span>${optBText}</span>`;
+            opts.appendChild(lblB);
+
+            q.appendChild(opts);
+            container.appendChild(q);
+        });
+    }
+
+    function buildEnneagram(container, data) {
+        container.appendChild(el('div', { innerHTML: '<strong>Kernmotivatie / Angst (kies het dichtsbijzijnde)</strong>', style: 'margin-bottom:6px' }));
+        data.items.main.forEach(it => {
+            const lbl = el('label', { className: 'opt' });
+            lbl.innerHTML = `<input type="radio" name="ennea_main" value="${it.type}"> <span>${it.text}</span>`;
+            container.appendChild(lbl);
+        });
+        container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Gedrag onder stress (aankruisen indien waargenomen)</strong>' }));
+        data.items.stress.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="checkbox" name="ennea_stress" value="${it.type}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+        container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Dominant instinct</strong>' }));
+        data.items.instincts.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="instinct" value="${it.id}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+    }
+
+    function buildDark(container, data) {
+        data.items.forEach((it, idx) => {
+            const q = el('div', { className: 'q' });
+            q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+            const row = el('div', { className: 'options' });
+            row.innerHTML = `1 <input type="range" name="${it.id}" min="1" max="5" value="3"> 5`;
+            q.appendChild(row); container.appendChild(q);
+        });
+    }
+
+    function buildAttachment(container, data) {
+        data.items.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="attachment" value="${it.val}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+    }
+
+    function buildScaleQuestions(container, data, sectionKey) {
+        container.appendChild(el('div', { innerHTML: data.scaleText, style: 'font-size:12px;color:var(--muted);margin-bottom:6px' }));
+        data.items.forEach((it, idx) => {
+            const q = el('div', { className: 'q' });
+            q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+            const row = el('div', { className: 'options' });
+            row.innerHTML = `0 <input type="range" name="${sectionKey}_${it.id}" min="0" max="4" value="0"> 4`;
+            q.appendChild(row); container.appendChild(q);
+        });
+    }
+    
+    /* ======================== */
+    /* == ANALYSIS FUNCTIONS == */
+    /* ======================== */
+    
+    function analyzeSection(sectionKey) {
+        if (!SECTIONS_DATA[sectionKey]) return null;
+        const data = SECTIONS_DATA[sectionKey];
+        let totalScore = 0;
+        const maxScore = data.items.length * 4; // Each question is on a 0-4 scale
+
+        data.items.forEach(item => {
+            const input = document.querySelector(`input[name="${sectionKey}_${item.id}"]`);
+            if (input) {
+                totalScore += parseInt(input.value, 10);
+            }
+        });
+
+        if (maxScore === 0) return { score: 0, percentage: 0, ...data };
+
+        const percentage = Math.round((totalScore / maxScore) * 100);
+        return {
+            score: totalScore,
+            maxScore: maxScore,
+            percentage: percentage,
+            ...data // Include title, description, prevalence
+        };
+    }
+    
+    function analyzeAllEnabledSections() {
+        const results = {};
+        for (const modKey in MODULES) {
+            if (MODULES[modKey].enabled) {
+                MODULES[modKey].sections.forEach(secKey => {
+                    switch(secKey) {
+                        case 'mbti': results.mbti = analyzeMBTI(); break;
+                        case 'enneagram': results.enneagram = analyzeEnnea(); break;
+                        case 'dark': results.dark = analyzeDark(); break;
+                        case 'attachment': results.attachment = analyzeAttach(); break;
+                        case 'adhd': results.adhd = analyzeADHD(); break;
+                        default:
+                            if(SECTIONS_DATA[secKey] && SECTIONS_DATA[secKey].scaleText) {
+                                results[secKey] = analyzeSection(secKey);
+                            }
+                    }
+                });
+            }
+        }
+        return results;
+    }
+
+    // --- Specific analysis functions (unchanged logic) ---
+    function analyzeMBTI() {
+        const counts = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        SECTIONS_DATA.mbti.items.forEach(it => {
+            const sel = document.querySelector(`input[name="${it.id}"]:checked`);
+            if (sel) {
+                const letter = sel.value === 'A' ? it.A : it.B;
+                counts[letter]++;
+            }
+        });
+        function decide(a, b) {
+            const ca = counts[a], cb = counts[b];
+            if (ca === 0 && cb === 0) return { letter: 'X', confidence: 0 }; // Case where questions are not answered
+            const letter = ca > cb ? a : b;
+            const confidence = Math.round(Math.abs(ca - cb) / 3 * 100);
+            return { letter, confidence };
+        }
+        const ie = decide('I', 'E'), sn = decide('S', 'N'), tf = decide('T', 'F'), jp = decide('J', 'P');
+        const type = ie.letter + sn.letter + tf.letter + jp.letter;
+        const globalConf = Math.round((ie.confidence + sn.confidence + tf.confidence + jp.confidence) / 4);
+        return { type, breakdown: { ie, sn, tf, jp }, globalConf };
+    }
+
+    function analyzeEnnea() {
+        const main = document.querySelector('input[name="ennea_main"]:checked');
+        const type = main ? parseInt(main.value, 10) : null;
+        const stresses = Array.from(document.querySelectorAll('input[name="ennea_stress"]:checked')).map(n => parseInt(n.value, 10));
+        const scores = {};
+        for (let i = 1; i <= 9; i++) scores[i] = 0;
+        if (type) scores[type] += 3;
+        stresses.forEach(t => { if (scores[t] !== undefined) scores[t] += 1; });
+        const sorted = Object.keys(scores).map(k => ({ type: parseInt(k, 10), score: scores[k] })).sort((a, b) => b.score - a.score);
+        const top = sorted[0] || null;
+        let wing = null;
+        if (type) {
+            const wing1 = type === 1 ? 9 : type - 1;
+            const wing2 = type === 9 ? 1 : type + 1;
+            const score1 = stresses.includes(wing1) ? 1 : 0;
+            const score2 = stresses.includes(wing2) ? 1 : 0;
+            if (score1 > score2) wing = wing1;
+            else if (score2 > score1) wing = wing2;
+        }
+        const inst = document.querySelector('input[name="instinct"]:checked');
+        const instMap = { sp: 'Zelfbehoud', so: 'Sociaal', sx: 'Seksueel (één-op-één)' };
+        return { type, top, wing, instinct: inst ? instMap[inst.value] : null, scores };
+    }
+
+    function analyzeDark() {
+        const traits = { mach: 0, narc: 0, psy: 0 };
+        for (let i = 1; i <= 9; i++) {
+            const el = document.querySelector(`input[name="dt${i}"]`);
+            if(el) {
+                const v = parseInt(el.value, 10);
+                if (i <= 3) traits.mach += v;
+                else if (i <= 6) traits.narc += v;
+                else traits.psy += v;
+            }
+        }
+        const machPct = Math.round((traits.mach - 3) / 12 * 100);
+        const narcPct = Math.round((traits.narc - 3) / 12 * 100);
+        const psyPct = Math.round((traits.psy - 3) / 12 * 100);
+        return { raw: traits, mach: machPct, narc: narcPct, psy: psyPct };
+    }
+
+    function analyzeAttach() {
+        const sel = document.querySelector('input[name="attachment"]:checked');
+        const map = { secure: 'Veilig', anxious: 'Angstig', avoidant: 'Vermijdend', fearful: 'Angstig-vermijdend' };
+        return { raw: sel ? sel.value : null, label: sel ? map[sel.value] : null };
+    }
+
+    // Replacement / fix of analyzeADHD() to use input names built by buildScaleQuestions
+    function analyzeADHD() {
+        let total = 0;
+        if (!SECTIONS_DATA || !SECTIONS_DATA.adhd) return { score: 0, percentage: 0, positive: false };
+        SECTIONS_DATA.adhd.items.forEach(item => {
+            const input = document.querySelector(`input[name="adhd_${item.id}"]`);
+            if (input) total += parseInt(input.value, 10) || 0;
+        });
+        const max = SECTIONS_DATA.adhd.items.length * 4;
+        const pct = max > 0 ? Math.round(total / max * 100) : 0;
+        const positive = total >= 9;
+        return { score: total, percentage: pct, positive: positive };
+    }
+
+    // Function to enable all modules and rebuild the UI
+    function enableAllModules() {
+        for (const key in MODULES) {
+            MODULES[key].enabled = true;
+            const cb = document.querySelector(`input[name="module"][value="${key}"]`);
+            if (cb) cb.checked = true;
+        }
+        buildAllSections();
+    }
+
+    // Automatic full example fill-in
+    function fillExample() {
+        // 1) enable all modules and (re)build sections
+        enableAllModules();
+
+        // 2) Fill ranges (generic) and dark triad (specific)
+        document.querySelectorAll('#profilerForm input[type="range"]').forEach(r => {
+            const name = r.name || '';
+            // Dark triad: dt1..dt9 (min 1..5) -> give varied values for the example
+            if (/^dt\d+$/.test(name)) {
+                const idx = parseInt(name.replace('dt',''), 10);
+                if (idx <= 3) r.value = 5;
+                else if (idx <= 6) r.value = 4;
+                else r.value = 3;
+            } else {
+                // other scales (0..4) -> moderately high value for demonstration
+                // if input has min=0 max=4, set to 3; if min=1 max=5 (dark) adjust above
+                r.value = Math.max(parseInt(r.min || 0,10), Math.min(parseInt(r.max || 4,10), 3));
+            }
+        });
+
+        // 3) MBTI -> choose options to illustrate a profile (e.g., ENFP-ish)
+        // Logic: if one of the two letters A/B corresponds to the desired letter, check it.
+        const desiredLetters = new Set(['E','N','F','P']); // example target
+        if (SECTIONS_DATA.mbti && SECTIONS_DATA.mbti.items) {
+            SECTIONS_DATA.mbti.items.forEach(it => {
+                const prefer = (it.A && desiredLetters.has(it.A)) ? it.A : ((it.B && desiredLetters.has(it.B)) ? it.B : it.A);
+                const val = it.A === prefer ? 'A' : 'B';
+                const inp = document.querySelector(`input[name="${it.id}"][value="${val}"]`);
+                if (inp) inp.checked = true;
+            });
+        }
+
+        // 4) Enneagram -> select an example type, some stresses, and instinct
+        const main = document.querySelector('input[name="ennea_main"][value="4"]');
+        if (main) main.checked = true;
+        // check some stress items (values 1..9)
+        [2, 4, 6].forEach(v => {
+            const c = document.querySelector(`input[name="ennea_stress"][value="${v}"]`);
+            if (c) c.checked = true;
+        });
+        const inst = document.querySelector('input[name="instinct"][value="so"]');
+        if (inst) inst.checked = true;
+
+        // 5) Attachment -> secure
+        const att = document.querySelector('input[name="attachment"][value="secure"]');
+        if (att) att.checked = true;
+
+        // 6) For other radios (if needed), can leave as default or select the first option.
+        // Example: loop through radio groups not MBTI/enneagram/attachment and check the first available
+        const radioNames = new Set();
+        document.querySelectorAll('#profilerForm input[type="radio"]').forEach(r => radioNames.add(r.name));
+        radioNames.forEach(name => {
+            if (['ennea_main','instinct','attachment'].includes(name)) return; // already handled
+            const first = document.querySelector(`#profilerForm input[type="radio"][name="${name}"]`);
+            if (first) first.checked = true;
+        });
+
+        // 7) Check some generic checkboxes if present (already done for ennea), otherwise leave.
+        // (no other specific checkboxes needed here)
+
+        // 8) Run analysis and display the report immediately
+        runAll();
+        // a small visual indication is possible (discreet alert)
+        // alert('Voorbeeld geladen — het rapport is gegenereerd.');
+    }
+
+    /* ========================== */
+    /* == REPORT & PDF GENERATION == */
+    /* ========================== */
+
+    function generateReport(allResults) {
+        const reportEl = document.getElementById('report');
+        reportEl.innerHTML = ''; // Clear previous report
+
+        const title = el('div', { className: 'section-title', innerText: 'Profieloverzicht' });
+        reportEl.appendChild(title);
+
+        // Base Profile
+        if (allResults.mbti) {
+            reportEl.innerHTML += `<strong>MBTI:</strong> ${allResults.mbti.type} (Vertrouwen ${allResults.mbti.globalConf}%)<br>`;
+            reportEl.innerHTML += `<span class="mini">${mbtiProfile(allResults.mbti.type)}</span><br><br>`;
+        }
+        if (allResults.enneagram && allResults.enneagram.type) {
+            const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+            reportEl.innerHTML += `<strong>Enneagram:</strong> Type ${allResults.enneagram.type}${wingText} - ${allResults.enneagram.instinct || 'N/B'}<br>`;
+            reportEl.innerHTML += `<span class="mini">${enneaProfile(allResults.enneagram.type)}</span><br><br>`;
+        }
+         if (allResults.dark) {
+            reportEl.innerHTML += `<strong>Dark Triad (Indicatoren):</strong><br>`;
+            reportEl.innerHTML += `<span class="mini">Machiavellisme: ${allResults.dark.mach}%, Narcisme: ${allResults.dark.narc}%, Psychopathie: ${allResults.dark.psy}%</span><br><br>`;
+        }
+        if (allResults.attachment && allResults.attachment.label) {
+            reportEl.innerHTML += `<strong>Hechting:</strong> ${allResults.attachment.label}<br><br>`;
+        }
+         if (allResults.adhd) {
+            reportEl.innerHTML += `<strong>ADHD (Screening):</strong> Score ${allResults.adhd.score}/24 (${allResults.adhd.percentage}%)<br>`;
+            reportEl.innerHTML += `<span class="mini">${allResults.adhd.positive ? 'Significante aanwijzing. Raadpleeg een professional als het dagelijks functioneren wordt beïnvloed.' : 'Geen sterke aanwijzing op deze screening.'}</span><br><br>`;
+        }
+
+        // Behavioral Disorders
+        const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
+        if (disorderKeys.length > 0) {
+             const disorderTitle = el('div', { className: 'section-title', innerText: 'Gedragsindicatoren', style: 'margin-top: 1rem;' });
+             reportEl.appendChild(disorderTitle);
+        }
+
+        disorderKeys.sort((a,b) => allResults[b].percentage - allResults[a].percentage).forEach(key => {
+            const result = allResults[key];
+            if (result.percentage > 35) { // Threshold to display in report
+                reportEl.innerHTML += `<strong>${result.title}:</strong> Indicator op ${result.percentage}%<br>`;
+                reportEl.innerHTML += `<span class="mini"><strong>Beschrijving:</strong> ${result.description}</span><br>`;
+                reportEl.innerHTML += `<span class="mini"><strong>Zeldzaamheid (pop. prevalentie):</strong> ${result.prevalence}</span><br><br>`;
+            }
+        });
+    }
+    
+    // Helper descriptions (unchanged logic)
+    function mbtiProfile(type) {
+        const map = { 'INTJ': 'Onafhankelijke strateeg, visie op lange termijn.', 'INTP': 'Nieuwsgierige denker, zoekt theoretische consistentie.', 'ENTJ': 'Natuurlijke leider, georganiseerd en efficiënt.', 'ENTP': 'Innovator, houdt van debatteren en ideeën verkennen.', 'INFJ': 'Inzichtelijke idealist, geleid door waarden.', 'INFP': 'Creatieve bemiddelaar, gevoelig en authentiek.', 'ENFJ': 'Charismatische inspirator, motiveert anderen.', 'ENFP': 'Enthousiaste inspirator, sociaal en creatief.', 'ISTJ': 'Betrouwbare organisator, methodisch en verantwoordelijk.', 'ISFJ': 'Toegewijde beschermer, warm en zorgzaam.', 'ESTJ': 'Pragmatische leider, houdt van orde en structuur.', 'ESFJ': 'Sociabele helper, zorgzaam en coöperatief.', 'ISTP': 'Pragmatische vakman, lost concrete problemen op.', 'ISFP': 'Gevoelige avonturier, artistiek en flexibel.', 'ESTP': 'Gedurfde ondernemer, houdt van actie en uitdaging.', 'ESFP': 'Spontane entertainer, sociaal en energiek.' };
+        return map[type] || 'Type niet gedefinieerd';
+    }
+    function enneaProfile(t) {
+        const map = { 1: 'De Perfectionist: nauwgezet, plichtsgetrouw.', 2: 'De Helper: op anderen gericht, empathisch.', 3: 'De Presteerder: gericht op succes en imago.', 4: 'De Individualist: zoekt authenticiteit, gevoelig.', 5: 'De Onderzoeker: nieuwsgierig, wil begrijpen en autonoom zijn.', 6: 'De Loyalist: zoekt veiligheid, waakzaam.', 7: 'De Enthousiasteling: zoekt prikkeling, optimistisch.', 8: 'De Uitdager: assertief, beschermend, wil controle.', 9: 'De Vredestichter: zoekt harmonie, vermijdt conflict.' };
+        return map[t] || '';
+    }
+
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const allResults = analyzeAllEnabledSections();
+        if (Object.keys(allResults).length === 0) {
+            alert("Analyseer eerst een profiel voordat u exporteert.");
+            return;
+        }
+        
+        // --- PDF Header ---
+        doc.setFontSize(18);
+        doc.setTextColor(40, 40, 80);
+        doc.text("Psychologisch Profielrapport (Educatief)", 105, 20, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Gegenereerd op: ${new Date().toLocaleString('nl-BE')}`, 105, 28, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(40, 40, 80);
+        doc.line(20, 35, 190, 35);
+
+        // --- PDF Body ---
+        let y = 45;
+        const addSection = (title, body) => {
+            if (y > 260) { doc.addPage(); y = 20; }
+            doc.setFontSize(14);
+            doc.setTextColor(60, 60, 100);
+            doc.text(title, 20, y);
+            y += 8;
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            const splitText = doc.splitTextToSize(body, 170);
+            doc.text(splitText, 20, y);
+            y += (splitText.length * 5) + 8;
+        };
+
+        if (allResults.mbti && allResults.mbti.type !== 'XXXX') {
+            addSection("MBTI Profiel", 
+                `Type: ${allResults.mbti.type} (Vertrouwen: ${allResults.mbti.globalConf}%)\n` +
+                `Beschrijving: ${mbtiProfile(allResults.mbti.type)}`
+            );
+        }
+        if (allResults.enneagram && allResults.enneagram.type) {
+             const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+             addSection("Enneagram Profiel", 
+                `Hoofdtype: ${allResults.enneagram.type}${wingText}\n` +
+                `Dominant instinct: ${allResults.enneagram.instinct || 'Niet gedefinieerd'}\n` +
+                `Beschrijving: ${enneaProfile(allResults.enneagram.type)}`
+             );
+        }
+        
+        // Table for other results
+        const tableBody = [];
+        if (allResults.dark) {
+            tableBody.push(['Dark Triad - Machiavellisme', `${allResults.dark.mach}%`]);
+            tableBody.push(['Dark Triad - Narcisme', `${allResults.dark.narc}%`]);
+            tableBody.push(['Dark Triad - Psychopathie', `${allResults.dark.psy}%`]);
+        }
+         if (allResults.attachment && allResults.attachment.label) {
+            tableBody.push(['Hechtingsstijl', allResults.attachment.label]);
+        }
+        if (allResults.adhd) {
+            tableBody.push(['ADHD Indicator', `${allResults.adhd.percentage}% (Score: ${allResults.adhd.score}/24)`]);
+        }
+        
+        if (tableBody.length > 0) {
+             if (y > 240) { doc.addPage(); y = 20; }
+             doc.autoTable({
+                startY: y,
+                head: [['Indicator', 'Resultaat']],
+                body: tableBody,
+                theme: 'grid',
+                headStyles: { fillColor: [230, 230, 230], textColor: [20, 20, 20] }
+            });
+            y = doc.autoTable.previous.finalY + 10;
+        }
+
+
+        // Behavioral Disorders Section
+        const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
+        const disorderResults = disorderKeys.map(k => allResults[k]).filter(r => r.percentage > 35).sort((a, b) => b.percentage - a.percentage);
+
+        if (disorderResults.length > 0) {
+            if (y > 240) { doc.addPage(); y = 20; }
+            doc.setFontSize(14);
+            doc.setTextColor(60, 60, 100);
+            doc.text("Gedragsindicatoren (hoge scores)", 20, y);
+            y += 10;
+            
+            disorderResults.forEach(result => {
+                addSection(
+                  `${result.title} (Indicator: ${result.percentage}%)`,
+                  `Beschrijving: ${result.description}\nPrevalentie: ${result.prevalence}`
+                );
+            });
+        }
+
+
+        // --- PDF Footer ---
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        const disclaimer = "WAARSCHUWING: Dit rapport is gegenereerd voor educatieve doeleinden en vormt geen diagnose. De resultaten zijn indicatoren op basis van een zelfvragenlijst en vervangen niet het advies van een gekwalificeerde professional in de geestelijke gezondheidszorg.";
+        doc.text(doc.splitTextToSize(disclaimer, 170), 20, 280);
+
+        doc.save(`Profielrapport_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+
+    /* ======================== */
+    /* == MAIN & UTILITIES   == */
+    /* ======================== */
+
+    function runAll() {
+        const allResults = analyzeAllEnabledSections();
+        
+        if (Object.keys(allResults).length === 0) {
+            alert('Selecteer minstens één module om te analyseren.');
+            return;
+        }
+
+        // Generate the detailed report in the UI
+        generateReport(allResults);
+
+        // Update JSON output
+        const out = { timestamp: (new Date()).toISOString(), results: allResults };
+        document.getElementById('jsonOut').innerText = JSON.stringify(out, null, 2);
+    }
+
+    function clearForm() {
+        document.getElementById('profilerForm').reset();
+        document.getElementById('report').innerHTML = 'Selecteer modules, vul de vragenlijsten in en klik op "Analyseer".';
+        document.getElementById('jsonOut').innerText = '—';
+        document.getElementById('heuristicsTags').innerHTML = '';
+    }
+
+    function exportJson() {
+        const json = document.getElementById('jsonOut').innerText;
+        if (json === '—') {
+            alert("Genereer eerst een analyse voordat u exporteert.");
+            return;
+        }
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `profiel-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    // Fix import file handler: use files[0] and pass File to readAsText
+    document.getElementById('importFile').addEventListener('change', (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            try {
+                const data = JSON.parse(event.target.result);
+                if (!data || !data.results) {
+                    alert('Ongeldig JSON-bestand of bevat geen profiel.');
+                    return;
+                }
+                document.getElementById('jsonOut').innerText = JSON.stringify(data, null, 2);
+                generateReport(data.results);
+                alert('Import geslaagd. Het rapport en de JSON-gegevens zijn weergegeven. Formulierantwoorden worden niet hersteld.');
+            } catch (err) {
+                alert('Fout bij het lezen van het JSON-bestand.');
+                console.error(err);
+            }
+        };
+        reader.readAsText(f);
+    });
+
+    function initLangSelector() {
+        const sel = document.getElementById('langSelect');
+        if (!sel) return;
+        const fn = (window.location.pathname.split('/').pop() || '').toLowerCase();
+        if (fn.includes('en-us')) sel.value = 'en-us.html';
+        else if (fn.includes('nl-be')) sel.value = 'nl-be.html';
+        else sel.value = 'index.html';
+        sel.addEventListener('change', () => { const v = sel.value; window.location.href = v; });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { build(); initLangSelector(); });
+</script>
+</body>
+</html>

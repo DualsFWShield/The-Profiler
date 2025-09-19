@@ -1,0 +1,1336 @@
+<!doctype html>
+
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>
+        The Profiler
+    </title>
+    <meta name="robots" content="noindex,nofollow">
+    <!-- CDN for jsPDF and jsPDF-AutoTable for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* CSS IDENTICAL TO ORIGINAL - NO CHANGES */
+        :root {
+            --bg: #0b1220;
+            --card: #07102b;
+            --muted: #94a3b8;
+            --accent: #60a5fa;
+            --good: #10b981;
+            --warn: #f59e0b;
+            --bad: #fb7185;
+            --surface: #0f1724;
+            --glass: rgba(255, 255, 255, 0.03);
+            --maxw: 1100px;
+            --gutter: 4vw;
+            --radius: 1.25rem;
+            --card-pad: 1rem;
+            --gap: 0.8rem;
+            --shadow: 0 0.8rem 2.4rem rgba(2, 6, 23, 0.55);
+            --btn-h: 2.6rem;
+        }
+
+        html {
+            font-size: clamp(14px, 1.8vw, 18px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(180deg, #041025 0%, #07102b 100%);
+            color: #e6eef6;
+            min-height: 100vh;
+            line-height: 1.35;
+        }
+
+        .wrap {
+            width: min(96%, var(--maxw));
+            margin: 0 auto;
+            padding: calc(var(--gutter) / 2);
+        }
+
+        header {
+            margin-bottom: calc(var(--gap) * 1.5);
+        }
+
+        h1 {
+            font-size: clamp(1.05rem, 3.2vw, 1.25rem);
+            margin: 0 0 0.35rem;
+            font-weight: 700;
+        }
+
+        p.lead {
+            margin: 0;
+            color: var(--muted);
+            font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+        }
+
+        form.card,
+        .panel.card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            padding: var(--card-pad);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: calc(var(--gap) * 1.25);
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin: 0.35rem 0 0.5rem;
+            font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+            color: var(--accent);
+        }
+
+        .q {
+            background: var(--glass);
+            padding: calc(var(--gap) * 0.9);
+            border-radius: calc(var(--radius) / 1.6);
+            margin: 0.6rem 0;
+        }
+
+        label.opt {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0.25rem;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 1.9vw, 1rem);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            transform: scale(1.05);
+            flex-shrink: 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            max-width: 100%;
+            margin: 0.35rem 0;
+        }
+
+        button.btn {
+            appearance: none;
+            border: 0;
+            padding: 0.5rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.4);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            display: block;
+            width: 100%;
+            height: var(--btn-h);
+            font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+        }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: calc(var(--gap) * 1.15);
+            align-items: start;
+        }
+
+        .aside {
+            display: block;
+        }
+
+        .results {
+            white-space: pre-wrap;
+            font-size: clamp(0.88rem, 1.6vw, 0.95rem);
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.6rem;
+            border-radius: calc(var(--radius) / 1.4);
+        }
+
+        .mini {
+            font-size: clamp(0.82rem, 1.6vw, 0.9rem);
+            color: var(--muted);
+        }
+
+        .bar {
+            height: clamp(0.45rem, 0.8vh, 0.6rem);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: calc(var(--radius) / 2.8);
+            overflow: hidden;
+            margin-top: 0.45rem;
+        }
+
+        .bar>i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+            transition: width 0.3s ease;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            font-size: clamp(0.78rem, 1.4vw, 0.9rem);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        footer {
+            margin-top: 0.9rem;
+            font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+            color: var(--muted);
+        }
+
+        pre.jsonOut {
+            background: #021024;
+            padding: 0.6rem;
+            border-radius: calc(var(--radius) / 1.4);
+            overflow: auto;
+            font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .q,
+        .options,
+        label.opt,
+        .results,
+        pre.jsonOut {
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .lang-switch { float: right; margin-top: -2.2rem; }
+        .lang-switch select { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--muted); padding: 0.25rem 0.5rem; border-radius: 6px; }
+
+        @media (min-width: 760px) {
+            .grid {
+                grid-template-columns: 1fr minmax(280px, 34%);
+                gap: calc(var(--gap) * 1.2);
+            }
+
+            .options {
+                gap: 0.5rem;
+            }
+
+            button.btn {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 980px) {
+            html {
+                font-size: clamp(15px, 1.5vw, 18px);
+            }
+
+            .wrap {
+                padding: calc(var(--gutter) / 1.4);
+            }
+
+            .grid {
+                grid-template-columns: 1fr 30%;
+                gap: calc(var(--gap) * 1.4);
+            }
+
+            .aside {
+                position: sticky;
+                top: 1rem;
+                align-self: start;
+            }
+
+            .form-buttons {
+                display: flex;
+                gap: 0.6rem;
+            }
+
+            button.btn,
+            button.ghost {
+                width: 100%;
+            }
+        }
+
+        input[type="file"] {
+            display: inline-block;
+            width: 100%;
+            height: var(--btn-h);
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.4);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            border: 0;
+            font-weight: 700;
+            font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* Modern browsers: style the file selector button */
+        input[type="file"]::file-selector-button {
+            appearance: none;
+            border: 0;
+            margin-right: 8px;
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.6);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* WebKit legacy pseudo-element */
+        input[type="file"]::-webkit-file-upload-button {
+            appearance: none;
+            border: 0;
+            margin-right: 8px;
+            padding: 0.3rem 0.75rem;
+            border-radius: calc(var(--radius) / 1.6);
+            background: linear-gradient(90deg, var(--accent), #7dd3fc);
+            color: #021024;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<div class="wrap">
+<header>
+    <div class="lang-switch">
+        <label class="muted" for="langSelect" style="margin-right:6px;font-size:0.9rem;">Lang:</label>
+        <select id="langSelect" aria-label="Choose language">
+            <option value="index.html">Français</option>
+            <option value="en-us.html">English</option>
+            <option value="nl-be.html">Nederlands</option>
+        </select>
+    </div>
+            <h1>The Profiler</h1>
+            <p class="lead">
+                Local application — data is kept client-side only. Behavioral and personality indicators —
+                <strong>not a diagnosis</strong>.
+            </p>
+        </header>
+        <div class="grid">
+            <form id="profilerForm" class="card" onsubmit="event.preventDefault(); runAll();">
+
+                <!-- Module selection section -->
+                <div>
+                    <div class="section-title">Module Selection</div>
+                    <div id="moduleSelector" class="q">
+                        <!-- Checkboxes generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Containers for all questionnaires -->
+                <div id="allSectionsContainer">
+                    <!-- Sections will be injected here by JS -->
+                </div>
+
+                <div style="margin-top:12px;" class="form-buttons">
+                    <button type="submit" class="btn">
+                        Analyze (generate profile)
+                    </button>
+                    <button type="button" class="btn ghost" onclick="generatePDF()">Export to PDF</button>
+                    <!-- Button added to fill in a complete example -->
+                    <button type="button" class="btn ghost" onclick="fillExample()">Example</button>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button type="button" class="ghost btn" onclick="clearForm()" style="flex:1">Reset</button>
+                    <button type="button" class="ghost btn" onclick="exportJson()" style="flex:1">
+                        Export JSON
+                    </button>
+                    <input id="importFile" type="file" accept=".json" style="flex:1">
+                </div>
+            </form>
+            <aside class="aside">
+                <div class="panel card">
+                    <div class="section-title">Detailed Report</div>
+                    <div id="report" class="results" style="max-height: 80vh; overflow-y: auto;">
+                        Please select modules, fill out the questionnaires, and click "Analyze".
+                    </div>
+                    <div class="tags" id="heuristicsTags"></div>
+                </div>
+                <div class="panel card" style="margin-top:12px">
+                    <div class="section-title">JSON (export)</div>
+                    <pre id="jsonOut" class="jsonOut" style="max-height: 200px; overflow: auto;">—</pre>
+                </div>
+            </aside>
+        </div>
+        <footer>
+            <p class="muted">
+                Reminder: this is an educational tool for exploring behavioral indicators.
+                It does not, under any circumstances, replace a clinical evaluation by a qualified professional.
+                If you or someone you know is in distress, consult a doctor or a psychologist.
+            </p>
+        </footer>
+    </div>
+    <script>
+        /* ================================================= */
+        /* == DATA DEFINITIONS (QUESTIONS & DESCRIPTIONS) == */
+        /* ================================================= */
+
+        // Helper to create scale questions (0=Never, 4=Very often)
+        const FREQUENCY_SCALE_TEXT = 'Rate the frequency: 0=Never, 1=Rarely, 2=Sometimes, 3=Often, 4=Very often';
+
+        const MODULES = {
+            base: {
+                title: "Personality Profile (MBTI, Enneagram, etc.)",
+                enabled: true,
+                sections: ['mbti', 'enneagram', 'dark', 'attachment', 'adhd']
+            },
+            adult: {
+                title: "Behavioral Disorders (Adult/Teen)",
+                enabled: false,
+                sections: ['top', 'conduct', 'addiction', 'intermittent', 'antisocial', 'borderline', 'narcissistic', 'ocpd']
+            },
+            child: {
+                title: "Behavioral Disorders (Child)",
+                enabled: false,
+                sections: ['child_top', 'child_conduct', 'child_anxiety', 'child_eating']
+            },
+            specific: {
+                title: "Specific Disorders (Phobia, OCD, etc.)",
+                enabled: false,
+                sections: ['social_phobia', 'ocd', 'autism', 'eating_disorder']
+            }
+        };
+
+        const SECTIONS_DATA = {
+            // == BASE MODULE ==
+            mbti: {
+                title: 'MBTI — 12 questions (≈2–3 min)',
+                items: [
+                    { id: 'mb1', q: 'After a social event, I feel: (A) Energized and ready for more / (B) Tired and in need of quiet', A: 'E', B: 'I' },
+                    { id: 'mb2', q: 'In a group, I am more: (A) The one who takes initiative / (B) The one who listens and observes', A: 'E', B: 'I' },
+                    { id: 'mb3', q: 'To think, I prefer to: (A) Express my ideas out loud / (B) Reflect internally', A: 'E', B: 'I' },
+                    { id: 'mb4', q: 'I trust more in: (A) What is concrete and observable / (B) My intuition and concepts', A: 'S', B: 'N' },
+                    { id: 'mb5', q: 'I learn better with: (A) Practical methods, clear steps / (B) The big picture and abstract principles', A: 'S', B: 'N' },
+                    { id: 'mb6', q: 'My attention is focused on: (A) The details of the present / (B) Future possibilities', A: 'S', B: 'N' },
+                    { id: 'mb7', q: 'To make decisions, I prioritize: (A) Logical analysis, objective criteria / (B) Human impact and values', A: 'T', B: 'F' },
+                    { id: 'mb8', q: 'I am perceived as: (A) Rational, direct / (B) Empathetic, diplomatic', A: 'T', B: 'F' },
+                    { id: 'mb9', q: 'The most difficult criticism is: (A) "You are illogical" / (B) "You have hurt people"', A: 'T', B: 'F' },
+                    { id: 'mb10', q: 'I prefer a lifestyle that is: (A) Organized, planned / (B) Flexible, spontaneous', A: 'J', B: 'P' },
+                    { id: 'mb11', q: 'When facing a task, I tend to: (A) Plan it and finish it early / (B) Work better under pressure', A: 'J', B: 'P' },
+                    { id: 'mb12', q: 'I like: (A) For things to be decided / (B) To keep my options open', A: 'J', B: 'P' }
+                ]
+            },
+            enneagram: {
+                title: 'Enneagram — motivation & instinct',
+                items: {
+                    main: [
+                        { id: 'en1', type: 1, text: 'I want to be right, moral, and perfect.' },
+                        { id: 'en2', type: 2, text: 'I want to be loved and needed.' },
+                        { id: 'en3', type: 3, text: 'I want to succeed and be valued.' },
+                        { id: 'en4', type: 4, text: 'I want to be unique and authentic.' },
+                        { id: 'en5', type: 5, text: 'I want to understand and conserve my resources.' },
+                        { id: 'en6', type: 6, text: 'I want security and reliable support.' },
+                        { id: 'en7', type: 7, text: 'I want to avoid pain and maximize pleasure.' },
+                        { id: 'en8', type: 8, text: 'I want to maintain control and not be dominated.' },
+                        { id: 'en9', type: 9, text: 'I want peace and harmony.' }
+                    ],
+                    stress: [
+                        { id: 'es1', type: 1, text: 'Tend to criticize when stressed.' },
+                        { id: 'es2', type: 2, text: 'Tend to over-protect/rescue when stressed.' },
+                        { id: 'es3', type: 3, text: 'Over-invests in image/work under stress.' },
+                        { id: 'es4', type: 4, text: 'Becomes melancholic/sensitive under stress.' },
+                        { id: 'es5', type: 5, text: 'Withdraws and hoards information under stress.' },
+                        { id: 'es6', type: 6, text: 'Becomes anxious/suspicious under stress.' },
+                        { id: 'es7', type: 7, text: 'Seeks excessive distractions under stress.' },
+                        { id: 'es8', type: 8, text: 'Becomes domineering/aggressive under stress.' },
+                        { id: 'es9', type: 9, text: 'Becomes numb and avoidant under stress.' }
+                    ],
+                    instincts: [
+                        { id: 'sp', text: 'Self-Preservation (safety, health, comfort)' },
+                        { id: 'so', text: 'Social (status, group, cooperation)' },
+                        { id: 'sx', text: 'Sexual (intensity, one-to-one, passion)' }
+                    ]
+                }
+            },
+            dark: {
+                title: 'Dark Triad — 1-5 scale',
+                items: [
+                    { id: 'dt1', text: 'I sometimes manipulate others to get what I want.' },
+                    { id: 'dt2', text: 'I use flattery to gain advantages.' },
+                    { id: 'dt3', text: 'I take advantage of others if it serves me.' },
+                    { id: 'dt4', text: 'I like to be admired.' },
+                    { id: 'dt5', text: 'I often want to be the center of attention.' },
+                    { id: 'dt6', text: 'I believe I deserve special treatment.' },
+                    { id: 'dt7', text: 'I feel little remorse for my actions.' },
+                    { id: 'dt8', text: 'I am sometimes indifferent to the emotions of others.' },
+                    { id: 'dt9', text: 'I seek thrills and take risks.' }
+                ]
+            },
+            attachment: {
+                title: "Attachment Style",
+                items: [
+                    { id: 'att_secure', val: 'secure', text: 'I am comfortable with intimacy and independence.' },
+                    { id: 'att_anxious', val: 'anxious', text: 'I desire closeness but fear abandonment.' },
+                    { id: 'att_avoidant', val: 'avoidant', text: 'I prefer independence and keep my distance.' },
+                    { id: 'att_fearful', val: 'fearful', text: 'I want to be close but I am afraid of being hurt.' }
+                ]
+            },
+            adhd: {
+                title: 'ADHD (ASRS-style screening — indicative)',
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ad1', text: 'I often have difficulty concentrating on what is being asked.' },
+                    { id: 'ad2', text: 'I have trouble remembering necessary daily things.' },
+                    { id: 'ad3', text: 'I procrastinate or avoid tasks that require sustained mental effort.' },
+                    { id: 'ad4', text: 'I am often restless, moving more than others.' },
+                    { id: 'ad5', text: 'I often interrupt others or talk excessively.' },
+                    { id: 'ad6', text: 'I have trouble waiting my turn or staying calm in lines.' }
+                ]
+            },
+
+            // == ADULT / TEEN MODULE ==
+            top: {
+                title: 'Oppositional Defiant Disorder (ODD)',
+                description: "ODD is characterized by a persistent pattern of angry/irritable mood, argumentative/defiant behavior, or vindictiveness.",
+                prevalence: "Affects approximately 1% to 11% of the population, with an average around 3.3%.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'top1', text: "The person often loses their temper." },
+                    { id: 'top2', text: "Is often touchy or easily annoyed by others." },
+                    { id: 'top3', text: "Is often angry and resentful." },
+                    { id: 'top4', text: "Often argues with authority figures." },
+                    { id: 'top5', text: "Actively defies or refuses to comply with requests or rules." },
+                    { id: 'top6', text: "Deliberately annoys others." },
+                    { id: 'top7', text: "Often blames others for their mistakes or misbehavior." },
+                    { id: 'top8', text: "Has been spiteful or vindictive at least twice in the past 6 months." }
+                ]
+            },
+            conduct: {
+                title: 'Conduct Disorder',
+                description: "A repetitive and persistent pattern of behavior in which the basic rights of others or major age-appropriate societal norms or rules are violated.",
+                prevalence: "One-year prevalence ranges from 2% to more than 10%, with a median of 4%.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'cd1', text: "Aggression to people and animals (bullying, threatening, physical cruelty)." },
+                    { id: 'cd2', text: "Has often initiated physical fights." },
+                    { id: 'cd3', text: "Has used a weapon that can cause serious physical harm (bat, brick, knife, gun)." },
+                    { id: 'cd4', text: "Destruction of property (deliberately set fires, destroyed others' property)." },
+                    { id: 'cd5', text: "Deceitfulness or theft (has lied to obtain goods, has stolen items of nontrivial value without confrontation)." },
+                    { id: 'cd6', text: "Serious violations of rules (stays out at night despite prohibitions, has run away from home)." }
+                ]
+            },
+            intermittent: {
+                title: 'Intermittent Explosive Disorder',
+                description: "Characterized by recurrent behavioral outbursts representing a failure to control aggressive impulses, which are grossly out of proportion to the provocation.",
+                prevalence: "The one-year prevalence is about 2.7% in the general population.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ie1', text: "Has verbal aggression (temper tantrums, disputes) several times a week." },
+                    { id: 'ie2', text: "Has behavioral outbursts involving property damage or physical assault (without serious injury) several times a year." },
+                    { id: 'ie3', text: "The magnitude of aggressiveness expressed is grossly out of proportion to the provocation." },
+                    { id: 'ie4', text: "The outbursts are not premeditated and are impulsive in nature." },
+                    { id: 'ie5', text: "These outbursts cause marked distress or impairment in functioning." }
+                ]
+            },
+            antisocial: {
+                title: 'Antisocial Personality Disorder',
+                description: "A pervasive pattern of disregard for and violation of the rights of others that begins in childhood or early adolescence.",
+                prevalence: "Between 0.2% and 3.3% of the general population.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'as1', text: "Failure to conform to social and legal norms (repeatedly performing acts that are grounds for arrest)." },
+                    { id: 'as2', text: "Deceitfulness for personal profit or pleasure (repeated lying, use of aliases, or conning others)." },
+                    { id: 'as3', text: "Impulsivity or failure to plan ahead." },
+                    { id: 'as4', text: "Irritability and aggressiveness (repeated physical fights or assaults)." },
+                    { id: 'as5', text: "Reckless disregard for safety of self or others." },
+                    { id: 'as6', text: "Consistent irresponsibility (failure to sustain consistent work behavior or honor financial obligations)." },
+                    { id: 'as7', text: "Lack of remorse (being indifferent to or rationalizing having hurt, mistreated, or stolen from another)." }
+                ]
+            },
+            borderline: {
+                title: 'Borderline Personality Disorder',
+                description: "A pervasive pattern of instability of interpersonal relationships, self-image, and affects, and marked impulsivity.",
+                prevalence: "Affects 1.6% to 5.9% of the population. More common in clinical populations (10-20%).",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'bpd1', text: "Frantic efforts to avoid real or imagined abandonment." },
+                    { id: 'bpd2', text: "A pattern of unstable and intense interpersonal relationships, alternating between extremes of idealization and devaluation." },
+                    { id: 'bpd3', text: "Identity disturbance: markedly and persistently unstable self-image or sense of self." },
+                    { id: 'bpd4', text: "Impulsivity in at least two areas that are potentially self-damaging (spending, sex, substance abuse, binge eating)." },
+                    { id: 'bpd5', text: "Recurrent suicidal behavior, gestures, or threats, or self-mutilating behavior." },
+                    { id: 'bpd6', text: "Affective instability due to a marked reactivity of mood (intense anger, irritability, anxiety)." },
+                    { id: 'bpd7', text: "Chronic feelings of emptiness." },
+                    { id: 'bpd8', text: "Inappropriate, intense anger or difficulty controlling anger." },
+                    { id: 'bpd9', text: "Transient, stress-related paranoid ideation or severe dissociative symptoms." }
+                ]
+            },
+            narcissistic: {
+                title: 'Narcissistic Personality Disorder',
+                description: "A pervasive pattern of grandiosity (in fantasy or behavior), need for admiration, and lack of empathy.",
+                prevalence: "Up to 6.2% in general population studies.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'npd1', text: "Has a grandiose sense of self-importance (exaggerates achievements, expects to be recognized as superior)." },
+                    { id: 'npd2', text: "Is preoccupied with fantasies of unlimited success, power, brilliance, beauty, or ideal love." },
+                    { id: 'npd3', text: "Believes that they are 'special' and unique and can only be understood by, or should associate with, other special or high-status people." },
+                    { id: 'npd4', text: "Requires excessive admiration." },
+                    { id: 'npd5', text: "Has a sense of entitlement: expects especially favorable treatment." },
+                    { id: 'npd6', text: "Is interpersonally exploitative: takes advantage of others to achieve their own ends." },
+                    { id: 'npd7', text: "Lacks empathy: is unwilling to recognize or identify with the feelings and needs of others." },
+                    { id: 'npd8', text: "Is often envious of others or believes that others are envious of them." },
+                    { id: 'npd9', text: "Shows arrogant, haughty behaviors or attitudes." }
+                ]
+            },
+            ocpd: {
+                title: 'Obsessive-Compulsive Personality Disorder (OCPD)',
+                description: "A preoccupation with orderliness, perfectionism, and mental and interpersonal control, at the expense of flexibility, openness, and efficiency. (Not to be confused with OCD).",
+                prevalence: "One of the most prevalent, estimated between 2.1% and 7.9% of the general population.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ocpd1', text: "Preoccupation with details, rules, lists, order, organization, or schedules to the extent that the major point of the activity is lost." },
+                    { id: 'ocpd2', text: "Perfectionism that interferes with task completion." },
+                    { id: 'ocpd3', text: "Excessive devotion to work and productivity to the exclusion of leisure activities and friendships." },
+                    { id: 'ocpd4', text: "Is overconscientious, scrupulous, and inflexible about matters of morality, ethics, or values." },
+                    { id: 'ocpd5', text: "Is unable to discard worn-out or worthless objects even when they have no sentimental value." },
+                    { id: 'ocpd6', text: "Is reluctant to delegate tasks or to work with others unless they submit to exactly their way of doing things." },
+                    { id: 'ocpd7', text: "Adopts a miserly spending style toward both self and others; money is viewed as something to be hoarded for future catastrophes." },
+                    { id: 'ocpd8', text: "Shows rigidity and stubbornness." }
+                ]
+            },
+
+            // == CHILD MODULE ==
+            child_top: {
+                title: 'Oppositional Disorder (Child)',
+                description: "Repetitive negative, hostile, and defiant behaviors towards authority figures, inappropriate for the child's age.",
+                prevalence: "Around 3.3%, but can vary from 1% to 11%. Diagnosis must consider the child's developmental stage.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ctop1', text: "The child often gets angry or is irritable." },
+                    { id: 'ctop2', text: "Argues with or actively defies adult requests." },
+                    { id: 'ctop3', text: "Deliberately annoys others." },
+                    { id: 'ctop4', text: "Blames others for their own mistakes." },
+                    { id: 'ctop5', text: "Is often touchy or easily annoyed." }
+                ]
+            },
+            child_conduct: {
+                title: 'Conduct Disorder (Child)',
+                description: "Serious and persistent behaviors that violate the rights of others or major age-appropriate social norms.",
+                prevalence: "Around 4%. Can be higher in boys.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ccd1', text: "Physical aggression towards peers or animals." },
+                    { id: 'ccd2', text: "Repeated lying to avoid obligations or obtain favors." },
+                    { id: 'ccd3', text: "Theft (at home, at school) without confrontation." },
+                    { id: 'ccd4', text: "Deliberate destruction of others' property." },
+                    { id: 'ccd5', text: "Serious violations of rules (e.g., running away, early school absenteeism)." }
+                ]
+            },
+            child_anxiety: {
+                title: 'Anxiety with Avoidant Behaviors (Child)',
+                description: "Intense and persistent anxiety that causes the child to avoid specific situations (school, social interactions), impacting their development.",
+                prevalence: "Anxiety disorders affect about 7% of children and adolescents.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'canx1', text: "Frequently refuses to go to school or expresses intense distress at the idea." },
+                    { id: 'canx2', text: "Avoids group activities or birthday parties." },
+                    { id: 'canx3', text: "Often complains of stomachaches or headaches, especially before social or school events." },
+                    { id: 'canx4', text: "Isolates themselves or has very few close friends." },
+                    { id: 'canx5', text: "Shows extreme shyness that prevents them from participating in class or asking for help." }
+                ]
+            },
+            child_eating: {
+                title: 'Early Eating Disorders (Child)',
+                description: "Unusual or restrictive eating behaviors that are not explained by another medical condition and that impact health or psychosocial functioning.",
+                prevalence: "Difficult to estimate, but problematic eating behaviors are common in early childhood.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ceat1', text: "Extreme food selectivity (accepts only a very small number of foods)." },
+                    { id: 'ceat2', text: "Refusal to eat leading to weight loss or failure to achieve expected weight." },
+                    { id: 'ceat3', text: "Intense fear of choking or vomiting that interferes with eating." },
+                    { id: 'ceat4', text: "Lack of apparent interest in food or eating." },
+                    { id: 'ceat5', text: "Eating is a major source of daily conflict and stress." }
+                ]
+            },
+
+            // == SPECIFIC DISORDERS MODULE ==
+            social_phobia: {
+                title: 'Social Phobia (Social Anxiety Disorder)',
+                description: "Marked fear or anxiety about one or more social situations in which the individual is exposed to possible scrutiny by others.",
+                prevalence: "12-month prevalence is about 7% in the U.S. and 2.3% in Europe. Lifetime prevalence is about 5% to 12%.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'sp1', text: "Fears situations where they might be judged negatively." },
+                    { id: 'sp2', text: "Avoids talking to strangers or speaking in public." },
+                    { id: 'sp3', text: "Social situations almost always provoke fear or anxiety." },
+                    { id: 'sp4', text: "The fear or anxiety is out of proportion to the actual threat posed by the situation." },
+                    { id: 'sp5', text: "The avoidance or anxiety significantly interferes with routine, work, or social life." }
+                ]
+            },
+            ocd: {
+                title: 'OCD (Obsessive-Compulsive Disorder)',
+                description: "Presence of obsessions (recurrent and intrusive thoughts) and/or compulsions (repetitive behaviors or mental acts) aimed at neutralizing anxiety.",
+                prevalence: "Lifetime prevalence is estimated between 2% and 3%.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ocd1', text: "Has recurrent and persistent thoughts, urges, or images that are experienced as intrusive and unwanted (obsessions)." },
+                    { id: 'ocd2', text: "Tries to ignore or suppress these thoughts with other thoughts or actions." },
+                    { id: 'ocd3', text: "Feels driven to perform repetitive behaviors (hand washing, checking) or mental acts (praying, counting) in response to an obsession (compulsions)." },
+                    { id: 'ocd4', text: "The obsessions or compulsions are time-consuming (more than one hour per day)." },
+                    { id: 'ocd5', text: "These symptoms cause clinically significant distress or impairment in functioning." }
+                ]
+            },
+            autism: {
+                title: 'Autism (Behavioral Dimension)',
+                description: "Behavioral indicators that may be associated with autism spectrum disorder, characterized by deficits in social communication and social interaction, and restricted, repetitive patterns of behavior, interests, or activities.",
+                prevalence: "Approximately 1% of the population.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'aut1', text: "Difficulty initiating or sustaining a conversation (social reciprocity)." },
+                    { id: 'aut2', text: "Atypical nonverbal behaviors (poor eye contact, limited facial expressions)." },
+                    { id: 'aut3', text: "Difficulty understanding relationships, social cues, or non-literal language (irony)." },
+                    { id: 'aut4', text: "Stereotyped or repetitive motor movements, use of objects, or speech (stereotypies, echolalia)." },
+                    { id: 'aut5', text: "Inflexible adherence to routines, or ritualized patterns; distress at small changes." },
+                    { id: 'aut6', text: "Highly restricted, fixated interests that are abnormal in intensity or focus." },
+                    { id: 'aut7', text: "Hyper- or hyporeactivity to sensory input (indifference to pain, fascination with lights, aversion to specific sounds or textures)." }
+                ]
+            },
+            eating_disorder: {
+                title: 'Eating Disorders (Anorexia, Bulimia, Binge Eating)',
+                description: "A persistent disturbance of eating or eating-related behavior that results in the altered consumption or absorption of food and that significantly impairs physical health or psychosocial functioning.",
+                prevalence: "Varies by disorder. Anorexia ≈0.4%, Bulimia ≈1-1.5%, Binge Eating ≈1.6-3.5% (females).",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ed1', text: "Restriction of energy intake leading to a significantly low body weight." },
+                    { id: 'ed2', text: "Intense fear of gaining weight or of becoming fat, or persistent behavior that interferes with weight gain." },
+                    { id: 'ed3', text: "Disturbance in the way in which one's body weight or shape is experienced." },
+                    { id: 'ed4', text: "Recurrent episodes of binge eating (eating a large amount of food in a discrete period with a sense of lack of control)." },
+                    { id: 'ed5', text: "Recurrent inappropriate compensatory behaviors in order to prevent weight gain (vomiting, laxatives, excessive exercise)." }
+                ]
+            },
+            addiction: {
+                title: 'Addiction-Related Disorders',
+                description: "A cluster of cognitive, behavioral, and physiological symptoms indicating that the individual continues using a substance or behavior despite significant related problems.",
+                prevalence: "Highly variable. For example, alcohol use disorder: about 5.3% of adults.",
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'add1', text: "The substance/behavior is often taken in larger amounts or over a longer period than was intended." },
+                    { id: 'add2', text: "A persistent desire or unsuccessful efforts to cut down or control use." },
+                    { id: 'add3', text: "A great deal of time is spent in activities necessary to obtain, use the substance, or recover from its effects." },
+                    { id: 'add4', text: "Craving, or a strong desire or urge to use." },
+                    { id: 'add5', text: "Recurrent use resulting in a failure to fulfill major role obligations (work, school, home)." },
+                    { id: 'add6', text: "Continued use despite having persistent social or interpersonal problems caused by the effects of the substance/behavior." },
+                    { id: 'add7', text: "Important social, occupational, or recreational activities are given up or reduced." },
+                    { id: 'add8', text: "A need for markedly increased amounts to achieve the desired effect (tolerance)." }
+                ]
+            },
+        };
+
+        /* ==================================== */
+        /* == UI BUILDING & EVENT LISTENERS  == */
+        /* ==================================== */
+
+        function el(tag, opts = {}) { const e = document.createElement(tag); Object.assign(e, opts); return e; }
+
+        function build() {
+            buildModuleSelector();
+            buildAllSections();
+        }
+
+        function buildModuleSelector() {
+            const selectorContainer = document.getElementById('moduleSelector');
+            selectorContainer.innerHTML = '';
+            for (const key in MODULES) {
+                const mod = MODULES[key];
+                const lbl = el('label', { className: 'opt' });
+                const checkbox = el('input', {
+                    type: 'checkbox',
+                    name: 'module',
+                    value: key,
+                    checked: mod.enabled,
+                    onchange: () => toggleModule(key)
+                });
+                lbl.appendChild(checkbox);
+                lbl.appendChild(el('span', { innerText: mod.title }));
+                selectorContainer.appendChild(lbl);
+            }
+        }
+
+        function toggleModule(key) {
+            MODULES[key].enabled = !MODULES[key].enabled;
+            buildAllSections(); // Re-render all sections based on new selection
+        }
+
+        function buildAllSections() {
+            const container = document.getElementById('allSectionsContainer');
+            container.innerHTML = ''; // Clear previous sections
+
+            for (const key in MODULES) {
+                if (MODULES[key].enabled) {
+                    MODULES[key].sections.forEach(sectionKey => {
+                        const sectionData = SECTIONS_DATA[sectionKey];
+                        if (sectionData) {
+                            const sectionDiv = el('div', { id: `${sectionKey}Container`, style: 'margin-top:10px' });
+                            sectionDiv.appendChild(el('div', { className: 'section-title', innerText: sectionData.title }));
+
+                            // Specific builder functions for complex sections
+                            if (sectionKey === 'mbti') buildMbti(sectionDiv, sectionData);
+                            else if (sectionKey === 'enneagram') buildEnneagram(sectionDiv, sectionData);
+                            else if (sectionKey === 'dark') buildDark(sectionDiv, sectionData);
+                            else if (sectionKey === 'attachment') buildAttachment(sectionDiv, sectionData);
+                            else if (sectionData.scaleText) buildScaleQuestions(sectionDiv, sectionData, sectionKey); // Generic builder for scale-based questions
+
+                            container.appendChild(sectionDiv);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Replace the broken buildMbti with robust parsing (handles ":", " : ", etc.)
+        function buildMbti(container, data) {
+            data.items.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                // robust split: split on first ":" then trim
+                const parts = it.q.split(':');
+                const mainQuestion = (parts[0] || '').trim();
+                const optionsText = parts.slice(1).join(':').trim(); // rest of string after first :
+                // try to split options by " / " otherwise fallback to whole optionsText
+                const optsParts = optionsText ? optionsText.split(' / ').map(t => t.replace(/\((A|B)\)\s*/g, '').trim()) : ['', ''];
+                const optAText = optsParts[0] || '';
+                const optBText = optsParts[1] || '';
+
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + mainQuestion, style: 'font-weight:700;margin-bottom:6px' }));
+                const opts = el('div', { className: 'options' });
+
+                const lblA = el('label', { className: 'opt' });
+                lblA.innerHTML = `<input type="radio" name="${it.id}" value="A"> <span>${optAText}</span>`;
+                opts.appendChild(lblA);
+
+                const lblB = el('label', { className: 'opt' });
+                lblB.innerHTML = `<input type="radio" name="${it.id}" value="B"> <span>${optBText}</span>`;
+                opts.appendChild(lblB);
+
+                q.appendChild(opts);
+                container.appendChild(q);
+            });
+        }
+
+        function buildEnneagram(container, data) {
+            container.appendChild(el('div', { innerHTML: '<strong>Core Motivation / Fear (choose the closest)</strong>', style: 'margin-bottom:6px' }));
+            data.items.main.forEach(it => {
+                const lbl = el('label', { className: 'opt' });
+                lbl.innerHTML = `<input type="radio" name="ennea_main" value="${it.type}"> <span>${it.text}</span>`;
+                container.appendChild(lbl);
+            });
+            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Behaviors under stress (check if observed)</strong>' }));
+            data.items.stress.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="checkbox" name="ennea_stress" value="${it.type}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Dominant instinct</strong>' }));
+            data.items.instincts.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="instinct" value="${it.id}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+        }
+
+        function buildDark(container, data) {
+            data.items.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                const row = el('div', { className: 'options' });
+                row.innerHTML = `1 <input type="range" name="${it.id}" min="1" max="5" value="3"> 5`;
+                q.appendChild(row); container.appendChild(q);
+            });
+        }
+
+        function buildAttachment(container, data) {
+            data.items.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="attachment" value="${it.val}"> <span>${it.text}</span>`; container.appendChild(lbl); });
+        }
+
+        function buildScaleQuestions(container, data, sectionKey) {
+            container.appendChild(el('div', { innerHTML: data.scaleText, style: 'font-size:12px;color:var(--muted);margin-bottom:6px' }));
+            data.items.forEach((it, idx) => {
+                const q = el('div', { className: 'q' });
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                const row = el('div', { className: 'options' });
+                row.innerHTML = `0 <input type="range" name="${sectionKey}_${it.id}" min="0" max="4" value="0"> 4`;
+                q.appendChild(row); container.appendChild(q);
+            });
+        }
+
+        /* ======================== */
+        /* == ANALYSIS FUNCTIONS == */
+        /* ======================== */
+
+        function analyzeSection(sectionKey) {
+            if (!SECTIONS_DATA[sectionKey]) return null;
+            const data = SECTIONS_DATA[sectionKey];
+            let totalScore = 0;
+            const maxScore = data.items.length * 4; // Each question is on a 0-4 scale
+
+            data.items.forEach(item => {
+                const input = document.querySelector(`input[name="${sectionKey}_${item.id}"]`);
+                if (input) {
+                    totalScore += parseInt(input.value, 10);
+                }
+            });
+
+            if (maxScore === 0) return { score: 0, percentage: 0, ...data };
+
+            const percentage = Math.round((totalScore / maxScore) * 100);
+            return {
+                score: totalScore,
+                maxScore: maxScore,
+                percentage: percentage,
+                ...data // Include title, description, prevalence
+            };
+        }
+
+        function analyzeAllEnabledSections() {
+            const results = {};
+            for (const modKey in MODULES) {
+                if (MODULES[modKey].enabled) {
+                    MODULES[modKey].sections.forEach(secKey => {
+                        switch (secKey) {
+                            case 'mbti': results.mbti = analyzeMBTI(); break;
+                            case 'enneagram': results.enneagram = analyzeEnnea(); break;
+                            case 'dark': results.dark = analyzeDark(); break;
+                            case 'attachment': results.attachment = analyzeAttach(); break;
+                            case 'adhd': results.adhd = analyzeADHD(); break;
+                            default:
+                                if (SECTIONS_DATA[secKey] && SECTIONS_DATA[secKey].scaleText) {
+                                    results[secKey] = analyzeSection(secKey);
+                                }
+                        }
+                    });
+                }
+            }
+            return results;
+        }
+
+        // --- Specific analysis functions (unchanged logic) ---
+        function analyzeMBTI() {
+            const counts = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            SECTIONS_DATA.mbti.items.forEach(it => {
+                const sel = document.querySelector(`input[name="${it.id}"]:checked`);
+                if (sel) {
+                    const letter = sel.value === 'A' ? it.A : it.B;
+                    counts[letter]++;
+                }
+            });
+            function decide(a, b) {
+                const ca = counts[a], cb = counts[b];
+                if (ca === 0 && cb === 0) return { letter: 'X', confidence: 0 }; // Case where questions are not answered
+                const letter = ca > cb ? a : b;
+                const confidence = Math.round(Math.abs(ca - cb) / 3 * 100);
+                return { letter, confidence };
+            }
+            const ie = decide('I', 'E'), sn = decide('S', 'N'), tf = decide('T', 'F'), jp = decide('J', 'P');
+            const type = ie.letter + sn.letter + tf.letter + jp.letter;
+            const globalConf = Math.round((ie.confidence + sn.confidence + tf.confidence + jp.confidence) / 4);
+            return { type, breakdown: { ie, sn, tf, jp }, globalConf };
+        }
+
+        function analyzeEnnea() {
+            const main = document.querySelector('input[name="ennea_main"]:checked');
+            const type = main ? parseInt(main.value, 10) : null;
+            const stresses = Array.from(document.querySelectorAll('input[name="ennea_stress"]:checked')).map(n => parseInt(n.value, 10));
+            const scores = {};
+            for (let i = 1; i <= 9; i++) scores[i] = 0;
+            if (type) scores[type] += 3;
+            stresses.forEach(t => { if (scores[t] !== undefined) scores[t] += 1; });
+            const sorted = Object.keys(scores).map(k => ({ type: parseInt(k, 10), score: scores[k] })).sort((a, b) => b.score - a.score);
+            const top = sorted[0] || null;
+            let wing = null;
+            if (type) {
+                const wing1 = type === 1 ? 9 : type - 1;
+                const wing2 = type === 9 ? 1 : type + 1;
+                const score1 = stresses.includes(wing1) ? 1 : 0;
+                const score2 = stresses.includes(wing2) ? 1 : 0;
+                if (score1 > score2) wing = wing1;
+                else if (score2 > score1) wing = wing2;
+            }
+            const inst = document.querySelector('input[name="instinct"]:checked');
+            const instMap = { sp: 'Self-Preservation', so: 'Social', sx: 'Sexual (One-to-One)' };
+            return { type, top, wing, instinct: inst ? instMap[inst.value] : null, scores };
+        }
+
+        function analyzeDark() {
+            const traits = { mach: 0, narc: 0, psy: 0 };
+            for (let i = 1; i <= 9; i++) {
+                const el = document.querySelector(`input[name="dt${i}"]`);
+                if (el) {
+                    const v = parseInt(el.value, 10);
+                    if (i <= 3) traits.mach += v;
+                    else if (i <= 6) traits.narc += v;
+                    else traits.psy += v;
+                }
+            }
+            const machPct = Math.round((traits.mach - 3) / 12 * 100);
+            const narcPct = Math.round((traits.narc - 3) / 12 * 100);
+            const psyPct = Math.round((traits.psy - 3) / 12 * 100);
+            return { raw: traits, mach: machPct, narc: narcPct, psy: psyPct };
+        }
+
+        function analyzeAttach() {
+            const sel = document.querySelector('input[name="attachment"]:checked');
+            const map = { secure: 'Secure', anxious: 'Anxious', avoidant: 'Avoidant', fearful: 'Fearful-avoidant' };
+            return { raw: sel ? sel.value : null, label: sel ? map[sel.value] : null };
+        }
+
+        // Replacement / fix of analyzeADHD() to use input names built by buildScaleQuestions
+        function analyzeADHD() {
+            let total = 0;
+            if (!SECTIONS_DATA || !SECTIONS_DATA.adhd) return { score: 0, percentage: 0, positive: false };
+            SECTIONS_DATA.adhd.items.forEach(item => {
+                const input = document.querySelector(`input[name="adhd_${item.id}"]`);
+                if (input) total += parseInt(input.value, 10) || 0;
+            });
+            const max = SECTIONS_DATA.adhd.items.length * 4;
+            const pct = max > 0 ? Math.round(total / max * 100) : 0;
+            const positive = total >= 9;
+            return { score: total, percentage: pct, positive: positive };
+        }
+
+        // Function to enable all modules and rebuild the UI
+        function enableAllModules() {
+            for (const key in MODULES) {
+                MODULES[key].enabled = true;
+                const cb = document.querySelector(`input[name="module"][value="${key}"]`);
+                if (cb) cb.checked = true;
+            }
+            buildAllSections();
+        }
+
+        // Automatic full example fill-in
+        function fillExample() {
+            // 1) enable all modules and (re)build sections
+            enableAllModules();
+
+            // 2) Fill ranges (generic) and dark triad (specific)
+            document.querySelectorAll('#profilerForm input[type="range"]').forEach(r => {
+                const name = r.name || '';
+                // Dark triad: dt1..dt9 (min 1..5) -> give varied values for the example
+                if (/^dt\d+$/.test(name)) {
+                    const idx = parseInt(name.replace('dt', ''), 10);
+                    if (idx <= 3) r.value = 5;
+                    else if (idx <= 6) r.value = 4;
+                    else r.value = 3;
+                } else {
+                    // other scales (0..4) -> moderately high value for demonstration
+                    // if input has min=0 max=4, set to 3; if min=1 max=5 (dark) adjust above
+                    r.value = Math.max(parseInt(r.min || 0, 10), Math.min(parseInt(r.max || 4, 10), 3));
+                }
+            });
+
+            // 3) MBTI -> choose options to illustrate a profile (e.g., ENFP-ish)
+            // Logic: if one of the two letters A/B corresponds to the desired letter, check it.
+            const desiredLetters = new Set(['E', 'N', 'F', 'P']); // example target
+            if (SECTIONS_DATA.mbti && SECTIONS_DATA.mbti.items) {
+                SECTIONS_DATA.mbti.items.forEach(it => {
+                    const prefer = (it.A && desiredLetters.has(it.A)) ? it.A : ((it.B && desiredLetters.has(it.B)) ? it.B : it.A);
+                    const val = it.A === prefer ? 'A' : 'B';
+                    const inp = document.querySelector(`input[name="${it.id}"][value="${val}"]`);
+                    if (inp) inp.checked = true;
+                });
+            }
+
+            // 4) Enneagram -> select an example type, some stresses, and instinct
+            const main = document.querySelector('input[name="ennea_main"][value="4"]');
+            if (main) main.checked = true;
+            // check some stress items (values 1..9)
+            [2, 4, 6].forEach(v => {
+                const c = document.querySelector(`input[name="ennea_stress"][value="${v}"]`);
+                if (c) c.checked = true;
+            });
+            const inst = document.querySelector('input[name="instinct"][value="so"]');
+            if (inst) inst.checked = true;
+
+            // 5) Attachment -> secure
+            const att = document.querySelector('input[name="attachment"][value="secure"]');
+            if (att) att.checked = true;
+
+            // 6) For other radios (if needed), can leave as default or select the first option.
+            // Example: loop through radio groups not MBTI/enneagram/attachment and check the first available
+            const radioNames = new Set();
+            document.querySelectorAll('#profilerForm input[type="radio"]').forEach(r => radioNames.add(r.name));
+            radioNames.forEach(name => {
+                if (['ennea_main', 'instinct', 'attachment'].includes(name)) return; // already handled
+                const first = document.querySelector(`#profilerForm input[type="radio"][name="${name}"]`);
+                if (first) first.checked = true;
+            });
+
+            // 7) Check some generic checkboxes if present (already done for ennea), otherwise leave.
+            // (no other specific checkboxes needed here)
+
+            // 8) Run analysis and display the report immediately
+            runAll();
+            // a small visual indication is possible (discreet alert)
+            // alert('Example loaded — the report has been generated.');
+        }
+
+        /* ========================== */
+        /* == REPORT & PDF GENERATION == */
+        /* ========================== */
+
+        function generateReport(allResults) {
+            const reportEl = document.getElementById('report');
+            reportEl.innerHTML = ''; // Clear previous report
+
+            const title = el('div', { className: 'section-title', innerText: 'Profile Summary' });
+            reportEl.appendChild(title);
+
+            // Base Profile
+            if (allResults.mbti) {
+                reportEl.innerHTML += `<strong>MBTI:</strong> ${allResults.mbti.type} (Confidence ${allResults.mbti.globalConf}%)<br>`;
+                reportEl.innerHTML += `<span class="mini">${mbtiProfile(allResults.mbti.type)}</span><br><br>`;
+            }
+            if (allResults.enneagram && allResults.enneagram.type) {
+                const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+                reportEl.innerHTML += `<strong>Enneagram:</strong> Type ${allResults.enneagram.type}${wingText} - ${allResults.enneagram.instinct || 'N/A'}<br>`;
+                reportEl.innerHTML += `<span class="mini">${enneaProfile(allResults.enneagram.type)}</span><br><br>`;
+            }
+            if (allResults.dark) {
+                reportEl.innerHTML += `<strong>Dark Triad (Indicators):</strong><br>`;
+                reportEl.innerHTML += `<span class="mini">Machiavellianism: ${allResults.dark.mach}%, Narcissism: ${allResults.dark.narc}%, Psychopathy: ${allResults.dark.psy}%</span><br><br>`;
+            }
+            if (allResults.attachment && allResults.attachment.label) {
+                reportEl.innerHTML += `<strong>Attachment:</strong> ${allResults.attachment.label}<br><br>`;
+            }
+            if (allResults.adhd) {
+                reportEl.innerHTML += `<strong>ADHD (Screening):</strong> Score ${allResults.adhd.score}/24 (${allResults.adhd.percentage}%)<br>`;
+                reportEl.innerHTML += `<span class="mini">${allResults.adhd.positive ? 'Significant indicator. Consult a professional if daily life is impacted.' : 'No strong indicator on this screening.'}</span><br><br>`;
+            }
+
+            // Behavioral Disorders
+            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
+            if (disorderKeys.length > 0) {
+                const disorderTitle = el('div', { className: 'section-title', innerText: 'Behavioral Indicators', style: 'margin-top: 1rem;' });
+                reportEl.appendChild(disorderTitle);
+            }
+
+            disorderKeys.sort((a, b) => allResults[b].percentage - allResults[a].percentage).forEach(key => {
+                const result = allResults[key];
+                if (result.percentage > 35) { // Threshold to display in report
+                    reportEl.innerHTML += `<strong>${result.title}:</strong> Indicator at ${result.percentage}%<br>`;
+                    reportEl.innerHTML += `<span class="mini"><strong>Description:</strong> ${result.description}</span><br>`;
+                    reportEl.innerHTML += `<span class="mini"><strong>Rarity (general pop. prevalence):</strong> ${result.prevalence}</span><br><br>`;
+                }
+            });
+        }
+
+        // Helper descriptions (unchanged logic)
+        function mbtiProfile(type) {
+            const map = { 'INTJ': 'Independent strategist, long-term vision.', 'INTP': 'Curious logician, seeks theoretical consistency.', 'ENTJ': 'Natural leader, organized and efficient.', 'ENTP': 'Innovator, loves debating and exploring ideas.', 'INFJ': 'Insightful idealist, guided by values.', 'INFP': 'Creative mediator, sensitive and authentic.', 'ENFJ': 'Charismatic protagonist, inspires others.', 'ENFP': 'Enthusiastic inspirer, sociable and creative.', 'ISTJ': 'Reliable logistician, methodical and responsible.', 'ISFJ': 'Devoted defender, warm and protective.', 'ESTJ': 'Pragmatic director, loves order and structure.', 'ESFJ': 'Sociable consul, caring and cooperative.', 'ISTP': 'Pragmatic virtuoso, loves solving concrete problems.', 'ISFP': 'Sensitive adventurer, artistic and flexible.', 'ESTP': 'Bold entrepreneur, loves action and challenge.', 'ESFP': 'Spontaneous entertainer, sociable and energetic.' };
+            return map[type] || 'Type not defined';
+        }
+        function enneaProfile(t) {
+            const map = { 1: 'The Perfectionist: rigorous, sense of duty.', 2: 'The Helper: other-oriented, empathetic.', 3: 'The Achiever: success and image-oriented.', 4: 'The Individualist: seeks authenticity, sensitive.', 5: 'The Investigator: curious, needs to understand and be autonomous.', 6: 'The Loyalist: seeks security, vigilant.', 7: 'The Enthusiast: seeks stimulation, optimistic.', 8: 'The Challenger: assertive, protective, needs control.', 9: 'The Peacemaker: seeks harmony, avoids conflict.' };
+            return map[t] || '';
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const allResults = analyzeAllEnabledSections();
+            if (Object.keys(allResults).length === 0) {
+                alert("Please analyze a profile before exporting.");
+                return;
+            }
+
+            // --- PDF Header ---
+            doc.setFontSize(18);
+            doc.setTextColor(40, 40, 80);
+            doc.text("Psychological Profile Report (Educational)", 105, 20, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Generated on: ${new Date().toLocaleString('en-US')}`, 105, 28, { align: 'center' });
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(40, 40, 80);
+            doc.line(20, 35, 190, 35);
+
+            // --- PDF Body ---
+            let y = 45;
+            const addSection = (title, body) => {
+                if (y > 260) { doc.addPage(); y = 20; }
+                doc.setFontSize(14);
+                doc.setTextColor(60, 60, 100);
+                doc.text(title, 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                const splitText = doc.splitTextToSize(body, 170);
+                doc.text(splitText, 20, y);
+                y += (splitText.length * 5) + 8;
+            };
+
+            if (allResults.mbti && allResults.mbti.type !== 'XXXX') {
+                addSection("MBTI Profile",
+                    `Type: ${allResults.mbti.type} (Confidence: ${allResults.mbti.globalConf}%)\n` +
+                    `Description: ${mbtiProfile(allResults.mbti.type)}`
+                );
+            }
+            if (allResults.enneagram && allResults.enneagram.type) {
+                const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+                addSection("Enneagram Profile",
+                    `Main Type: ${allResults.enneagram.type}${wingText}\n` +
+                    `Dominant Instinct: ${allResults.enneagram.instinct || 'Not defined'}\n` +
+                    `Description: ${enneaProfile(allResults.enneagram.type)}`
+                );
+            }
+
+            // Table for other results
+            const tableBody = [];
+            if (allResults.dark) {
+                tableBody.push(['Dark Triad - Machiavellianism', `${allResults.dark.mach}%`]);
+                tableBody.push(['Dark Triad - Narcissism', `${allResults.dark.narc}%`]);
+                tableBody.push(['Dark Triad - Psychopathy', `${allResults.dark.psy}%`]);
+            }
+            if (allResults.attachment && allResults.attachment.label) {
+                tableBody.push(['Attachment Style', allResults.attachment.label]);
+            }
+            if (allResults.adhd) {
+                tableBody.push(['ADHD Indicator', `${allResults.adhd.percentage}% (Score: ${allResults.adhd.score}/24)`]);
+            }
+
+            if (tableBody.length > 0) {
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.autoTable({
+                    startY: y,
+                    head: [['Indicator', 'Result']],
+                    body: tableBody,
+                    theme: 'grid',
+                    headStyles: { fillColor: [230, 230, 230], textColor: [20, 20, 20] }
+                });
+                y = doc.autoTable.previous.finalY + 10;
+            }
+
+
+            // Behavioral Disorders Section
+            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
+            const disorderResults = disorderKeys.map(k => allResults[k]).filter(r => r.percentage > 35).sort((a, b) => b.percentage - a.percentage);
+
+            if (disorderResults.length > 0) {
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.setFontSize(14);
+                doc.setTextColor(60, 60, 100);
+                doc.text("Behavioral Indicators (high scores)", 20, y);
+                y += 10;
+
+                disorderResults.forEach(result => {
+                    addSection(
+                        `${result.title} (Indicator: ${result.percentage}%)`,
+                        `Description: ${result.description}\nPrevalence: ${result.prevalence}`
+                    );
+                });
+            }
+
+
+            // --- PDF Footer ---
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            const disclaimer = "DISCLAIMER: This report is generated for educational purposes and does not constitute a diagnosis. The results are indicators based on a self-questionnaire and do not replace the advice of a mental health professional.";
+            doc.text(doc.splitTextToSize(disclaimer, 170), 20, 280);
+
+            doc.save(`Profile_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        /* ======================== */
+        /* == MAIN & UTILITIES   == */
+        /* ======================== */
+
+        function runAll() {
+            const allResults = analyzeAllEnabledSections();
+
+            if (Object.keys(allResults).length === 0) {
+                alert('Please select at least one module to analyze.');
+                return;
+            }
+
+            // Generate the detailed report in the UI
+            generateReport(allResults);
+
+            // Update JSON output
+            const out = { timestamp: (new Date()).toISOString(), results: allResults };
+            document.getElementById('jsonOut').innerText = JSON.stringify(out, null, 2);
+        }
+
+        function clearForm() {
+            document.getElementById('profilerForm').reset();
+            document.getElementById('report').innerHTML = 'Please select modules, fill out the questionnaires, and click "Analyze".';
+            document.getElementById('jsonOut').innerText = '—';
+            document.getElementById('heuristicsTags').innerHTML = '';
+        }
+
+        function exportJson() {
+            const json = document.getElementById('jsonOut').innerText;
+            if (json === '—') {
+                alert("Please generate an analysis before exporting.");
+                return;
+            }
+            const blob = new Blob([json], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `profile-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Fix import file handler: use files[0] and pass File to readAsText
+        document.getElementById('importFile').addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    if (!data || !data.results) {
+                        alert('Invalid JSON file or does not contain a profile.');
+                        return;
+                    }
+                    document.getElementById('jsonOut').innerText = JSON.stringify(data, null, 2);
+                    generateReport(data.results);
+                    alert('Import successful. The report and JSON data have been displayed. Form answers are not restored.');
+                } catch (err) {
+                    alert('Error reading the JSON file.');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(f);
+        });
+
+        function initLangSelector() {
+            const sel = document.getElementById('langSelect');
+            if (! sel) return;
+            const fn = (window.location.pathname.split('/').pop() || '').toLowerCase();
+            if (fn.includes('en-us')) sel.value = 'en-us.html';
+            else if (fn.includes('nl-be')) sel.value = 'nl-be.html';
+            else sel.value = 'index.html';
+            sel.addEventListener('change', () => { const v = sel.value; window.location.href = v; });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { build(); initLangSelector(); });
+    </script>
+</body>
+</html>
