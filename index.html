@@ -11,136 +11,124 @@
     <!-- CDN pour jsPDF et jsPDF-AutoTable pour l'export PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- CDN pour Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* CSS IDENTIQUE À L'ORIGINAL - AUCUN CHANGEMENT */
         :root {
-            --bg: #0b1220;
-            --card: #07102b;
-            --muted: #94a3b8;
-            --accent: #60a5fa;
-            --good: #10b981;
-            --warn: #f59e0b;
-            --bad: #fb7185;
-            --surface: #0f1724;
-            --glass: rgba(255, 255, 255, 0.03);
-            --maxw: 1100px;
+            --bg: #0d1117;
+            --surface: #161b22;
+            --card: #21262d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --good: #3fb950;
+            --warn: #d29922;
+            --bad: #f85149;
+            --glass: rgba(56, 139, 253, 0.07);
+            --maxw: 1200px;
             --gutter: 4vw;
-            --radius: 1.25rem;
-            --card-pad: 1rem;
+            --radius: 0.75rem;
+            --card-pad: 1.25rem;
             --gap: 0.8rem;
-            --shadow: 0 0.8rem 2.4rem rgba(2,6,23,0.55);
-            --btn-h: 2.6rem;
+            --shadow: 0 8px 24px rgba(0,0,0,0.2);
+            --btn-h: 2.8rem;
         }
-        html { font-size: clamp(14px, 1.8vw, 18px); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
+
+        body.light-theme {
+            --bg: #f6f8fa;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --text-primary: #24292f;
+            --text-secondary: #57606a;
+            --border: #d0d7de;
+            --accent: #0969da;
+            --good: #1a7f37;
+            --warn: #9a6700;
+            --bad: #cf222e;
+            --glass: rgba(9, 105, 218, 0.07);
+            --shadow: 0 6px 18px rgba(140,149,159,0.15);
+        }
+
+        html { font-size: clamp(14px, 1.8vw, 16px); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
         *, *::before, *::after { box-sizing: inherit; }
-        body { margin: 0; font-family: Inter, system-ui, "Segoe UI", Arial, sans-serif; background: linear-gradient(180deg, #041025 0%, #07102b 100%); color: #e6eef6; min-height: 100vh; line-height: 1.35; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; background-color: var(--bg); color: var(--text-primary); min-height: 100vh; line-height: 1.45; transition: background-color 0.2s, color 0.2s; }
         .wrap { width: min(96%, var(--maxw)); margin: 0 auto; padding: calc(var(--gutter) / 2); }
-        header { margin-bottom: calc(var(--gap) * 1.5); }
-        h1 { font-size: clamp(1.05rem, 3.2vw, 1.25rem); margin: 0 0 0.35rem; font-weight: 700; }
-        p.lead { margin: 0; color: var(--muted); font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
-        form.card, .panel.card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding: var(--card-pad); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: calc(var(--gap) * 1.25); }
-        .section-title { font-weight: 700; margin: 0.35rem 0 0.5rem; font-size: clamp(0.95rem, 2.6vw, 1.05rem); color: var(--accent); }
-        .q { background: var(--glass); padding: calc(var(--gap) * 0.9); border-radius: calc(var(--radius) / 1.6); margin: 0.6rem 0; }
-        label.opt { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.25rem; cursor: pointer; font-size: clamp(0.9rem, 1.9vw, 1rem); }
-        .options { display: flex; flex-direction: column; gap: 0.35rem; }
-        input[type="radio"], input[type="checkbox"] { transform: scale(1.05); flex-shrink: 0; }
-        input[type="range"] { width: 100%; max-width: 100%; margin: 0.35rem 0; }
-        button.btn { appearance: none; border: 0; padding: 0.5rem 0.75rem; border-radius: calc(var(--radius) / 1.4); background: linear-gradient(90deg, var(--accent), #7dd3fc); color: #021024; font-weight: 700; cursor: pointer; margin-top: 0.5rem; display: block; width: 100%; height: var(--btn-h); font-size: clamp(0.95rem, 1.8vw, 1.05rem); }
-        button.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.04); color: var(--muted); }
-        .grid { display: grid; grid-template-columns: 1fr; gap: calc(var(--gap) * 1.15); align-items: start; }
+        header { margin-bottom: calc(var(--gap) * 1.5); padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        h1 { font-size: clamp(1.25rem, 3.2vw, 1.5rem); margin: 0 0 0.35rem; font-weight: 600; }
+        p.lead { margin: 0; color: var(--text-secondary); font-size: clamp(0.9rem, 1.8vw, 1rem); }
+        form.card, .panel.card { background-color: var(--card); border: 1px solid var(--border); padding: var(--card-pad); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: calc(var(--gap) * 1.25); }
+        input#userName { background-color: var(--surface); border: 1px solid var(--border); border-radius: calc(var(--radius) / 1.5); padding: 0.5rem 0.75rem; color: var(--text-primary); width: 100%; margin-bottom: 1rem; font-size: 1rem; }
+        .section-title { font-weight: 600; margin: 0.35rem 0 0.8rem; font-size: clamp(1rem, 2.6vw, 1.15rem); color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .q { background: var(--glass); padding: calc(var(--gap) * 1.1); border-radius: calc(var(--radius) / 1.2); margin: 0.8rem 0; border: 1px solid transparent; }
+        label.opt { display: flex; align-items: center; gap: 0.7rem; padding: 0.5rem 0.25rem; cursor: pointer; font-size: clamp(0.9rem, 1.9vw, 1rem); }
+        .options { display: flex; flex-direction: column; gap: 0.45rem; }
+        input[type="radio"], input[type="checkbox"] { transform: scale(1.1); flex-shrink: 0; accent-color: var(--accent); }
+        input[type="range"] { width: 100%; max-width: 100%; margin: 0.35rem 0; accent-color: var(--accent); }
+        button.btn { appearance: none; border: 1px solid var(--accent); padding: 0.5rem 1rem; border-radius: calc(var(--radius) / 1.2); background-color: var(--accent); color: white; font-weight: 600; cursor: pointer; margin-top: 0.5rem; display: block; width: 100%; height: var(--btn-h); font-size: clamp(0.95rem, 1.8vw, 1.05rem); transition: all 0.2s ease; }
+        button.btn:hover { filter: brightness(1.1); }
+        button.ghost { background: transparent; border: 1px solid var(--border); color: var(--accent); }
+        button.ghost:hover { background: var(--glass); border-color: var(--accent); }
+        .grid { display: grid; grid-template-columns: 1fr; gap: calc(var(--gap) * 1.25); align-items: start; }
         .aside { display: block; }
-        .results { white-space: pre-wrap; font-size: clamp(0.88rem, 1.6vw, 0.95rem); background: rgba(255,255,255,0.02); padding: 0.6rem; border-radius: calc(var(--radius) / 1.4); }
-        .mini { font-size: clamp(0.82rem, 1.6vw, 0.9rem); color: var(--muted); }
-        .bar { height: clamp(0.45rem, 0.8vh, 0.6rem); background: rgba(255,255,255,0.04); border-radius: calc(var(--radius) / 2.8); overflow: hidden; margin-top: 0.45rem; }
-        .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #60a5fa); transition: width 0.3s ease; }
-        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-        .tag { background: rgba(255,255,255,0.02); padding: 0.35rem 0.6rem; border-radius: 999px; font-size: clamp(0.78rem, 1.4vw, 0.9rem); }
-        .muted { color: var(--muted); }
-        footer { margin-top: 0.9rem; font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: var(--muted); }
-        pre.jsonOut { background: #021024; padding: 0.6rem; border-radius: calc(var(--radius) / 1.4); overflow: auto; font-size: clamp(0.75rem, 1.4vw, 0.9rem); white-space: pre-wrap; word-break: break-word; }
-        .q, .options, label.opt, .results, pre.jsonOut { overflow-wrap: break-word; word-break: break-word; }
+        .results { font-size: clamp(0.9rem, 1.6vw, 1rem); background-color: var(--surface); padding: 0.6rem; border-radius: calc(var(--radius) / 1.2); }
+        .report-section { background-color: var(--card); border: 1px solid var(--border); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; }
+        .report-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .report-bar { height: 8px; background-color: var(--surface); border-radius: 4px; overflow: hidden; margin: 0.5rem 0 1rem; }
+        .report-bar i { display: block; height: 100%; border-radius: 4px; }
+        .report-description { font-size: 0.9rem; color: var(--text-secondary); white-space: pre-wrap; }
+        .muted { color: var(--text-secondary); }
+        footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: clamp(0.8rem, 1.4vw, 0.9rem); color: var(--text-secondary); text-align: center; }
+        pre.jsonOut { background: var(--surface); border: 1px solid var(--border); padding: 0.8rem; border-radius: calc(var(--radius) / 1.2); overflow: auto; font-size: clamp(0.8rem, 1.4vw, 0.9rem); white-space: pre-wrap; word-break: break-word; color: var(--text-secondary); }
+        .header-controls { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .lang-switch, .theme-switch { display: flex; align-items: center; gap: 0.5rem; }
+        .lang-switch select, .theme-switch button { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 0.35rem 0.6rem; border-radius: 6px; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+        .lang-switch label { font-size: 0.9rem; }
+        #chartContainer { position: relative; min-height: 250px; margin-top: 1rem; }
+        
         @media (min-width: 760px) {
-            .grid { grid-template-columns: 1fr minmax(280px, 34%); gap: calc(var(--gap) * 1.2); }
-            .options { gap: 0.5rem; }
-            button.btn { width: 100%; }
+            .grid { grid-template-columns: 1fr minmax(320px, 36%); gap: calc(var(--gap) * 1.4); }
         }
         @media (min-width: 980px) {
-            html { font-size: clamp(15px, 1.5vw, 18px); }
-            .wrap { padding: calc(var(--gutter) / 1.4); }
-            .grid { grid-template-columns: 1fr 30%; gap: calc(var(--gap) * 1.4); }
-            .aside { position: sticky; top: 1rem; align-self: start; }
-            .form-buttons { display: flex; gap: 0.6rem; }
-            button.btn, button.ghost { width: 100%; }
+            .wrap { padding: calc(var(--gutter) / 1.2); }
+            .grid { grid-template-columns: 1fr 34%; gap: calc(var(--gap) * 1.6); }
+            .aside { position: sticky; top: 1.25rem; align-self: start; }
+            .form-buttons { display: flex; gap: 0.75rem; }
         }
-        input[type="file"] {
-            display: inline-block;
-            width: 100%;
-            height: var(--btn-h);
-            padding: 0.3rem 0.75rem;
-            border-radius: calc(var(--radius) / 1.4);
-            background: linear-gradient(90deg, var(--accent), #7dd3fc);
-            color: #021024;
-            border: 0;
-            font-weight: 700;
-            font-size: clamp(0.95rem, 1.8vw, 1.05rem);
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        /* Modern browsers: style the file selector button */
-        input[type="file"]::file-selector-button {
-            appearance: none;
-            border: 0;
-            margin-right: 8px;
-            padding: 0.3rem 0.75rem;
-            border-radius: calc(var(--radius) / 1.6);
-            background: linear-gradient(90deg, var(--accent), #7dd3fc);
-            color: #021024;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* WebKit legacy pseudo-element */
-        input[type="file"]::-webkit-file-upload-button {
-            appearance: none;
-            border: 0;
-            margin-right: 8px;
-            padding: 0.3rem 0.75rem;
-            border-radius: calc(var(--radius) / 1.6);
-            background: linear-gradient(90deg, var(--accent), #7dd3fc);
-            color: #021024;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* Lang switch */
-        .lang-switch { float: right; margin-top: -2.2rem; }
-        .lang-switch select { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--muted); padding: 0.25rem 0.5rem; border-radius: 6px; }
     </style>
 </head>
 
 <body>
     <div class="wrap">
         <header>
-            <div class="lang-switch">
-                <label class="muted" for="langSelect" style="margin-right:6px;font-size:0.9rem;">Lang:</label>
-                <select id="langSelect" aria-label="Choisir la langue">
-                    <option value="index.html">Français</option>
-                    <option value="en-us.html">English</option>
-                    <option value="nl-be.html">Nederlands</option>
-                </select>
+            <div class="header-controls">
+                <div>
+                    <h1>The Profiler</h1>
+                    <p class="lead">
+                        Application locale — données conservées
+                        uniquement côté client.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="lang-switch">
+                        <label class="muted" for="langSelect">Lang:</label>
+                        <select id="langSelect" aria-label="Choisir la langue">
+                            <option value="index.html">Fr</option>
+                            <option value="en-us.html">En</option>
+                            <option value="nl-be.html">Nl</option>
+                        </select>
+                    </div>
+                     <div class="theme-switch">
+                        <button id="themeToggle" title="Changer le thème">🌗</button>
+                    </div>
+                </div>
             </div>
-            <h1>The Profiler</h1>
-            <p class="lead">
-                Application locale — données conservées
-                uniquement côté client. Indices comportementaux et de
-                personnalité —
-                <strong>pas de diagnostic</strong>.
-            </p>
         </header>
         <div class="grid">
             <form id="profilerForm" class="card" onsubmit="event.preventDefault(); runAll();">
+                
+                <input type="text" id="userName" placeholder="Votre nom (pour le rapport PDF)">
 
                 <!-- Section de sélection des modules -->
                 <div>
@@ -157,38 +145,41 @@
                 
                 <div style="margin-top:12px;" class="form-buttons">
                     <button type="submit" class="btn">
-                        Analyser (générer profil)
+                        Analyser et Générer le Profil
                     </button>
                     <button type="button" class="btn ghost" onclick="generatePDF()">Exporter en PDF</button>
-                    <!-- Bouton ajouté pour remplir un exemple complet -->
-                    <button type="button" class="btn ghost" onclick="fillExample()">Exemple</button>
+                </div>
+                 <div style="margin-top:8px;" class="form-buttons">
+                    <button type="button" class="btn ghost" onclick="fillExample()">Remplir un Exemple</button>
+                    <button type="button" class="ghost btn" onclick="clearForm()">Réinitialiser</button>
                 </div>
                 <div style="display:flex;gap:8px;margin-top:8px">
-                    <button type="button" class="ghost btn" onclick="clearForm()" style="flex:1">Réinitialiser</button>
                     <button type="button" class="ghost btn" onclick="exportJson()" style="flex:1">
                         Exporter JSON
                     </button>
-                    <input id="importFile" type="file" accept=".json" style="flex:1">
+                    <label class="btn ghost" style="flex:1;text-align:center;line-height:1.8">
+                        Importer JSON
+                        <input id="importFile" type="file" accept=".json" style="display:none">
+                    </label>
                 </div>
             </form>
             <aside class="aside">
                 <div class="panel card">
                     <div class="section-title">Rapport Détaillé</div>
-                    <div id="report" class="results" style="max-height: 80vh; overflow-y: auto;">
+                    <div id="report" class="results" style="max-height: 85vh; overflow-y: auto;">
                         Veuillez sélectionner les modules, remplir les questionnaires et cliquer sur "Analyser".
                     </div>
-                    <div class="tags" id="heuristicsTags"></div>
                 </div>
                 <div class="panel card" style="margin-top:12px">
-                    <div class="section-title">JSON (export)</div>
+                    <div class="section-title">Données JSON (pour export)</div>
                     <pre id="jsonOut" class="jsonOut" style="max-height: 200px; overflow: auto;">—</pre>
                 </div>
             </aside>
         </div>
         <footer>
             <p class="muted">
-                Rappel : ceci est un outil éducatif d'exploration des indices
-                comportementaux. Il ne remplace en aucun cas une évaluation clinique par un professionnel qualifié.
+                <strong>Avertissement :</strong> Ceci est un outil éducatif d'exploration des indices comportementaux. 
+                Il ne remplace en aucun cas une évaluation clinique par un professionnel qualifié.
                 Si vous ou une personne que vous connaissez êtes en détresse, consultez un médecin ou un psychologue.
             </p>
         </footer>
@@ -198,14 +189,13 @@
         /* == DATA DEFINITIONS (QUESTIONS & DESCRIPTIONS) == */
         /* ================================================= */
 
-        // Helper pour créer les questions à échelle (0=Jamais, 4=Très souvent)
         const FREQUENCY_SCALE_TEXT = 'Évaluez la fréquence : 0=Jamais, 1=Rarement, 2=Parfois, 3=Souvent, 4=Très souvent';
 
         const MODULES = {
             base: {
                 title: "Profil de Personnalité (MBTI, Ennéagramme, etc.)",
                 enabled: true,
-                sections: ['mbti', 'enneagram', 'dark', 'attachment', 'adhd']
+                sections: ['mbti', 'enneagram', 'antagonistic_traits', 'attachment', 'otroverti', 'adhd']
             },
             adult: {
                 title: "Troubles du Comportement (Adulte/Ado)",
@@ -247,265 +237,64 @@
                 title: 'Ennéagramme — motivation & instinct',
                 items: {
                     main: [
-                        { id: 'en1', type: 1, text: 'Je veux être juste, moral, et parfait.' },
-                        { id: 'en2', type: 2, text: 'Je veux être aimé et nécessaire.' },
-                        { id: 'en3', type: 3, text: 'Je veux réussir et être valorisé.' },
-                        { id: 'en4', type: 4, text: 'Je veux être unique et authentique.' },
-                        { id: 'en5', type: 5, text: 'Je veux comprendre et conserver mes ressources.' },
-                        { id: 'en6', type: 6, text: 'Je veux sécurité et soutien fiable.' },
-                        { id: 'en7', type: 7, text: 'Je veux éviter la douleur et maximiser le plaisir.' },
-                        { id: 'en8', type: 8, text: 'Je veux garder le contrôle et ne pas être dominé.' },
-                        { id: 'en9', type: 9, text: 'Je veux paix et harmonie.' }
+                        { id: 'en1', type: 1, text: 'Je veux être juste, moral, et parfait.' }, { id: 'en2', type: 2, text: 'Je veux être aimé et nécessaire.' }, { id: 'en3', type: 3, text: 'Je veux réussir et être valorisé.' }, { id: 'en4', type: 4, text: 'Je veux être unique et authentique.' }, { id: 'en5', type: 5, text: 'Je veux comprendre et conserver mes ressources.' }, { id: 'en6', type: 6, text: 'Je veux sécurité et soutien fiable.' }, { id: 'en7', type: 7, text: 'Je veux éviter la douleur et maximiser le plaisir.' }, { id: 'en8', type: 8, text: 'Je veux garder le contrôle et ne pas être dominé.' }, { id: 'en9', type: 9, text: 'Je veux paix et harmonie.' }
                     ],
                     stress: [
-                        { id: 'es1', type: 1, text: 'Tend à critiquer quand stressé.' },
-                        { id: 'es2', type: 2, text: 'Tend à sur-protéger/sauver quand stressé.' },
-                        { id: 'es3', type: 3, text: 'Surinvestit image/travail sous stress.' },
-                        { id: 'es4', type: 4, text: 'Devient mélancolique/sensible sous stress.' },
-                        { id: 'es5', type: 5, text: 'S\'isole et accumule info sous stress.' },
-                        { id: 'es6', type: 6, text: 'Devient anxieux/méfiant sous stress.' },
-                        { id: 'es7', type: 7, text: 'Cherche distractions excessives sous stress.' },
-                        { id: 'es8', type: 8, text: 'Devient dominateur/agressif sous stress.' },
-                        { id: 'es9', type: 9, text: 'S\'engourdit et évite sous stress.' }
+                        { id: 'es1', type: 1, text: 'Tend à critiquer quand stressé.' }, { id: 'es2', type: 2, text: 'Tend à sur-protéger/sauver quand stressé.' }, { id: 'es3', type: 3, text: 'Surinvestit image/travail sous stress.' }, { id: 'es4', type: 4, text: 'Devient mélancolique/sensible sous stress.' }, { id: 'es5', type: 5, text: 'S\'isole et accumule info sous stress.' }, { id: 'es6', type: 6, text: 'Devient anxieux/méfiant sous stress.' }, { id: 'es7', type: 7, text: 'Cherche distractions excessives sous stress.' }, { id: 'es8', type: 8, text: 'Devient dominateur/agressif sous stress.' }, { id: 'es9', type: 9, text: 'S\'engourdit et évite sous stress.' }
                     ],
                     instincts: [
-                        { id: 'sp', text: 'Auto-préservation (sécurité, santé, confort)' },
-                        { id: 'so', text: 'Social (statut, groupe, coopération)' },
-                        { id: 'sx', text: 'Sexuel (intensité, tête-à-tête, passion)' }
+                        { id: 'sp', text: 'Auto-préservation (sécurité, santé, confort)' }, { id: 'so', text: 'Social (statut, groupe, coopération)' }, { id: 'sx', text: 'Sexuel (intensité, tête-à-tête, passion)' }
                     ]
                 }
             },
-            dark: {
-                title: 'Dark Triad — échelle 1..5',
+            antagonistic_traits: {
+                title: 'Traits Comportementaux Antagonistes — échelle 1..5',
                 items: [
-                    { id: 'dt1', text: 'Je manipule parfois les autres pour obtenir ce que je veux.' },
-                    { id: 'dt2', text: 'J\'utilise la flatterie pour obtenir des avantages.' },
-                    { id: 'dt3', text: 'Je profite des autres si cela me sert.' },
-                    { id: 'dt4', text: 'J\'aime être admiré.' },
-                    { id: 'dt5', text: 'Je veux souvent être au centre de l\'attention.' },
-                    { id: 'dt6', text: 'Je pense mériter un traitement spécial.' },
-                    { id: 'dt7', text: 'Je ressens peu de remords pour mes actes.' },
-                    { id: 'dt8', text: 'Je suis parfois indifférent aux émotions des autres.' },
-                    { id: 'dt9', text: 'Je cherche des sensations fortes et prends des risques.' }
+                    { id: 'at1', group: 'mach', text: 'Je manipule parfois les autres pour obtenir ce que je veux.' },
+                    { id: 'at2', group: 'mach', text: 'J\'utilise la flatterie pour obtenir des avantages.' },
+                    { id: 'at3', group: 'mach', text: 'Je profite des autres si cela me sert.' },
+                    { id: 'at4', group: 'narc', text: 'J\'aime être admiré et être au centre de l\'attention.' },
+                    { id: 'at5', group: 'narc', text: 'Je pense mériter un traitement spécial et supérieur.' },
+                    { id: 'at6', group: 'narc', text: 'Je suis préoccupé(e) par des fantaisies de succès illimité.' },
+                    { id: 'at7', group: 'psy', text: 'Je ressens peu de remords ou de culpabilité pour mes actes.' },
+                    { id: 'at8', group: 'psy', text: 'Je suis souvent indifférent(e) aux émotions des autres.' },
+                    { id: 'at9', group: 'psy', text: 'Je cherche des sensations fortes et prends des risques sans penser aux conséquences.' },
+                    { id: 'at10', group: 'soc', text: 'J\'ai des accès de colère soudains et intenses.' },
+                    { id: 'at11', group: 'soc', text: 'J\'ai du mal à maintenir un emploi ou des relations stables à long terme.' },
+                    { id: 'at12', group: 'soc', text: 'Je me sens souvent agité(e) et j\'agis de manière impulsive.' }
                 ]
             },
             attachment: {
                 title: "Style d'attachement",
                 items: [
-                    { id: 'att_secure', val: 'secure', text: 'Je suis à l\'aise avec l\'intimité et l\'indépendance.' },
-                    { id: 'att_anxious', val: 'anxious', text: 'Je désire la proximité mais crains l\'abandon.' },
-                    { id: 'att_avoidant', val: 'avoidant', text: 'Je préfère l\'indépendance et garde mes distances.' },
-                    { id: 'att_fearful', val: 'fearful', text: 'Je veux être proche mais j\'ai peur d\'être blessé.' }
+                    { id: 'att_secure', val: 'secure', text: 'Attachement Sécure (≈50-60%) : Je suis à l\'aise avec l\'intimité et l\'indépendance, et je fais confiance aux autres.' },
+                    { id: 'att_anxious', val: 'anxious_fused', text: 'Attachement Anxieux/Fusionnel (≈20%) : Je désire une grande proximité mais je crains l\'abandon et l\'inconstance de l\'autre.' },
+                    { id: 'att_avoidant', val: 'avoidant_fearful', text: 'Attachement Évitant/Craintif (≈25%) : Je préfère l\'indépendance, je me méfie de l\'intimité et garde mes distances émotionnelles.' },
+                    { id: 'att_disorganized', val: 'disorganized', text: 'Attachement Désorganisé/Chaotique (≈5%) : Je veux être proche mais j\'ai peur d\'être blessé(e) ; mes relations sont souvent intenses et instables.' }
+                ]
+            },
+            otroverti: {
+                title: 'Profil "Otroverti" (Ambiverti)',
+                scaleText: FREQUENCY_SCALE_TEXT,
+                items: [
+                    { id: 'ot1', text: 'Mon besoin de socialisation varie beaucoup ; parfois je le recherche, parfois je l\'évite.' },
+                    { id: 'ot2', text: 'Je suis aussi à l\'aise en dirigeant un groupe qu\'en travaillant seul(e).' },
+                    { id: 'ot3', text: 'Mon niveau d\'énergie dépend fortement de mon humeur et de l\'environnement, pas seulement de la présence des autres.' },
+                    { id: 'ot4', text: 'Je prends le temps de réfléchir avant de parler, mais n\'hésite pas à m\'exprimer quand c\'est nécessaire.' },
+                    { id: 'ot5', text: 'On me décrit parfois comme extraverti(e) et d\'autres fois comme introverti(e).' }
                 ]
             },
             adhd: {
                 title: 'TDA/H (screening ASRS-style — indicatif)',
                 scaleText: FREQUENCY_SCALE_TEXT,
                 items: [
-                    { id: 'ad1', text: 'J\'ai souvent du mal à me concentrer sur ce qui est demandé.' },
-                    { id: 'ad2', text: 'J\'ai du mal à me souvenir de choses nécessaires au quotidien.' },
-                    { id: 'ad3', text: 'Je procrastine ou évite les tâches demandant un effort mental soutenu.' },
-                    { id: 'ad4', text: 'Je suis souvent agité, je bouge plus que les autres.' },
-                    { id: 'ad5', text: 'J\'interromps souvent les autres ou parle excessivement.' },
-                    { id: 'ad6', text: 'J\'ai du mal à attendre mon tour ou à rester calme dans des files d\'attente.' }
-                ]
-            },
-
-            // == MODULE ADULTE / ADO ==
-            top: {
-                title: 'Trouble Oppositionnel avec Provocation (TOP)',
-                description: "Le TOP est caractérisé par une humeur colérique/irritable persistante, un comportement querelleur/provocateur et un esprit vindicatif.",
-                prevalence: "Affecte environ 1 à 11% de la population, avec une moyenne autour de 3.3%.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'top1', text: "La personne se met souvent en colère." },
-                    { id: 'top2', text: "Elle est souvent susceptible ou facilement agacée par les autres." },
-                    { id: 'top3', text: "Elle est souvent fâchée et pleine de ressentiment." },
-                    { id: 'top4', text: "Elle conteste souvent ce que disent les figures d'autorité." },
-                    { id: 'top5', text: "Elle s'oppose activement ou refuse de se plier aux demandes ou aux règles." },
-                    { id: 'top6', text: "Elle embête délibérément les autres." },
-                    { id: 'top7', text: "Elle fait souvent porter sur autrui la responsabilité de ses erreurs ou de sa mauvaise conduite." },
-                    { id: 'top8', text: "S'est montrée méchante ou vindicative au moins deux fois lors des 6 derniers mois." }
-                ]
-            },
-            conduct: {
-                title: 'Trouble des Conduites',
-                description: "Le trouble des conduites est un ensemble de comportements répétitifs et persistants dans lequel sont bafoués les droits fondamentaux d'autrui ou les normes et règles sociales correspondant à l'âge.",
-                prevalence: "La prévalence sur un an varie de 2 à plus de 10%, avec une médiane de 4%.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'cd1', text: "Agressions envers des personnes ou des animaux (intimidation, menace, cruauté physique)." },
-                    { id: 'cd2', text: "A souvent initié des bagarres." },
-                    { id: 'cd3', text: "A utilisé une arme pouvant blesser gravement autrui (bâton, brique, couteau, arme à feu)." },
-                    { id: 'cd4', text: "Destruction de biens (a délibérément mis le feu, a détruit le bien d'autrui)." },
-                    { id: 'cd5', text: "Fraude ou vol (a menti pour obtenir des biens, a volé des objets de valeur sans confrontation)." },
-                    { id: 'cd6', text: "Violations graves des règles établies (reste dehors la nuit malgré les interdictions, a fait une fugue)." }
-                ]
-            },
-            intermittent: {
-                title: 'Trouble Explosif Intermittent',
-                description: "Caractérisé par des crises de colère ou d'agressivité impulsives et récurrentes, nettement disproportionnées par rapport à la provocation.",
-                prevalence: "La prévalence sur un an est d'environ 2.7% dans la population générale.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ie1', text: "A des crises d'agressivité verbale (colère, disputes) plusieurs fois par semaine." },
-                    { id: 'ie2', text: "A des crises comportementales impliquant des dommages matériels ou des agressions physiques (sans blessure grave) plusieurs fois par an." },
-                    { id: 'ie3', text: "Le niveau d'agressivité exprimé est manifestement hors de proportion avec la provocation." },
-                    { id: 'ie4', text: "Les crises ne sont pas préméditées et sont de nature impulsive." },
-                    { id: 'ie5', text: "Ces crises entraînent une détresse marquée ou une altération du fonctionnement." }
-                ]
-            },
-            antisocial: {
-                title: 'Personnalité Antisociale',
-                description: "Mode général de mépris et de transgression des droits d'autrui qui apparaît dès l'adolescence.",
-                prevalence: "Entre 0.2% et 3.3% de la population générale.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'as1', text: "Incapacité à se conformer aux normes sociales et légales (comportements délictueux répétés)." },
-                    { id: 'as2', text: "Tendance à tromper par profit ou par plaisir (mensonges répétés, escroqueries)." },
-                    { id: 'as3', text: "Impulsivité ou incapacité à planifier à l'avance." },
-                    { id: 'as4', text: "Irritabilité et agressivité (bagarres ou agressions répétées)." },
-                    { id: 'as5', text: "Mépris inconsidéré pour sa sécurité ou celle d'autrui." },
-                    { id: 'as6', text: "Irresponsabilité persistante (incapacité à assumer un emploi stable ou des obligations financières)." },
-                    { id: 'as7', text: "Absence de remords (indifférence ou rationalisation après avoir blessé, maltraité ou volé autrui)." }
-                ]
-            },
-            borderline: {
-                title: 'Personnalité Borderline (ou Limite)',
-                description: "Mode général d'instabilité des relations interpersonnelles, de l'image de soi et des affects, avec une impulsivité marquée.",
-                prevalence: "Affecte 1.6% à 5.9% de la population. Plus fréquent dans les populations cliniques (10-20%).",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'bpd1', text: "Efforts effrénés pour éviter les abandons réels ou imaginés." },
-                    { id: 'bpd2', text: "Relations interpersonnelles instables et intenses, alternant entre idéalisation et dévalorisation." },
-                    { id: 'bpd3', text: "Perturbation de l'identité : instabilité marquée et persistante de l'image ou de la notion de soi." },
-                    { id: 'bpd4', text: "Impulsivité dans au moins deux domaines potentiellement dommageables (dépenses, sexualité, toxicomanie, crises de boulimie)." },
-                    { id: 'bpd5', text: "Répétition de comportements, de gestes ou de menaces suicidaires, ou d'automutilations." },
-                    { id: 'bpd6', text: "Instabilité affective due à une réactivité marquée de l'humeur (colère intense, irritabilité, anxiété)." },
-                    { id: 'bpd7', text: "Sentiments chroniques de vide." },
-                    { id: 'bpd8', text: "Colères intenses et inappropriées ou difficulté à contrôler sa colère." },
-                    { id: 'bpd9', text: "Survenue transitoire, dans des situations de stress, d'une idéation persécutoire ou de symptômes dissociatifs sévères." }
-                ]
-            },
-             narcissistic: {
-                title: 'Personnalité Narcissique',
-                description: "Mode général de fantaisies ou de comportements grandioses, de besoin d'être admiré et de manque d'empathie.",
-                prevalence: "Jusqu'à 6.2% dans les études sur la population générale.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'npd1', text: "A un sens grandiose de sa propre importance (surestime ses réalisations, s'attend à être reconnu comme supérieur)." },
-                    { id: 'npd2', text: "Est absorbé par des fantaisies de succès illimité, de pouvoir, de splendeur, de beauté ou d'amour idéal." },
-                    { id: 'npd3', text: "Pense être « spécial » et unique et ne pouvoir être compris que par des gens spéciaux ou de haut niveau." },
-                    { id: 'npd4', text: "A un besoin excessif d'être admiré." },
-                    { id: 'npd5', text: "Pense que tout lui est dû : s'attend à un traitement particulièrement favorable." },
-                    { id: 'npd6', text: "Exploite l'autre dans les relations interpersonnelles : utilise autrui pour parvenir à ses propres fins." },
-                    { id: 'npd7', text: "Manque d'empathie : n'est pas disposé à reconnaître ou à partager les sentiments et les besoins d'autrui." },
-                    { id: 'npd8', text: "Envie souvent les autres, ou croit que les autres l'envient." },
-                    { id: 'npd9', text: "Fait preuve d'attitudes et de comportements arrogants et hautains." }
-                ]
-            },
-            ocpd: {
-                title: 'Personnalité Obsessionnelle-Compulsive (POC)',
-                description: "Préoccupation pour l'ordre, le perfectionnisme et le contrôle mental et interpersonnel, aux dépens de la souplesse, de l'ouverture et de l'efficacité. (À ne pas confondre avec le TOC).",
-                prevalence: "L'un des plus fréquents, estimé entre 2.1% et 7.9% de la population générale.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ocpd1', text: "Préoccupations pour les détails, les règles, les inventaires, l'organisation ou les plans, au point de perdre de vue l'objectif principal." },
-                    { id: 'ocpd2', text: "Perfectionnisme qui entrave l'achèvement des tâches." },
-                    { id: 'ocpd3', text: "Dévotion excessive pour le travail et la productivité, à l'exclusion des loisirs et des amitiés." },
-                    { id: 'ocpd4', text: "Est trop consciencieux, scrupuleux et rigide sur des questions de morale, d'éthique ou de valeurs." },
-                    { id: 'ocpd5', text: "Incapacité de jeter des objets usés ou sans valeur même si ceux-ci n'ont pas de valeur sentimentale." },
-                    { id: 'ocpd6', text: "Réticence à déléguer des tâches ou à travailler avec autrui à moins que les autres se soumettent exactement à sa manière de faire." },
-                    { id: 'ocpd7', text: "Se montre avare avec l'argent pour soi-même et les autres ; l'argent est perçu comme quelque chose qui doit être accumulé en vue de catastrophes futures." },
-                    { id: 'ocpd8', text: "Se montre rigide et têtu." }
-                ]
-            },
-            
-            // == MODULE ENFANT ==
-            child_top: {
-                title: 'Trouble Oppositionnel (Enfant)',
-                description: "Comportements négatifs, hostiles et provocateurs répétés envers les figures d'autorité, inappropriés pour l'âge de l'enfant.",
-                prevalence: "Environ 3.3%, mais peut varier de 1 à 11%. Le diagnostic doit tenir compte du stade de développement de l'enfant.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ctop1', text: "L'enfant se met souvent en colère ou est irritable." },
-                    { id: 'ctop2', text: "Conteste ou refuse activement de se plier aux demandes des adultes." },
-                    { id: 'ctop3', text: "Embête délibérément les autres." },
-                    { id: 'ctop4', text: "Accuse les autres pour ses propres erreurs." },
-                    { id: 'ctop5', text: "Est souvent susceptible ou facilement agacé." }
-                ]
-            },
-            child_conduct: {
-                title: 'Troubles des Conduites (Enfant)',
-                description: "Comportements graves et persistants qui violent les droits des autres ou les normes sociales majeures pour son âge.",
-                prevalence: "Environ 4%. Peut être plus élevé chez les garçons.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ccd1', text: "Agressivité physique envers les peers ou les animaux." },
-                    { id: 'ccd2', text: "Mensonges répétés pour éviter des obligations ou obtenir des faveurs." },
-                    { id: 'ccd3', text: "Vols (à la maison, à l'école) sans confrontation." },
-                    { id: 'ccd4', text: "Destruction délibérée de biens appartenant à autrui." },
-                    { id: 'ccd5', text: "Violations graves des règles (ex: fugues, absentéisme scolaire précoce)." }
-                ]
-            },
-            child_anxiety: {
-                title: 'Anxiété avec Comportements Évitants (Enfant)',
-                description: "Anxiété intense et persistante qui pousse l'enfant à éviter des situations spécifiques (école, interactions sociales), impactant son développement.",
-                prevalence: "Les troubles anxieux touchent environ 7% des enfants et adolescents.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'canx1', text: "Refuse fréquemment d'aller à l'école ou exprime une détresse intense à cette idée." },
-                    { id: 'canx2', text: "Évite les activités de groupe ou les fêtes d'anniversaire." },
-                    { id: 'canx3', text: "Se plaint souvent de maux de ventre ou de tête, surtout avant des événements sociaux ou scolaires." },
-                    { id: 'canx4', text: "S'isole ou a très peu d'amis proches." },
-                    { id: 'canx5', text: "Montre une timidité extrême qui l'empêche de participer en classe ou de demander de l'aide." }
-                ]
-            },
-            child_eating: {
-                title: 'Troubles Alimentaires Précoces (Enfant)',
-                description: "Comportements alimentaires inhabituels ou restrictifs qui ne sont pas expliqués par une autre condition médicale et qui impactent la santé ou le fonctionnement psychosocial.",
-                prevalence: "Difficile à estimer, mais les comportements alimentaires problématiques sont courants dans la petite enfance.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ceat1', text: "Sélectivité alimentaire extrême (n'accepte qu'un très petit nombre d'aliments)." },
-                    { id: 'ceat2', text: "Refus de s'alimenter conduisant à une perte de poids ou à une incapacité à atteindre le poids attendu." },
-                    { id: 'ceat3', text: "Peur intense de s'étouffer ou de vomir qui interfère avec l'alimentation." },
-                    { id: 'ceat4', text: "Manque d'intérêt apparent pour la nourriture ou l'alimentation." },
-                    { id: 'ceat5', text: "L'alimentation est une source majeure de conflit et de stress au quotidien." }
-                ]
-            },
-
-            // == MODULE TROUBLES SPÉCIFIQUES ==
-            social_phobia: {
-                title: 'Phobie Sociale (Trouble d\'Anxiété Sociale)',
-                description: "Peur ou anxiété intenses d'une ou plusieurs situations sociales durant lesquelles le sujet est exposé à l'éventuelle observation attentive d'autrui.",
-                prevalence: "La prévalence sur 12 mois est d'environ 7% aux États-Unis et 2.3% en Europe. Prévalence à vie d'environ 5 à 12%.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'sp1', text: "Craint les situations où il/elle pourrait être jugé(e) négativement." },
-                    { id: 'sp2', text: "Évite de parler à des inconnus ou de prendre la parole en public." },
-                    { id: 'sp3', text: "Les situations sociales provoquent presque toujours une peur ou une anxiété." },
-                    { id: 'sp4', text: "La peur ou l'anxiété est disproportionnée par rapport à la menace réelle posée par la situation." },
-                    { id: 'sp5', text: "L'évitement ou l'anxiété interfère de manière significative avec la routine, le travail ou la vie sociale." }
-                ]
-            },
-            ocd: {
-                title: 'TOC (Trouble Obsessionnel-Compulsif)',
-                description: "Présence d'obsessions (pensées intrusives et récurrentes) et/ou de compulsions (comportements répétitifs ou actes mentaux) visant à neutraliser l'anxiété.",
-                prevalence: "La prévalence sur la vie est estimée entre 2% et 3%.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ocd1', text: "A des pensées, pulsions ou images récurrentes et persistantes qui sont ressenties comme intrusives et non désirées (obsessions)." },
-                    { id: 'ocd2', text: "Tente d'ignorer ou de neutraliser ces pensées par d'autres pensées ou actions." },
-                    { id: 'ocd3', text: "Se sent poussé(e) à accomplir des comportements répétitifs (lavage des mains, vérifications) ou des actes mentaux (prier, compter) en réponse à une obsession (compulsions)." },
-                    { id: 'ocd4', text: "Les obsessions ou compulsions prennent beaucoup de temps (plus d'une heure par jour)." },
-                    { id: 'ocd5', text: "Ces symptômes causent une détresse ou une altération cliniquement significative du fonctionnement." }
+                    { id: 'ad1', text: 'J\'ai souvent du mal à me concentrer sur ce qui est demandé.' }, { id: 'ad2', text: 'J\'ai du mal à me souvenir de choses nécessaires au quotidien.' }, { id: 'ad3', text: 'Je procrastine ou évite les tâches demandant un effort mental soutenu.' }, { id: 'ad4', text: 'Je suis souvent agité, je bouge plus que les autres.' }, { id: 'ad5', text: 'J\'interromps souvent les autres ou parle excessivement.' }, { id: 'ad6', text: 'J\'ai du mal à attendre mon tour ou à rester calme dans des files d\'attente.' }
                 ]
             },
             autism: {
-                title: 'Autisme (Dimension Comportementale)',
-                description: "Indices comportementaux pouvant être associés au trouble du spectre de l'autisme, caractérisé par des déficits dans la communication et les interactions sociales, et des comportements, intérêts ou activités à caractère restreint et répétitif.",
-                prevalence: "Environ 1% de la population.",
+                title: 'Trouble du Spectre de l\'Autisme (TSA)',
+                description: "Indices comportementaux pouvant être associés au TSA. Évaluez la fréquence et l'intensité des traits.",
+                prevalence: "Environ 1 à 2% de la population.",
                 scaleText: FREQUENCY_SCALE_TEXT,
                 items: [
                     { id: 'aut1', text: "Difficulté à initier ou à soutenir une conversation (réciprocité sociale)." },
@@ -514,39 +303,83 @@
                     { id: 'aut4', text: "Mouvements, utilisation d'objets ou langage stéréotypés ou répétitifs (stéréotypies, écholalie)." },
                     { id: 'aut5', text: "Adhésion inflexible à des routines, ou rituels ; détresse face aux petits changements." },
                     { id: 'aut6', text: "Intérêts très restreints et fixes, anormaux dans leur intensité ou leur but." },
-                    { id: 'aut7', text: "Hyper- ou hyporéactivité aux stimuli sensoriels (indifférence à la douleur, fascination pour des lumières, aversion pour certains sons ou textures)." }
-                ]
+                    { id: 'aut7', text: "Hyper- ou hyporéactivité aux stimuli sensoriels (indifférence à la douleur, fascination pour des lumières, aversion pour certains sons ou textures)." },
+                    { id: 'aut8', text: "Mes difficultés sociales nécessitent un soutien notable pour fonctionner au quotidien (ex: aide pour les courses, le travail)." },
+                    { id: 'aut9', text: "Mes routines sont si rigides que tout changement provoque une détresse majeure, m'empêchant de fonctionner." },
+                    { id: 'aut10', text: "J'ai besoin d'une aide verbale ou non-verbale significative pour communiquer mes besoins essentiels." }
+                ],
+                extra: { id: 'aut_di', text: "Le profil concerne une personne avec une déficience intellectuelle (DI) associée." }
             },
-            eating_disorder: {
-                title: 'Troubles Alimentaires (Anorexie, Boulimie, Hyperphagie)',
-                description: "Perturbation persistante de l'alimentation ou du comportement lié à l'alimentation entraînant une altération de la consommation ou de l'absorption de la nourriture et une altération significative de la santé physique ou du fonctionnement psychosocial.",
-                prevalence: "Varie selon le trouble. Anorexie ≈0.4%, Boulimie ≈1-1.5%, Hyperphagie ≈1.6-3.5% (femmes).",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'ed1', text: "Restriction des apports énergétiques conduisant à un poids significativement bas." },
-                    { id: 'ed2', text: "Peur intense de prendre du poids ou de devenir gros, ou comportement persistant qui interfère avec la prise de poids." },
-                    { id: 'ed3', text: "Altération de la perception du poids ou de la forme de son propre corps." },
-                    { id: 'ed4', text: "Survenue récurrente d'accès hyperphagiques (consommation d'une grande quantité de nourriture en un temps limité avec un sentiment de perte de contrôle)." },
-                    { id: 'ed5', text: "Comportements compensatoires inappropriés et récurrents visant à prévenir la prise de poids (vomissements, laxatifs, exercice excessif)." }
-                ]
-            },
-             addiction: {
-                title: 'Troubles liés aux Addictions',
-                description: "Ensemble de symptômes cognitifs, comportementaux et physiologiques indiquant qu'un individu continue d'utiliser une substance ou un comportement malgré des problèmes significatifs.",
-                prevalence: "Très variable. Par exemple, trouble lié à l'usage d'alcool : environ 5.3% des adultes.",
-                scaleText: FREQUENCY_SCALE_TEXT,
-                items: [
-                    { id: 'add1', text: "La substance/comportement est souvent utilisé(e) en quantité plus importante ou pendant une période plus prolongée que prévu." },
-                    { id: 'add2', text: "Désir persistant ou efforts infructueux pour diminuer ou contrôler l'utilisation." },
-                    { id: 'add3', text: "Beaucoup de temps est passé à des activités nécessaires pour obtenir, utiliser la substance ou se remettre de ses effets." },
-                    { id: 'add4', text: "Envie impérieuse (craving), ou besoin urgent d'utiliser." },
-                    { id: 'add5', text: "Utilisation récurrente entraînant l'incapacité de remplir des obligations majeures (travail, école, maison)." },
-                    { id: 'add6', text: "Utilisation continue malgré des problèmes interpersonnels ou sociaux persistants causés par les effets de la substance/comportement." },
-                    { id: 'add7', text: "Activités sociales, professionnelles ou de loisirs importantes abandonnées ou réduites." },
-                    { id: 'add8', text: "Besoin de quantités notablement plus fortes pour obtenir l'effet désiré (tolérance)." }
-                ]
-            },
+            // Autres sections... (inchangées pour la concision de l'exemple, mais elles sont ici)
+            top: { title: 'Trouble Oppositionnel avec Provocation (TOP)', description: "Le TOP est caractérisé par une humeur colérique/irritable persistante, un comportement querelleur/provocateur et un esprit vindicatif.", prevalence: "Affecte environ 1 à 11% de la population, avec une moyenne autour de 3.3%.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'top1', text: "La personne se met souvent en colère." }, { id: 'top2', text: "Elle est souvent susceptible ou facilement agacée par les autres." }, { id: 'top3', text: "Elle est souvent fâchée et pleine de ressentiment." }, { id: 'top4', text: "Elle conteste souvent ce que disent les figures d'autorité." }, { id: 'top5', text: "Elle s'oppose activement ou refuse de se plier aux demandes ou aux règles." }, { id: 'top6', text: "Elle embête délibérément les autres." }, { id: 'top7', text: "Elle fait souvent porter sur autrui la responsabilité de ses erreurs ou de sa mauvaise conduite." }, { id: 'top8', text: "S'est montrée méchante ou vindicative au moins deux fois lors des 6 derniers mois." } ] },
+            conduct: { title: 'Trouble des Conduites', description: "Le trouble des conduites est un ensemble de comportements répétitifs et persistants dans lequel sont bafoués les droits fondamentaux d'autrui ou les normes et règles sociales correspondant à l'âge.", prevalence: "La prévalence sur un an varie de 2 à plus de 10%, avec une médiane de 4%.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'cd1', text: "Agressions envers des personnes ou des animaux (intimidation, menace, cruauté physique)." }, { id: 'cd2', text: "A souvent initié des bagarres." }, { id: 'cd3', text: "A utilisé une arme pouvant blesser gravement autrui (bâton, brique, couteau, arme à feu)." }, { id: 'cd4', text: "Destruction de biens (a délibérément mis le feu, a détruit le bien d'autrui)." }, { id: 'cd5', text: "Fraude ou vol (a menti pour obtenir des biens, a volé des objets de valeur sans confrontation)." }, { id: 'cd6', text: "Violations graves des règles établies (reste dehors la nuit malgré les interdictions, a fait une fugue)." } ] },
+            intermittent: { title: 'Trouble Explosif Intermittent', description: "Caractérisé par des crises de colère ou d'agressivité impulsives et récurrentes, nettement disproportionnées par rapport à la provocation.", prevalence: "La prévalence sur un an est d'environ 2.7% dans la population générale.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ie1', text: "A des crises d'agressivité verbale (colère, disputes) plusieurs fois par semaine." }, { id: 'ie2', text: "A des crises comportementales impliquant des dommages matériels ou des agressions physiques (sans blessure grave) plusieurs fois par an." }, { id: 'ie3', text: "Le niveau d'agressivité exprimé est manifestement hors de proportion avec la provocation." }, { id: 'ie4', text: "Les crises ne sont pas préméditées et sont de nature impulsive." }, { id: 'ie5', text: "Ces crises entraînent une détresse marquée ou une altération du fonctionnement." } ] },
+            antisocial: { title: 'Personnalité Antisociale', description: "Mode général de mépris et de transgression des droits d'autrui qui apparaît dès l'adolescence.", prevalence: "Entre 0.2% et 3.3% de la population générale.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'as1', text: "Incapacité à se conformer aux normes sociales et légales (comportements délictueux répétés)." }, { id: 'as2', text: "Tendance à tromper par profit ou par plaisir (mensonges répétés, escroqueries)." }, { id: 'as3', text: "Impulsivité ou incapacité à planifier à l'avance." }, { id: 'as4', text: "Irritabilité et agressivité (bagarres ou agressions répétées)." }, { id: 'as5', text: "Mépris inconsidéré pour sa sécurité ou celle d'autrui." }, { id: 'as6', text: "Irresponsabilité persistante (incapacité à assumer un emploi stable ou des obligations financières)." }, { id: 'as7', text: "Absence de remords (indifférence ou rationalisation après avoir blessé, maltraité ou volé autrui)." } ] },
+            borderline: { title: 'Personnalité Borderline (ou Limite)', description: "Mode général d'instabilité des relations interpersonnelles, de l'image de soi et des affects, avec une impulsivité marquée.", prevalence: "Affecte 1.6% à 5.9% de la population. Plus fréquent dans les populations cliniques (10-20%).", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'bpd1', text: "Efforts effrénés pour éviter les abandons réels ou imaginés." }, { id: 'bpd2', text: "Relations interpersonnelles instables et intenses, alternant entre idéalisation et dévalorisation." }, { id: 'bpd3', text: "Perturbation de l'identité : instabilité marquée et persistante de l'image ou de la notion de soi." }, { id: 'bpd4', text: "Impulsivité dans au moins deux domaines potentiellement dommageables (dépenses, sexualité, toxicomanie, crises de boulimie)." }, { id: 'bpd5', text: "Répétition de comportements, de gestes ou de menaces suicidaires, ou d'automutilations." }, { id: 'bpd6', text: "Instabilité affective due à une réactivité marquée de l'humeur (colère intense, irritabilité, anxiété)." }, { id: 'bpd7', text: "Sentiments chroniques de vide." }, { id: 'bpd8', text: "Colères intenses et inappropriées ou difficulté à contrôler sa colère." }, { id: 'bpd9', text: "Survenue transitoire, dans des situations de stress, d'une idéation persécutoire ou de symptômes dissociatifs sévères." } ] },
+            narcissistic: { title: 'Personnalité Narcissique', description: "Mode général de fantaisies ou de comportements grandioses, de besoin d'être admiré et de manque d'empathie.", prevalence: "Jusqu'à 6.2% dans les études sur la population générale.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'npd1', text: "A un sens grandiose de sa propre importance (surestime ses réalisations, s'attend à être reconnu comme supérieur)." }, { id: 'npd2', text: "Est absorbé par des fantaisies de succès illimité, de pouvoir, de splendeur, de beauté ou d'amour idéal." }, { id: 'npd3', text: "Pense être « spécial » et unique et ne pouvoir être compris que par des gens spéciaux ou de haut niveau." }, { id: 'npd4', text: "A un besoin excessif d'être admiré." }, { id: 'npd5', text: "Pense que tout lui est dû : s'attend à un traitement particulièrement favorable." }, { id: 'npd6', text: "Exploite l'autre dans les relations interpersonnelles : utilise autrui pour parvenir à ses propres fins." }, { id: 'npd7', text: "Manque d'empathie : n'est pas disposé à reconnaître ou à partager les sentiments et les besoins d'autrui." }, { id: 'npd8', text: "Envie souvent les autres, ou croit que les autres l'envient." }, { id: 'npd9', text: "Fait preuve d'attitudes et de comportements arrogants et hautains." } ] },
+            ocpd: { title: 'Personnalité Obsessionnelle-Compulsive (POC)', description: "Préoccupation pour l'ordre, le perfectionnisme et le contrôle mental et interpersonnel, aux dépens de la souplesse, de l'ouverture et de l'efficacité. (À ne pas confondre avec le TOC).", prevalence: "L'un des plus fréquents, estimé entre 2.1% et 7.9% de la population générale.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ocpd1', text: "Préoccupations pour les détails, les règles, les inventaires, l'organisation ou les plans, au point de perdre de vue l'objectif principal." }, { id: 'ocpd2', text: "Perfectionnisme qui entrave l'achèvement des tâches." }, { id: 'ocpd3', text: "Dévotion excessive pour le travail et la productivité, à l'exclusion des loisirs et des amitiés." }, { id: 'ocpd4', text: "Est trop consciencieux, scrupuleux et rigide sur des questions de morale, d'éthique ou de valeurs." }, { id: 'ocpd5', text: "Incapacité de jeter des objets usés ou sans valeur même si ceux-ci n'ont pas de valeur sentimentale." }, { id: 'ocpd6', text: "Réticence à déléguer des tâches ou à travailler avec autrui à moins que les autres se soumettent exactement à sa manière de faire." }, { id: 'ocpd7', text: "Se montre avare avec l'argent pour soi-même et les autres ; l'argent est perçu comme quelque chose qui doit être accumulé en vue de catastrophes futures." }, { id: 'ocpd8', text: "Se montre rigide et têtu." } ] },
+            child_top: { title: 'Trouble Oppositionnel (Enfant)', description: "Comportements négatifs, hostiles et provocateurs répétés envers les figures d'autorité, inappropriés pour l'âge de l'enfant.", prevalence: "Environ 3.3%, mais peut varier de 1 à 11%. Le diagnostic doit tenir compte du stade de développement de l'enfant.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ctop1', text: "L'enfant se met souvent en colère ou est irritable." }, { id: 'ctop2', text: "Conteste ou refuse activement de se plier aux demandes des adultes." }, { id: 'ctop3', text: "Embête délibérément les autres." }, { id: 'ctop4', text: "Accuse les autres pour ses propres erreurs." }, { id: 'ctop5', text: "Est souvent susceptible ou facilement agacé." } ] },
+            child_conduct: { title: 'Troubles des Conduites (Enfant)', description: "Comportements graves et persistants qui violent les droits des autres ou les normes sociales majeures pour son âge.", prevalence: "Environ 4%. Peut être plus élevé chez les garçons.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ccd1', text: "Agressivité physique envers les peers ou les animaux." }, { id: 'ccd2', text: "Mensonges répétés pour éviter des obligations ou obtenir des faveurs." }, { id: 'ccd3', text: "Vols (à la maison, à l'école) sans confrontation." }, { id: 'ccd4', text: "Destruction délibérée de biens appartenant à autrui." }, { id: 'ccd5', text: "Violations graves des règles (ex: fugues, absentéisme scolaire précoce)." } ] },
+            child_anxiety: { title: 'Anxiété avec Comportements Évitants (Enfant)', description: "Anxiété intense et persistante qui pousse l'enfant à éviter des situations spécifiques (école, interactions sociales), impactant son développement.", prevalence: "Les troubles anxieux touchent environ 7% des enfants et adolescents.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'canx1', text: "Refuse fréquemment d'aller à l'école ou exprime une détresse intense à cette idée." }, { id: 'canx2', text: "Évite les activités de groupe ou les fêtes d'anniversaire." }, { id: 'canx3', text: "Se plaint souvent de maux de ventre ou de tête, surtout avant des événements sociaux ou scolaires." }, { id: 'canx4', text: "S'isole ou a très peu d'amis proches." }, { id: 'canx5', text: "Montre une timidité extrême qui l'empêche de participer en classe ou de demander de l'aide." } ] },
+            child_eating: { title: 'Troubles Alimentaires Précoces (Enfant)', description: "Comportements alimentaires inhabituels ou restrictifs qui ne sont pas expliqués par une autre condition médicale et qui impactent la santé ou le fonctionnement psychosocial.", prevalence: "Difficile à estimer, mais les comportements alimentaires problématiques sont courants dans la petite enfance.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ceat1', text: "Sélectivité alimentaire extrême (n'accepte qu'un très petit nombre d'aliments)." }, { id: 'ceat2', text: "Refus de s'alimenter conduisant à une perte de poids ou à une incapacité à atteindre le poids attendu." }, { id: 'ceat3', text: "Peur intense de s'étouffer ou de vomir qui interfère avec l'alimentation." }, { id: 'ceat4', text: "Manque d'intérêt apparent pour la nourriture ou l'alimentation." }, { id: 'ceat5', text: "L'alimentation est une source majeure de conflit et de stress au quotidien." } ] },
+            social_phobia: { title: 'Phobie Sociale (Trouble d\'Anxiété Sociale)', description: "Peur ou anxiété intenses d'une ou plusieurs situations sociales durant lesquelles le sujet est exposé à l'éventuelle observation attentive d'autrui.", prevalence: "La prévalence sur 12 mois est d'environ 7% aux États-Unis et 2.3% en Europe. Prévalence à vie d'environ 5 à 12%.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'sp1', text: "Craint les situations où il/elle pourrait être jugé(e) négativement." }, { id: 'sp2', text: "Évite de parler à des inconnus ou de prendre la parole en public." }, { id: 'sp3', text: "Les situations sociales provoquent presque toujours une peur ou une anxiété." }, { id: 'sp4', text: "La peur ou l'anxiété est disproportionnée par rapport à la menace réelle posée par la situation." }, { id: 'sp5', text: "L'évitement ou l'anxiété interfère de manière significative avec la routine, le travail ou la vie sociale." } ] },
+            ocd: { title: 'TOC (Trouble Obsessionnel-Compulsif)', description: "Présence d'obsessions (pensées intrusives et récurrentes) et/ou de compulsions (comportements répétitifs ou actes mentaux) visant à neutraliser l'anxiété.", prevalence: "La prévalence sur la vie est estimée entre 2% et 3%.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ocd1', text: "A des pensées, pulsions ou images récurrentes et persistantes qui sont ressenties comme intrusives et non désirées (obsessions)." }, { id: 'ocd2', text: "Tente d'ignorer ou de neutraliser ces pensées par d'autres pensées ou actions." }, { id: 'ocd3', text: "Se sent poussé(e) à accomplir des comportements répétitifs (lavage des mains, vérifications) ou des actes mentaux (prier, compter) en réponse à une obsession (compulsions)." }, { id: 'ocd4', text: "Les obsessions ou compulsions prennent beaucoup de temps (plus d'une heure par jour)." }, { id: 'ocd5', text: "Ces symptômes causent une détresse ou une altération cliniquement significative du fonctionnement." } ] },
+            eating_disorder: { title: 'Troubles Alimentaires (Anorexie, Boulimie, Hyperphagie)', description: "Perturbation persistante de l'alimentation ou du comportement lié à l'alimentation entraînant une altération de la consommation ou de l'absorption de la nourriture et une altération significative de la santé physique ou du fonctionnement psychosocial.", prevalence: "Varie selon le trouble. Anorexie ≈0.4%, Boulimie ≈1-1.5%, Hyperphagie ≈1.6-3.5% (femmes).", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'ed1', text: "Restriction des apports énergétiques conduisant à un poids significativement bas." }, { id: 'ed2', text: "Peur intense de prendre du poids ou de devenir gros, ou comportement persistant qui interfère avec la prise de poids." }, { id: 'ed3', text: "Altération de la perception du poids ou de la forme de son propre corps." }, { id: 'ed4', text: "Survenue récurrente d'accès hyperphagiques (consommation d'une grande quantité de nourriture en un temps limité avec un sentiment de perte de contrôle)." }, { id: 'ed5', text: "Comportements compensatoires inappropriés et récurrents visant à prévenir la prise de poids (vomissements, laxatifs, exercice excessif)." } ] },
+            addiction: { title: 'Troubles liés aux Addictions', description: "Ensemble de symptômes cognitifs, comportementaux et physiologiques indiquant qu'un individu continue d'utiliser une substance ou un comportement malgré des problèmes significatifs.", prevalence: "Très variable. Par exemple, trouble lié à l'usage d'alcool : environ 5.3% des adultes.", scaleText: FREQUENCY_SCALE_TEXT, items: [ { id: 'add1', text: "La substance/comportement est souvent utilisé(e) en quantité plus importante ou pendant une période plus prolongée que prévu." }, { id: 'add2', text: "Désir persistant ou efforts infructueux pour diminuer ou contrôler l'utilisation." }, { id: 'add3', text: "Beaucoup de temps est passé à des activités nécessaires pour obtenir, utiliser la substance ou se remettre de ses effets." }, { id: 'add4', text: "Envie impérieuse (craving), ou besoin urgent d'utiliser." }, { id: 'add5', text: "Utilisation récurrente entraînant l'incapacité de remplir des obligations majeures (travail, école, maison)." }, { id: 'add6', text: "Utilisation continue malgré des problèmes interpersonnels ou sociaux persistants causés par les effets de la substance/comportement." }, { id: 'add7', text: "Activités sociales, professionnelles ou de loisirs importantes abandonnées ou réduites." }, { id: 'add8', text: "Besoin de quantités notablement plus fortes pour obtenir l'effet désiré (tolérance)." } ] }
         };
+
+        // ... (le reste des données SECTIONS_DATA est supposé être ici) ...
+        const DESCRIPTIONS = {
+            mbti: {
+                'INTJ': 'L\'Architecte : Penseur stratégique et imaginatif. Les INTJ ont un plan pour tout. Ils aiment la connaissance, sont très logiques et ont de hautes exigences de performance pour eux-mêmes et les autres.',
+                'INTP': 'Le Logicien : Inventeur innovant avec une soif de connaissance inépuisable. Les INTP sont des penseurs abstraits, fiers de leur point de vue unique et de leur intellect vif.',
+                'ENTJ': 'Le Commandant : Leader audacieux, imaginatif et doté d\'une forte volonté. Les ENTJ trouvent toujours un moyen d\'arriver à leurs fins. Ils sont charismatiques et confiants.',
+                'ENTP': 'L\'Innovateur : Penseur astucieux et curieux qui ne peut résister à un défi intellectuel. Les ENTP sont audacieux et créatifs, déconstruisant et reconstruisant les idées pour le plaisir.',
+                'INFJ': 'L\'Avocat : Idéaliste calme et mystique, mais très inspirant et infatigable. Les INFJ ont un sens profond de l\'idéalisme et de la moralité, mais ne sont pas des rêveurs oisifs.',
+                'INFP': 'Le Médiateur : Poétique, gentil et altruiste. Les INFP sont toujours prêts à aider une bonne cause. Ils peuvent sembler calmes, mais ont une flamme intérieure et une passion qui peuvent vraiment briller.',
+                'ENFJ': 'Le Protagoniste : Leader charismatique et inspirant, capable de fasciner son auditoire. Les ENFJ sont pleins de passion et de charisme, et n\'hésitent pas à défendre ce qui est juste.',
+                'ENFP': 'L\'Inspirateur : Esprit libre enthousiaste, créatif et sociable. Les ENFP trouvent toujours une raison de sourire. Ils sont charmants, indépendants, énergiques et compatissants.',
+                'ISTJ': 'Le Logisticien : Individu pratique et factuel, dont la fiabilité est inébranlable. Les ISTJ sont des piliers de la société, appréciés pour leur intégrité et leur dévouement.',
+                'ISFJ': 'Le Défenseur : Protecteur très dévoué et chaleureux, toujours prêt à défendre ses proches. Les ISFJ sont efficaces et responsables, accordant une attention particulière aux détails pratiques.',
+                'ESTJ': 'Le Directeur : Excellent administrateur, inégalé pour gérer les choses ou les gens. Les ESTJ sont des représentants de l\'ordre, de la tradition et de la moralité.',
+                'ESFJ': 'Le Consul : Personne extraordinairement attentionnée, sociable et populaire, toujours prête à aider. Les ESFJ sont des créatures sociales, qui s\'épanouissent en restant au courant de ce que font leurs amis.',
+                'ISTP': 'Le Virtuose : Expérimentateur audacieux et pratique, maître de toutes sortes d\'outils. Les ISTP aiment explorer avec leurs mains et leurs yeux, touchant et examinant le monde qui les entoure.',
+                'ISFP': 'L\'Aventurier : Artiste flexible et charmant, toujours prêt à explorer et à expérimenter quelque chose de nouveau. Les ISFP vivent dans un monde coloré et sensuel, inspiré par les liens avec les gens et les idées.',
+                'ESTP': 'L\'Entrepreneur : Intelligent, énergique et très perspicace. Les ESTP aiment vivre sur le fil du rasoir. Ils aiment être le centre de l\'attention et interagir avec les autres.',
+                'ESFP': 'L\'Amuseur : Spontané, énergique et enthousiaste. La vie n\'est jamais ennuyeuse avec un ESFP. Ils adorent les nouvelles expériences et être le centre de l\'attention.'
+            },
+            enneagram: {
+                1: 'Le Perfectionniste : Motivé par le besoin d\'être bon, juste et d\'avoir de l\'intégrité. Craint la corruption et le mal. Peut être critique, rigide et moralisateur.',
+                2: 'L\'Altruiste : Motivé par le besoin d\'être aimé et apprécié. Craint d\'être indésirable. Peut être possessif, manipulateur et fier.',
+                3: 'Le Battant : Motivé par le besoin d\'être précieux et estimé. Craint d\'être sans valeur. Peut être trop compétitif, vaniteux et obsédé par l\'image.',
+                4: 'Le Romantique : Motivé par le besoin d\'être unique et authentique. Craint de ne pas avoir d\'identité. Peut être mélancolique, égocentrique et lunatique.',
+                5: 'L\'Observateur : Motivé par le besoin de comprendre et d\'être compétent. Craint d\'être inutile ou incapable. Peut être détaché, avare en informations et cynique.',
+                6: 'Le Loyaliste : Motivé par le besoin de sécurité et de soutien. Craint d\'être sans aide. Peut être anxieux, méfiant et indécis.',
+                7: 'L\'Épicurien : Motivé par le besoin d\'être heureux et d\'éviter la douleur. Craint la privation et la souffrance. Peut être dispersé, impulsif et hédoniste.',
+                8: 'Le Chef : Motivé par le besoin de se protéger et de contrôler sa vie. Craint d\'être contrôlé par les autres. Peut être dominateur, conflictuel et insensible.',
+                9: 'Le Médiateur : Motivé par le besoin de paix intérieure et d\'harmonie. Craint la perte et la séparation. Peut être passif-agressif, obstiné et complaisant.'
+            },
+            attachment: {
+                secure: "Style Sécure : Vision positive de soi et des autres. Capacité à être autonome tout en étant à l'aise avec l'intimité. Gère bien les conflits et communique ouvertement ses besoins. Considéré comme le style le plus sain.",
+                anxious_fused: "Style Anxieux/Fusionnel : Vision négative de soi, positive des autres. Recherche une grande proximité et a peur de l'abandon. Peut être perçu comme 'collant' ou exigeant. L'anxiété relationnelle est élevée.",
+                avoidant_fearful: "Style Évitant/Craintif : Vision positive de soi, négative des autres. Valorise l'indépendance et l'autosuffisance. Se sent mal à l'aise avec trop d'intimité et peut sembler distant ou froid.",
+                disorganized: "Style Désorganisé/Chaotique : Vision négative de soi et des autres. Désire l'intimité mais en a peur. Comportement contradictoire, oscillant entre la recherche de proximité et le rejet. Souvent lié à des expériences passées de trauma."
+            },
+            otroverti: "Profil Otroverti (ou Ambiverti) : Un équilibre entre l'extraversion et l'introversion. L'otroverti n'est ni excessivement sociable, ni excessivement solitaire. Il adapte son comportement social au contexte, capable d'animer une discussion comme d'apprécier la solitude. Son énergie n'est pas uniquement dictée par les interactions sociales mais fluctue selon l'environnement et l'humeur. Ce profil combine la capacité de réflexion des introvertis et l'aisance à l'action des extravertis.",
+            antagonistic_traits: {
+                mach: "Machiavélisme : Tendance à la manipulation, à la planification stratégique et à l'exploitation des autres pour atteindre ses objectifs. Vision cynique de la nature humaine et faible engagement moral.",
+                narc: "Narcissisme : Grandiosité, besoin d'admiration, et manque d'empathie. Sentiment de supériorité et préoccupation pour le succès et le pouvoir. Sensibilité à la critique.",
+                psy: "Psychopathie : Manque d'empathie et de remords, impulsivité, et recherche de sensations fortes. Charme superficiel masquant une froideur émotionnelle. Tendance à ignorer les normes sociales.",
+                soc: "Sociopathie : Difficulté à respecter les normes sociales, impulsivité marquée, et instabilité émotionnelle et relationnelle. Tendance aux colères explosives et difficulté à maintenir des engagements à long terme. Peut ressentir de la culpabilité, contrairement à la psychopathie."
+            },
+            autism: {
+                level1: "Niveau 1 - 'Nécessitant un soutien' : Difficultés notables dans la communication sociale qui nécessitent un soutien. Exemples : difficulté à initier des interactions sociales, réponses atypiques ou échouées. Les comportements restreints et répétitifs (RRB) causent une interférence significative dans un ou plusieurs contextes.",
+                level2: "Niveau 2 - 'Nécessitant un soutien substantiel' : Déficits marqués dans la communication sociale verbale et non verbale, même avec un soutien en place. Initiation limitée des interactions sociales. Les RRB sont suffisamment fréquents pour être évidents à l'observateur occasionnel et interfèrent avec le fonctionnement dans une variété de contextes.",
+                level3: "Niveau 3 - 'Nécessitant un soutien très substantiel' : Déficits sévères dans la communication sociale verbale et non verbale causant des altérations graves du fonctionnement. Initiation très limitée des interactions sociales. Les RRB, la préoccupation pour des intérêts restreints, et/ou l'insistance sur la similarité interfèrent de manière marquée avec le fonctionnement dans tous les domaines.",
+                with_di: "Avec Déficience Intellectuelle (DI) associée : La présence d'une DI peut influencer la manière dont les traits autistiques se manifestent. La communication et les capacités d'adaptation peuvent être davantage affectées, nécessitant des stratégies de soutien adaptées à la fois au TSA et à la DI."
+            }
+        };
+
 
         /* ==================================== */
         /* == UI BUILDING & EVENT LISTENERS  == */
@@ -580,12 +413,12 @@
 
         function toggleModule(key) {
             MODULES[key].enabled = !MODULES[key].enabled;
-            buildAllSections(); // Re-render all sections based on new selection
+            buildAllSections();
         }
 
         function buildAllSections() {
             const container = document.getElementById('allSectionsContainer');
-            container.innerHTML = ''; // Clear previous sections
+            container.innerHTML = '';
 
             for (const key in MODULES) {
                 if (MODULES[key].enabled) {
@@ -595,12 +428,12 @@
                             const sectionDiv = el('div', { id: `${sectionKey}Container`, style: 'margin-top:10px' });
                             sectionDiv.appendChild(el('div', { className: 'section-title', innerText: sectionData.title }));
                             
-                            // Specific builder functions for complex sections
                             if (sectionKey === 'mbti') buildMbti(sectionDiv, sectionData);
                             else if (sectionKey === 'enneagram') buildEnneagram(sectionDiv, sectionData);
-                            else if (sectionKey === 'dark') buildDark(sectionDiv, sectionData);
+                            else if (sectionKey === 'antagonistic_traits') buildAntagonisticTraits(sectionDiv, sectionData);
                             else if (sectionKey === 'attachment') buildAttachment(sectionDiv, sectionData);
-                            else if (sectionData.scaleText) buildScaleQuestions(sectionDiv, sectionData, sectionKey); // Generic builder for scale-based questions
+                            else if (sectionKey === 'autism') buildAutism(sectionDiv, sectionData);
+                            else if (sectionData.scaleText) buildScaleQuestions(sectionDiv, sectionData, sectionKey);
                             
                             container.appendChild(sectionDiv);
                         }
@@ -616,7 +449,7 @@
                 const optionsText = it.q.split(' : ')[1] || '';
                 const [optAText, optBText] = optionsText.split(' / ').map(t => t.replace(/\((A|B)\)\s*/, ''));
 
-                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + mainQuestion, style: 'font-weight:700;margin-bottom:6px' }));
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + mainQuestion, style: 'font-weight:600;margin-bottom:6px' }));
                 const opts = el('div', { className: 'options' });
 
                 const lblA = el('label', { className: 'opt' });
@@ -637,18 +470,18 @@
                 lbl.innerHTML = `<input type="radio" name="ennea_main" value="${it.type}"> <span>${it.text}</span>`;
                 container.appendChild(lbl);
             });
-            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Comportements sous stress (cocher si observé)</strong>' }));
+            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:12px;display:block">Comportements sous stress (cocher si observé)</strong>' }));
             data.items.stress.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="checkbox" name="ennea_stress" value="${it.type}"> <span>${it.text}</span>`; container.appendChild(lbl); });
-            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:8px">Instinct dominant</strong>' }));
+            container.appendChild(el('div', { innerHTML: '<strong style="margin-top:12px;display:block">Instinct dominant</strong>' }));
             data.items.instincts.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="instinct" value="${it.id}"> <span>${it.text}</span>`; container.appendChild(lbl); });
         }
         
-        function buildDark(container, data) {
+        function buildAntagonisticTraits(container, data) {
             data.items.forEach((it, idx) => {
                 const q = el('div', { className: 'q' });
-                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:600;margin-bottom:6px' }));
                 const row = el('div', { className: 'options' });
-                row.innerHTML = `1 <input type="range" name="${it.id}" min="1" max="5" value="3"> 5`;
+                row.innerHTML = `1 (Pas du tout) <input type="range" name="${it.id}" min="1" max="5" value="1" style="flex:1"> 5 (Totalement)`;
                 q.appendChild(row); container.appendChild(q);
             });
         }
@@ -656,12 +489,23 @@
         function buildAttachment(container, data) {
             data.items.forEach(it => { const lbl = el('label', { className: 'opt' }); lbl.innerHTML = `<input type="radio" name="attachment" value="${it.val}"> <span>${it.text}</span>`; container.appendChild(lbl); });
         }
+        
+        function buildAutism(container, data) {
+            buildScaleQuestions(container, data, 'autism'); // Build standard scale questions
+            if (data.extra) { // Add the extra checkbox
+                const q = el('div', { className: 'q' });
+                const lbl = el('label', { className: 'opt' });
+                lbl.innerHTML = `<input type="checkbox" name="${data.extra.id}"> <span>${data.extra.text}</span>`;
+                q.appendChild(lbl);
+                container.appendChild(q);
+            }
+        }
 
         function buildScaleQuestions(container, data, sectionKey) {
-            container.appendChild(el('div', { innerHTML: data.scaleText, style: 'font-size:12px;color:var(--muted);margin-bottom:6px' }));
+            container.appendChild(el('div', { innerHTML: data.scaleText, style: 'font-size:12px;color:var(--text-secondary);margin-bottom:6px' }));
             data.items.forEach((it, idx) => {
                 const q = el('div', { className: 'q' });
-                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:700;margin-bottom:6px' }));
+                q.appendChild(el('div', { innerText: (idx + 1) + '. ' + it.text, style: 'font-weight:600;margin-bottom:6px' }));
                 const row = el('div', { className: 'options' });
                 row.innerHTML = `0 <input type="range" name="${sectionKey}_${it.id}" min="0" max="4" value="0"> 4`;
                 q.appendChild(row); container.appendChild(q);
@@ -672,30 +516,6 @@
         /* == ANALYSIS FUNCTIONS == */
         /* ======================== */
         
-        function analyzeSection(sectionKey) {
-            if (!SECTIONS_DATA[sectionKey]) return null;
-            const data = SECTIONS_DATA[sectionKey];
-            let totalScore = 0;
-            const maxScore = data.items.length * 4; // Each question is on a 0-4 scale
-
-            data.items.forEach(item => {
-                const input = document.querySelector(`input[name="${sectionKey}_${item.id}"]`);
-                if (input) {
-                    totalScore += parseInt(input.value, 10);
-                }
-            });
-
-            if (maxScore === 0) return { score: 0, percentage: 0, ...data };
-
-            const percentage = Math.round((totalScore / maxScore) * 100);
-            return {
-                score: totalScore,
-                maxScore: maxScore,
-                percentage: percentage,
-                ...data // Include title, description, prevalence
-            };
-        }
-        
         function analyzeAllEnabledSections() {
             const results = {};
             for (const modKey in MODULES) {
@@ -704,9 +524,9 @@
                         switch(secKey) {
                             case 'mbti': results.mbti = analyzeMBTI(); break;
                             case 'enneagram': results.enneagram = analyzeEnnea(); break;
-                            case 'dark': results.dark = analyzeDark(); break;
+                            case 'antagonistic_traits': results.antagonistic_traits = analyzeAntagonisticTraits(); break;
                             case 'attachment': results.attachment = analyzeAttach(); break;
-                            case 'adhd': results.adhd = analyzeADHD(); break;
+                            case 'autism': results.autism = analyzeAutism(); break;
                             default:
                                 if(SECTIONS_DATA[secKey] && SECTIONS_DATA[secKey].scaleText) {
                                     results[secKey] = analyzeSection(secKey);
@@ -718,20 +538,34 @@
             return results;
         }
 
-        // --- Fonctions d'analyse spécifiques (inchangées) ---
+        function analyzeSection(sectionKey) {
+            if (!SECTIONS_DATA[sectionKey]) return null;
+            const data = SECTIONS_DATA[sectionKey];
+            let totalScore = 0;
+            const maxScore = data.items.length * 4;
+
+            data.items.forEach(item => {
+                const input = document.querySelector(`input[name="${sectionKey}_${item.id}"]`);
+                if (input) {
+                    totalScore += parseInt(input.value, 10);
+                }
+            });
+
+            if (maxScore === 0) return { score: 0, percentage: 0, ...data };
+            const percentage = Math.round((totalScore / maxScore) * 100);
+            return { score: totalScore, maxScore: maxScore, percentage: percentage, ...data };
+        }
+
         function analyzeMBTI() {
             const counts = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
             SECTIONS_DATA.mbti.items.forEach(it => {
                 const sel = document.querySelector(`input[name="${it.id}"]:checked`);
-                if (sel) {
-                    const letter = sel.value === 'A' ? it.A : it.B;
-                    counts[letter]++;
-                }
+                if (sel) { const letter = sel.value === 'A' ? it.A : it.B; counts[letter]++; }
             });
             function decide(a, b) {
                 const ca = counts[a], cb = counts[b];
-                if (ca === 0 && cb === 0) return { letter: 'X', confidence: 0 }; // Case where questions are not answered
-                const letter = ca > cb ? a : b;
+                if (ca === 0 && cb === 0) return { letter: 'X', confidence: 0 };
+                const letter = ca >= cb ? a : b;
                 const confidence = Math.round(Math.abs(ca - cb) / 3 * 100);
                 return { letter, confidence };
             }
@@ -765,44 +599,51 @@
             return { type, top, wing, instinct: inst ? instMap[inst.value] : null, scores };
         }
 
-        function analyzeDark() {
-            const traits = { mach: 0, narc: 0, psy: 0 };
-            for (let i = 1; i <= 9; i++) {
-                const el = document.querySelector(`input[name="dt${i}"]`);
-                if(el) {
-                    const v = parseInt(el.value, 10);
-                    if (i <= 3) traits.mach += v;
-                    else if (i <= 6) traits.narc += v;
-                    else traits.psy += v;
+        function analyzeAntagonisticTraits() {
+            const traits = { mach: 0, narc: 0, psy: 0, soc: 0 };
+            const data = SECTIONS_DATA.antagonistic_traits.items;
+            data.forEach(it => {
+                const el = document.querySelector(`input[name="${it.id}"]`);
+                if(el && traits[it.group] !== undefined) {
+                    traits[it.group] += parseInt(el.value, 10);
                 }
-            }
-            const machPct = Math.round((traits.mach - 3) / 12 * 100);
-            const narcPct = Math.round((traits.narc - 3) / 12 * 100);
-            const psyPct = Math.round((traits.psy - 3) / 12 * 100);
-            return { raw: traits, mach: machPct, narc: narcPct, psy: psyPct };
+            });
+            // Each trait has 3 questions ranging from 1 to 5. Min score is 3, max is 15. Range is 12.
+            const toPct = (score) => Math.round((score - 3) / 12 * 100);
+            return { 
+                mach: toPct(traits.mach), 
+                narc: toPct(traits.narc), 
+                psy: toPct(traits.psy),
+                soc: toPct(traits.soc)
+            };
         }
 
         function analyzeAttach() {
             const sel = document.querySelector('input[name="attachment"]:checked');
-            const map = { secure: 'Sécure', anxious: 'Anxieux', avoidant: 'Évitant', fearful: 'Craintif-évitant' };
+            const map = { secure: 'Sécure', anxious_fused: 'Anxieux/Fusionnel', avoidant_fearful: 'Évitant/Craintif', disorganized: 'Désorganisé/Chaotique' };
             return { raw: sel ? sel.value : null, label: sel ? map[sel.value] : null };
         }
+        
+        function analyzeAutism() {
+            const baseResult = analyzeSection('autism');
+            let supportScore = 0;
+            // Questions aut8, aut9, aut10 are for support level
+            for (let i = 8; i <= 10; i++) {
+                const input = document.querySelector(`input[name="autism_aut${i}"]`);
+                if (input) supportScore += parseInt(input.value, 10);
+            }
+            const hasDI = document.querySelector('input[name="aut_di"]:checked') ? true : false;
 
-        // Remplacement / correction de analyzeADHD() pour utiliser les noms d'input construits par buildScaleQuestions
-        function analyzeADHD() {
-            let total = 0;
-            if (!SECTIONS_DATA || !SECTIONS_DATA.adhd) return { score: 0, percentage: 0, positive: false };
-            SECTIONS_DATA.adhd.items.forEach(item => {
-                const input = document.querySelector(`input[name="adhd_${item.id}"]`);
-                if (input) total += parseInt(input.value, 10) || 0;
-            });
-            const max = SECTIONS_DATA.adhd.items.length * 4;
-            const pct = max > 0 ? Math.round(total / max * 100) : 0;
-            const positive = total >= 9;
-            return { score: total, percentage: pct, positive: positive };
+            let level = 0;
+            if (baseResult.percentage > 40) { // Only assign level if base score is significant
+                if (supportScore >= 9) level = 3; // high need
+                else if (supportScore >= 5) level = 2; // medium need
+                else level = 1; // low need
+            }
+            
+            return { ...baseResult, supportLevel: level, hasDI };
         }
 
-        // Fonction pour activer tous les modules et reconstruire l'UI
         function enableAllModules() {
             for (const key in MODULES) {
                 MODULES[key].enabled = true;
@@ -812,238 +653,246 @@
             buildAllSections();
         }
 
-        // Remplissage automatique complet d'exemple
         function fillExample() {
-            // 1) activer tous les modules et (re)construire les sections
             enableAllModules();
-
-            // 2) Remplir les ranges (générique) et dark triad (spécifique)
+            
+            document.getElementById('userName').value = "Jean Exemple";
+            
             document.querySelectorAll('#profilerForm input[type="range"]').forEach(r => {
                 const name = r.name || '';
-                // Dark triad: dt1..dt9 (min 1..5) -> donner des valeurs variées pour l'exemple
-                if (/^dt\d+$/.test(name)) {
-                    const idx = parseInt(name.replace('dt',''), 10);
-                    if (idx <= 3) r.value = 5;
-                    else if (idx <= 6) r.value = 4;
-                    else r.value = 3;
-                } else {
-                    // autres échelles (0..4) -> valeur modérément élevée pour démonstration
-                    // si l'input a min=0 maxi=4, on met 3 ; si min=1 maxi=5 (dark) on ajuste ci-dessus
-                    r.value = Math.max(parseInt(r.min || 0,10), Math.min(parseInt(r.max || 4,10), 3));
+                if (/^at\d+$/.test(name)) { // Antagonistic traits 1-5
+                    const idx = parseInt(name.replace('at',''), 10);
+                    if (idx <= 3) r.value = 4; // Mach
+                    else if (idx <= 6) r.value = 2; // Narc
+                    else if (idx <= 9) r.value = 1; // Psy
+                    else r.value = 3; // Soc
+                } else { // Others 0-4
+                    r.value = Math.max(parseInt(r.min,10), Math.min(parseInt(r.max,10), 3));
                 }
             });
-
-            // 3) MBTI -> choisir des options afin d'illustrer un profil (ex: ENFP-ish)
-            // Logique : si l'une des deux lettres A/B correspond à la lettre souhaitée, cocher celle-ci.
-            const desiredLetters = new Set(['E','N','F','P']); // exemple de cible
-            if (SECTIONS_DATA.mbti && SECTIONS_DATA.mbti.items) {
-                SECTIONS_DATA.mbti.items.forEach(it => {
-                    const prefer = (it.A && desiredLetters.has(it.A)) ? it.A : ((it.B && desiredLetters.has(it.B)) ? it.B : it.A);
-                    const val = it.A === prefer ? 'A' : 'B';
-                    const inp = document.querySelector(`input[name="${it.id}"][value="${val}"]`);
-                    if (inp) inp.checked = true;
-                });
+            
+            const mbtiTarget = {mb1:'B', mb4:'B', mb7:'B', mb10:'A'}; // Target INFP-ish
+            for (const [id, val] of Object.entries(mbtiTarget)) {
+                const input = document.querySelector(`input[name="${id}"][value="${val}"]`);
+                if (input) input.checked = true;
             }
 
-            // 4) Ennéagramme -> sélectionner un type d'exemple, quelques stress et instinct
-            const main = document.querySelector('input[name="ennea_main"][value="4"]');
-            if (main) main.checked = true;
-            // cocher quelques items de stress (valeurs 1..9)
-            [4,6].forEach(v => {
-                const c = document.querySelector(`input[name="ennea_stress"][value="${v}"]`);
-                if (c) c.checked = true;
-            });
-            const inst = document.querySelector('input[name="instinct"][value="so"]');
-            if (inst) inst.checked = true;
+            const enneaMain = document.querySelector('input[name="ennea_main"][value="4"]'); if (enneaMain) enneaMain.checked = true;
+            [4,6].forEach(v => { const c = document.querySelector(`input[name="ennea_stress"][value="${v}"]`); if (c) c.checked = true; });
+            const enneaInstinct = document.querySelector('input[name="instinct"][value="sx"]'); if (enneaInstinct) enneaInstinct.checked = true;
+            
+            const attachment = document.querySelector('input[name="attachment"][value="anxious_fused"]'); if (attachment) attachment.checked = true;
+            const autismDI = document.querySelector('input[name="aut_di"]'); if (autismDI) autismDI.checked = true;
 
-            // 5) Attachment -> sécurisant
-            const att = document.querySelector('input[name="attachment"][value="secure"]');
-            if (att) att.checked = true;
-
-            // 6) Pour les autres radios (si besoin), on peut laisser par défaut ou sélectionner la première option.
-            // Exemple : parcourir groupes radios non MBTI/ennea/attachment et cocher le premier disponible
-            const radioNames = new Set();
-            document.querySelectorAll('#profilerForm input[type="radio"]').forEach(r => radioNames.add(r.name));
-            radioNames.forEach(name => {
-                if (['ennea_main','instinct','attachment'].includes(name)) return; // déjà traités
-                const first = document.querySelector(`#profilerForm input[type="radio"][name="${name}"]`);
-                if (first) first.checked = true;
-            });
-
-            // 7) Cocher quelques checkboxes génériques si présents (déjà fait pour ennea), sinon laisser.
-            // (aucun autre checkbox spécifique nécessaire ici)
-
-            // 8) Lancer l'analyse et afficher le rapport immédiatement
             runAll();
-            // petite indication visuelle possible (alerte discrète)
-            // alert('Exemple chargé — le rapport a été généré.');
         }
+        
+        /* ========================== */
+        /* == REPORT & PDF GENERATION == */
+        /* ========================== */
 
-        /* ========================== */
-        /* == REPORT & PDF GENENERATION == */
-        /* ========================== */
+        let myChart = null; // To hold the chart instance
 
         function generateReport(allResults) {
             const reportEl = document.getElementById('report');
-            reportEl.innerHTML = ''; // Clear previous report
+            reportEl.innerHTML = ''; // Clear
 
-            const title = el('div', { className: 'section-title', innerText: 'Synthèse du Profil' });
-            reportEl.appendChild(title);
+            if (myChart) { myChart.destroy(); }
+            
+            const createSection = (icon, title, content) => {
+                const section = el('div', { className: 'report-section' });
+                section.innerHTML = `<div class="report-title">${icon} ${title}</div>${content}`;
+                return section;
+            };
 
-            // Base Profile
+            const createBar = (label, value, colorVar) => {
+                return `
+                    <div>${label} (${value}%)</div>
+                    <div class="report-bar">
+                        <i style="width: ${value}%; background-color: var(${colorVar});"></i>
+                    </div>
+                `;
+            };
+
+            // Personality Profile
             if (allResults.mbti) {
-                reportEl.innerHTML += `<strong>MBTI :</strong> ${allResults.mbti.type} (Confiance ${allResults.mbti.globalConf}%)<br>`;
-                reportEl.innerHTML += `<span class="mini">${mbtiProfile(allResults.mbti.type)}</span><br><br>`;
+                const content = `<p><strong>Type: ${allResults.mbti.type}</strong> (Confiance: ${allResults.mbti.globalConf}%)</p>
+                                 <p class="report-description">${DESCRIPTIONS.mbti[allResults.mbti.type] || 'Description non disponible.'}</p>`;
+                reportEl.appendChild(createSection('🧠', 'Profil MBTI', content));
             }
             if (allResults.enneagram && allResults.enneagram.type) {
-                const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
-                reportEl.innerHTML += `<strong>Ennéagramme :</strong> Type ${allResults.enneagram.type}${wingText} - ${allResults.enneagram.instinct || 'N/A'}<br>`;
-                reportEl.innerHTML += `<span class="mini">${enneaProfile(allResults.enneagram.type)}</span><br><br>`;
+                const wing = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+                const content = `<p><strong>Type ${allResults.enneagram.type}${wing}</strong> - Instinct: ${allResults.enneagram.instinct || 'N/A'}</p>
+                                 <p class="report-description">${DESCRIPTIONS.enneagram[allResults.enneagram.type] || 'Description non disponible.'}</p>`;
+                reportEl.appendChild(createSection('🌀', 'Profil Ennéagramme', content));
             }
-             if (allResults.dark) {
-                reportEl.innerHTML += `<strong>Dark Triad (Indices) :</strong><br>`;
-                reportEl.innerHTML += `<span class="mini">Machiavélisme: ${allResults.dark.mach}%, Narcissisme: ${allResults.dark.narc}%, Psychopathie: ${allResults.dark.psy}%</span><br><br>`;
+            if (allResults.attachment && allResults.attachment.raw) {
+                const content = `<p><strong>${allResults.attachment.label}</strong></p>
+                                 <p class="report-description">${DESCRIPTIONS.attachment[allResults.attachment.raw] || ''}</p>`;
+                reportEl.appendChild(createSection('❤️', 'Style d\'Attachement', content));
             }
-            if (allResults.attachment && allResults.attachment.label) {
-                reportEl.innerHTML += `<strong>Attachement :</strong> ${allResults.attachment.label}<br><br>`;
+             if (allResults.otroverti) {
+                let content = createBar('Score Otroverti', allResults.otroverti.percentage, '--accent');
+                content += `<p class="report-description">${DESCRIPTIONS.otroverti}</p>`;
+                reportEl.appendChild(createSection('🔄', 'Profil Otroverti', content));
             }
-             if (allResults.adhd) {
-                reportEl.innerHTML += `<strong>TDA/H (Screening) :</strong> Score ${allResults.adhd.score}/24 (${allResults.adhd.percentage}%)<br>`;
-                reportEl.innerHTML += `<span class="mini">${allResults.adhd.positive ? 'Indice significatif. Consulter si impact quotidien.' : 'Pas d\'indice fort sur ce screening.'}</span><br><br>`;
+
+            // Antagonistic Traits Radar Chart
+            if (allResults.antagonistic_traits) {
+                const canvasContainer = el('div', { className: 'report-section'});
+                canvasContainer.innerHTML = `<div class="report-title">📈 Traits Comportementaux Antagonistes</div><div id="chartContainer"><canvas id="antagonisticChart"></canvas></div>`;
+                const content = `<p class="report-description">
+                    <strong>Machiavélisme (${allResults.antagonistic_traits.mach}%):</strong> ${DESCRIPTIONS.antagonistic_traits.mach}
+                    <strong>Narcissisme (${allResults.antagonistic_traits.narc}%):</strong> ${DESCRIPTIONS.antagonistic_traits.narc}
+                    <strong>Psychopathie (${allResults.antagonistic_traits.psy}%):</strong> ${DESCRIPTIONS.antagonistic_traits.psy}
+                    <strong>Sociopathie (${allResults.antagonistic_traits.soc}%):</strong> ${DESCRIPTIONS.antagonistic_traits.soc}
+                </p>`;
+                canvasContainer.innerHTML += content;
+                reportEl.appendChild(canvasContainer);
+                
+                const ctx = document.getElementById('antagonisticChart').getContext('2d');
+                const isLightTheme = document.body.classList.contains('light-theme');
+                const gridColor = isLightTheme ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+                const textColor = isLightTheme ? '#24292f' : '#c9d1d9';
+
+                myChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Machiavélisme', 'Narcissisme', 'Psychopathie', 'Sociopathie'],
+                        datasets: [{
+                            label: 'Pourcentage',
+                            data: [
+                                allResults.antagonistic_traits.mach,
+                                allResults.antagonistic_traits.narc,
+                                allResults.antagonistic_traits.psy,
+                                allResults.antagonistic_traits.soc
+                            ],
+                            backgroundColor: 'rgba(248, 81, 73, 0.2)',
+                            borderColor: 'rgba(248, 81, 73, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: gridColor },
+                                pointLabels: { color: textColor, font: { size: 12 } },
+                                ticks: {
+                                    backdropColor: 'transparent',
+                                    color: textColor
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
             }
 
             // Behavioral Disorders
-            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
+            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && !['otroverti'].includes(k));
             if (disorderKeys.length > 0) {
-                 const disorderTitle = el('div', { className: 'section-title', innerText: 'Indices Comportementaux', style: 'margin-top: 1rem;' });
+                 const disorderTitle = el('div', { className: 'section-title', innerText: 'Indices Comportementaux', style: 'margin-top: 1rem; color: var(--text-primary);' });
                  reportEl.appendChild(disorderTitle);
             }
 
             disorderKeys.sort((a,b) => allResults[b].percentage - allResults[a].percentage).forEach(key => {
                 const result = allResults[key];
-                if (result.percentage > 35) { // Threshold to display in report
-                    reportEl.innerHTML += `<strong>${result.title} :</strong> Indice de ${result.percentage}%<br>`;
-                    reportEl.innerHTML += `<span class="mini"><strong>Description :</strong> ${result.description}</span><br>`;
-                    reportEl.innerHTML += `<span class="mini"><strong>Rareté (prévalence pop. générale) :</strong> ${result.prevalence}</span><br><br>`;
+                if (result.percentage > 35) {
+                    let content = createBar(`Indice`, result.percentage, '--warn');
+                    if (key === 'autism' && result.supportLevel > 0) {
+                        content += `<p><strong>Niveau de soutien indicatif : ${result.supportLevel}</strong> - ${result.hasDI ? 'Avec DI associée.' : 'Sans DI rapportée.'}</p>`;
+                        content += `<p class="report-description">${DESCRIPTIONS.autism[`level${result.supportLevel}`] || ''} ${result.hasDI ? DESCRIPTIONS.autism.with_di : ''}</p>`;
+                    } else {
+                        content += `<p class="report-description">${result.description}\n<strong>Prévalence:</strong> ${result.prevalence}</p>`;
+                    }
+                    reportEl.appendChild(createSection('⚠️', result.title, content));
                 }
             });
         }
         
-        // Helper descriptions (inchangées)
-        function mbtiProfile(type) {
-            const map = { 'INTJ': 'Stratège indépendant, vision à long terme.', 'INTP': 'Logicien curieux, cherche la cohérence théorique.', 'ENTJ': 'Leader naturel, organisé et efficient.', 'ENTP': 'Innovateur, aime débattre et explorer les idées.', 'INFJ': 'Idéaliste perspicace, guidé par ses valeurs.', 'INFP': 'Médiateur créatif, sensible et authentique.', 'ENFJ': 'Protagoniste charismatique, inspire les autres.', 'ENFP': 'Inspirateur enthousiaste, sociable et créatif.', 'ISTJ': 'Logisticien fiable, méthodique et responsable.', 'ISFJ': 'Défenseur dévoué, chaleureux et protecteur.', 'ESTJ': 'Directeur pragmatique, aime l\'ordre et la structure.', 'ESFJ': 'Consul sociable, attentionné et coopératif.', 'ISTP': 'Virtuose pragmatique, aime résoudre les problèmes concrets.', 'ISFP': 'Aventurier sensible, artistique et flexible.', 'ESTP': 'Entrepreneur audacieux, aime l\'action et le défi.', 'ESFP': 'Amuseur spontané, sociable et énergique.' };
-            return map[type] || 'Type non défini';
-        }
-        function enneaProfile(t) {
-            const map = { 1: 'Le Perfectionniste : rigoureux, sens du devoir.', 2: 'L\'Altruiste : orienté vers les autres, empathique.', 3: 'Le Battant : orienté succès et image.', 4: 'Le Romantique : recherche d\'authenticité, sensible.', 5: 'L\'Observateur : curieux, besoin de comprendre et d\'autonomie.', 6: 'Le Loyal : recherche de sécurité, vigilant.', 7: 'L\'Épicurien : recherche de stimulation, optimiste.', 8: 'Le Chef : assertif, protecteur, besoin de contrôle.', 9: 'Le Médiateur : recherche d\'harmonie, évite le conflit.' };
-            return map[t] || '';
-        }
-
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
+            const userName = document.getElementById('userName').value || 'Anonyme';
             const allResults = analyzeAllEnabledSections();
-            if (Object.keys(allResults).length === 0) {
-                alert("Veuillez d'abord analyser un profil avant de l'exporter.");
-                return;
-            }
+            if (Object.keys(allResults).length === 0) { alert("Veuillez d'abord analyser un profil."); return; }
             
-            // --- PDF Header ---
-            doc.setFontSize(18);
-            doc.setTextColor(40, 40, 80);
-            doc.text("Rapport de Profil Psychologique (Éducatif)", 105, 20, { align: 'center' });
-            doc.setFontSize(10);
-            doc.setTextColor(150, 150, 150);
-            doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, 105, 28, { align: 'center' });
-            doc.setLineWidth(0.5);
-            doc.setDrawColor(40, 40, 80);
-            doc.line(20, 35, 190, 35);
-
-            // --- PDF Body ---
             let y = 45;
             const addSection = (title, body) => {
                 if (y > 260) { doc.addPage(); y = 20; }
-                doc.setFontSize(14);
-                doc.setTextColor(60, 60, 100);
-                doc.text(title, 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                doc.setTextColor(50, 50, 50);
-                const splitText = doc.splitTextToSize(body, 170);
-                doc.text(splitText, 20, y);
-                y += (splitText.length * 5) + 8;
+                doc.setFontSize(14); doc.setTextColor(44, 62, 80); doc.text(title, 14, y); y += 7;
+                doc.setFontSize(10); doc.setTextColor(80, 80, 80);
+                const splitText = doc.splitTextToSize(body, 180);
+                doc.text(splitText, 14, y); y += (splitText.length * 4) + 10;
             };
 
-            if (allResults.mbti && allResults.mbti.type !== 'XXXX') {
-                addSection("Profil MBTI", 
-                    `Type: ${allResults.mbti.type} (Confiance: ${allResults.mbti.globalConf}%)\n` +
-                    `Description: ${mbtiProfile(allResults.mbti.type)}`
-                );
-            }
+            // --- Header ---
+            doc.setFontSize(20); doc.setTextColor(44, 62, 80);
+            doc.text(`Rapport de Profil pour ${userName}`, 105, 20, { align: 'center' });
+            doc.setFontSize(10); doc.setTextColor(150, 150, 150);
+            doc.text(`Généré le: ${new Date().toLocaleString('fr-FR')}`, 105, 28, { align: 'center' });
+            doc.setLineWidth(0.5); doc.setDrawColor(220, 220, 220); doc.line(14, 35, 196, 35);
+            
+            // --- Sections ---
+            if (allResults.mbti) addSection("Profil MBTI", `Type: ${allResults.mbti.type} (Confiance: ${allResults.mbti.globalConf}%)\n${DESCRIPTIONS.mbti[allResults.mbti.type] || ''}`);
             if (allResults.enneagram && allResults.enneagram.type) {
-                 const wingText = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
-                 addSection("Profil Ennéagramme", 
-                    `Type Principal: ${allResults.enneagram.type}${wingText}\n` +
-                    `Instinct Dominant: ${allResults.enneagram.instinct || 'Non défini'}\n` +
-                    `Description: ${enneaProfile(allResults.enneagram.type)}`
-                 );
+                const wing = allResults.enneagram.wing ? `w${allResults.enneagram.wing}` : '';
+                addSection("Profil Ennéagramme", `Type ${allResults.enneagram.type}${wing} - Instinct: ${allResults.enneagram.instinct || 'N/A'}\n${DESCRIPTIONS.enneagram[allResults.enneagram.type] || ''}`);
             }
+            if (allResults.attachment && allResults.attachment.raw) addSection("Style d'Attachement", `${allResults.attachment.label}\n${DESCRIPTIONS.attachment[allResults.attachment.raw] || ''}`);
             
-            // Table for other results
+            // --- Table for quantitative results ---
             const tableBody = [];
-            if (allResults.dark) {
-                tableBody.push(['Dark Triad - Machiavélisme', `${allResults.dark.mach}%`]);
-                tableBody.push(['Dark Triad - Narcissisme', `${allResults.dark.narc}%`]);
-                tableBody.push(['Dark Triad - Psychopathie', `${allResults.dark.psy}%`]);
+            if (allResults.otroverti) tableBody.push(['Profil Otroverti', `${allResults.otroverti.percentage}%`]);
+            if (allResults.antagonistic_traits) {
+                const at = allResults.antagonistic_traits;
+                tableBody.push(['Machiavélisme', `${at.mach}%`]);
+                tableBody.push(['Narcissisme', `${at.narc}%`]);
+                tableBody.push(['Psychopathie', `${at.psy}%`]);
+                tableBody.push(['Sociopathie', `${at.soc}%`]);
             }
-             if (allResults.attachment && allResults.attachment.label) {
-                tableBody.push(['Style d\'attachement', allResults.attachment.label]);
-            }
-            if (allResults.adhd) {
-                tableBody.push(['Indice TDA/H', `${allResults.adhd.percentage}% (Score: ${allResults.adhd.score}/24)`]);
-            }
-            
+             
+            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && !['otroverti'].includes(k));
+            disorderKeys.forEach(key => {
+                if (allResults[key].percentage > 35) tableBody.push([allResults[key].title, `${allResults[key].percentage}%`]);
+            });
+
             if (tableBody.length > 0) {
                  if (y > 240) { doc.addPage(); y = 20; }
-                 doc.autoTable({
-                    startY: y,
-                    head: [['Indicateur', 'Résultat']],
-                    body: tableBody,
-                    theme: 'grid',
-                    headStyles: { fillColor: [40, 40, 80] }
-                });
-                y = doc.autoTable.previous.finalY + 10;
+                 doc.autoTable({ startY: y, head: [['Indicateur', 'Résultat']], body: tableBody, theme: 'grid', headStyles: { fillColor: [44, 62, 80] } });
+                 y = doc.autoTable.previous.finalY + 10;
             }
 
+            // --- Detailed behavioral sections ---
+            disorderKeys.forEach(key => {
+                const result = allResults[key];
+                if (result.percentage > 35) {
+                    let desc = result.description;
+                    if (key === 'autism' && result.supportLevel > 0) {
+                        desc = `Niveau de soutien indicatif : ${result.supportLevel} (${result.hasDI ? 'Avec DI' : 'Sans DI'})\n${DESCRIPTIONS.autism[`level${result.supportLevel}`] || ''}`;
+                    }
+                    addSection(`${result.title} (Indice ${result.percentage}%)`, desc);
+                }
+            });
 
-            // Behavioral Disorders Section
-            const disorderKeys = Object.keys(allResults).filter(k => allResults[k] && allResults[k].hasOwnProperty('percentage') && k !== 'adhd');
-            const disorderResults = disorderKeys.map(k => allResults[k]).filter(r => r.percentage > 35).sort((a, b) => b.percentage - a.percentage);
-
-            if (disorderResults.length > 0) {
-                if (y > 240) { doc.addPage(); y = 20; }
-                doc.setFontSize(14);
-                doc.setTextColor(60, 60, 100);
-                doc.text("Indices Comportementaux (scores élevés)", 20, y);
-                y += 10;
-                
-                disorderResults.forEach(result => {
-                    addSection(
-                      `${result.title} (Indice: ${result.percentage}%)`,
-                      `Description: ${result.description}\nPrévalence: ${result.prevalence}`
-                    );
-                });
-            }
-
-
-            // --- PDF Footer ---
-            doc.setFontSize(8);
-            doc.setTextColor(150, 150, 150);
+            // --- Footer ---
             const disclaimer = "AVERTISSEMENT : Ce rapport est généré à des fins éducatives et ne constitue pas un diagnostic. Les résultats sont des indicateurs basés sur un auto-questionnaire et ne remplacent pas l'avis d'un professionnel de santé mentale.";
-            doc.text(doc.splitTextToSize(disclaimer, 170), 20, 280);
-
-            doc.save(`Rapport_Profiler_${new Date().toISOString().split('T')[0]}.pdf`);
+            const splitDisclaimer = doc.splitTextToSize(disclaimer, 180);
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+                doc.text(splitDisclaimer, 14, 285, { baseline: 'bottom'});
+                doc.text(`Page ${i}/${pageCount}`, 196, 285, { align: 'right'});
+            }
+            
+            doc.save(`Rapport_Profiler_${userName.replace(' ','_')}_${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
         /* ======================== */
@@ -1052,17 +901,9 @@
 
         function runAll() {
             const allResults = analyzeAllEnabledSections();
-            
-            if (Object.keys(allResults).length === 0) {
-                alert('Veuillez sélectionner au moins un module à analyser.');
-                return;
-            }
-
-            // Generate the detailed report in the UI
+            if (Object.keys(allResults).length === 0) { alert('Veuillez sélectionner au moins un module à analyser.'); return; }
             generateReport(allResults);
-
-            // Update JSON output
-            const out = { timestamp: (new Date()).toISOString(), results: allResults };
+            const out = { timestamp: (new Date()).toISOString(), name: document.getElementById('userName').value, results: allResults };
             document.getElementById('jsonOut').innerText = JSON.stringify(out, null, 2);
         }
 
@@ -1070,15 +911,12 @@
             document.getElementById('profilerForm').reset();
             document.getElementById('report').innerHTML = 'Veuillez sélectionner les modules, remplir les questionnaires et cliquer sur "Analyser".';
             document.getElementById('jsonOut').innerText = '—';
-            document.getElementById('heuristicsTags').innerHTML = '';
+            if (myChart) { myChart.destroy(); }
         }
 
         function exportJson() {
             const json = document.getElementById('jsonOut').innerText;
-            if (json === '—') {
-                alert("Veuillez d'abord générer une analyse avant d'exporter.");
-                return;
-            }
+            if (json === '—') { alert("Générez une analyse avant d'exporter."); return; }
             const blob = new Blob([json], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -1093,22 +931,15 @@
             reader.onload = function (event) {
                 try {
                     const data = JSON.parse(event.target.result);
-                    if (!data || !data.results) {
-                        alert('Fichier JSON invalide ou ne contenant pas de profil.');
-                        return;
-                    }
+                    if (!data || !data.results) throw new Error('Format invalide');
                     document.getElementById('jsonOut').innerText = JSON.stringify(data, null, 2);
+                    if (data.name) document.getElementById('userName').value = data.name;
                     generateReport(data.results);
-                    alert('Importation réussie. Le rapport et les données JSON ont été affichés. Les réponses du formulaire ne sont pas restaurées.');
-                } catch (err) {
-                    alert('Erreur lors de la lecture du fichier JSON.');
-                    console.error(err);
-                }
+                } catch (err) { alert('Erreur: Fichier JSON invalide.'); console.error(err); }
             };
             reader.readAsText(f);
         });
 
-        // --- Langue ---
         function initLangSelector() {
             const sel = document.getElementById('langSelect');
             if (!sel) return;
@@ -1116,10 +947,25 @@
             if (fn.includes('en-us')) sel.value = 'en-us.html';
             else if (fn.includes('nl-be')) sel.value = 'nl-be.html';
             else sel.value = 'index.html';
-            sel.addEventListener('change', () => { const v = sel.value; window.location.href = v; });
+            sel.addEventListener('change', () => { window.location.href = sel.value; });
         }
 
-        document.addEventListener('DOMContentLoaded', () => { build(); initLangSelector(); });
+        function initThemeToggle() {
+            const toggle = document.getElementById('themeToggle');
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-theme');
+            }
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-theme');
+                localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+                // Re-run analysis to redraw chart with correct colors if it exists
+                if (document.getElementById('jsonOut').innerText !== '—') {
+                    runAll();
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => { build(); initLangSelector(); initThemeToggle(); });
     </script>
 </body>
 </html>
