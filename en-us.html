@@ -437,67 +437,67 @@
 
         const DESCRIPTIONS = {
             mbti: {
-            'INTJ': 'The Architect: Strategic and imaginative thinker. INTJs have a plan for everything. They love knowledge, are very logical, and have high standards of performance for themselves and others.',
-            'INTP': 'The Logician: Innovative inventor with an unquenchable thirst for knowledge. INTPs are abstract thinkers, proud of their unique perspective and keen intellect.',
-            'ENTJ': 'The Commander: Bold, imaginative leader with a strong will. ENTJs always find a way to achieve their goals. They are charismatic and confident.',
-            'ENTP': 'The Innovator: Clever and curious thinker who cannot resist an intellectual challenge. ENTPs are bold and creative, deconstructing and rebuilding ideas for fun.',
-            'INFJ': 'The Advocate: Quiet and mystical idealist, yet very inspiring and tireless. INFJs have a deep sense of idealism and morality, but are not idle dreamers.',
-            'INFP': 'The Mediator: Poetic, kind, and altruistic. INFPs are always ready to help a good cause. They may seem calm, but have an inner flame and passion that can truly shine.',
-            'ENFJ': 'The Protagonist: Charismatic and inspiring leader, able to mesmerize their audience. ENFJs are full of passion and charisma, and do not hesitate to stand up for what is right.',
-            'ENFP': 'The Campaigner: Enthusiastic, creative, and sociable free spirit. ENFPs always find a reason to smile. They are charming, independent, energetic, and compassionate.',
-            'ISTJ': 'The Logistician: Practical and fact-minded individual, whose reliability cannot be doubted. ISTJs are pillars of society, valued for their integrity and dedication.',
-            'ISFJ': 'The Defender: Very dedicated and warm protector, always ready to defend their loved ones. ISFJs are efficient and responsible, paying close attention to practical details.',
-            'ESTJ': 'The Executive: Excellent administrator, unsurpassed at managing things or people. ESTJs are representatives of order, tradition, and morality.',
-            'ESFJ': 'The Consul: Extraordinarily caring, sociable, and popular person, always eager to help. ESFJs are social creatures, thriving on staying up-to-date with what their friends are doing.',
-            'ISTP': 'The Virtuoso: Bold and practical experimenter, master of all kinds of tools. ISTPs love to explore with their hands and eyes, touching and examining the world around them.',
-            'ISFP': 'The Adventurer: Flexible and charming artist, always ready to explore and experience something new. ISFPs live in a colorful and sensual world, inspired by connections with people and ideas.',
-            'ESTP': 'The Entrepreneur: Smart, energetic, and very perspicacious. ESTPs love to live on the edge. They enjoy being the center of attention and interacting with others.',
-            'ESFP': 'The Entertainer: Spontaneous, energetic, and enthusiastic. Life is never boring with an ESFP. They love new experiences and being the center of attention.'
+            'INTJ': "The Architect: Strategic and imaginative thinker. INTJs have a plan for everything and systematically evaluate situations to reach their goals. They are independent, rational, and favor logic over emotion. Very demanding of themselves and others, they strive for efficiency and excellence.\n- Signs and symptoms: Preference for long-term planning, deep analysis before acting, emotional detachment at times, steady quiet confidence, low tolerance for inefficiency.",
+            'INTP': "The Logician: Innovative inventor with an insatiable thirst for knowledge. INTPs are abstract thinkers who enjoy exploring complex theoretical ideas. They are curious, independent, and often unconventional in their intellectual approach.\n- Signs and symptoms: Constant questioning of received ideas, deep reflective thinking, sometimes distant expression, strong interest in logic and theory, cognitive creativity.",
+            'ENTJ': "The Commander: Bold, imaginative leader with strong will. ENTJs always find ways to reach their objectives and inspire confidence in others. They are charismatic, organized, and result-oriented.\n- Signs and symptoms: Natural leadership ability, strategic planning, high assertiveness, marked self-confidence, low tolerance for passivity or inefficiency.",
+            'ENTP': "The Debater/Innovator: Clever, curious thinker who loves intellectual challenges. ENTPs deconstruct and reconstruct ideas for fun, innovate constantly, and enjoy exploring possibilities.\n- Signs and symptoms: Divergent thinking, high creativity, enthusiasm for debate, tendency to take intellectual risks, rapid adaptability.",
+            'INFJ': "The Advocate: Quiet, idealistic, and often mystical, yet deeply inspiring and tireless. INFJs are guided by a strong sense of purpose and moral clarity. They may be reserved but are deeply empathetic.\n- Signs and symptoms: Sensitivity to others' emotions, strong intuition, long-term vision, deep moral motivation, ability to guide others quietly.",
+            'INFP': "The Mediator: Poetic, kind, and altruistic. INFPs are driven by values and idealism, and they seek to support worthy causes. They possess a rich inner life and marked emotional creativity.\n- Signs and symptoms: Strong empathy, introspective reflection, artistic or verbal creativity, tendency to avoid conflict, passion for personal causes.",
+            'ENFJ': "The Protagonist: Charismatic and inspiring leader capable of captivating an audience. ENFJs use their energy to help and motivate others while defending high ethical values.\n- Signs and symptoms: Persuasive communication, natural charisma, concern for others, ability to inspire and organize, strong ethical sense.",
+            'ENFP': "The Campaigner/Inspirer: Enthusiastic, creative, and sociable free spirit. ENFPs are curious, charming, and compassionate, able to adapt socially and generate new ideas enthusiastically.\n- Signs and symptoms: High sociability, overflowing creativity, insatiable curiosity, contagious enthusiasm, ability to motivate others.",
+            'ISTJ': "The Logistician: Practical, methodical, and reliable individual whose loyalty and discipline are unwavering. ISTJs appreciate order, rules, and structure.\n- Signs and symptoms: Strong organization, respect for tradition, sense of duty, attention to detail, consistent dependability.",
+            'ISFJ': "The Defender: Warm, devoted protector always ready to support loved ones. ISFJs combine practicality with empathy and a strong sense of responsibility.\n- Signs and symptoms: Concrete altruism, remembering others' needs, tendency to support rather than lead, loyalty and patience, keen eye for detail.",
+            'ESTJ': "The Executive/Director: Efficient, organized manager excellent at handling tasks and people. ESTJs value order, rules, and responsibility.\n- Signs and symptoms: Natural authority, organizational skill, quick decision-making, respect for hierarchy and norms, strong pragmatism.",
+            'ESFJ': "The Consul: Caring, sociable, and popular person who deeply values others. ESFJs thrive in cooperative settings and focus on group harmony.\n- Signs and symptoms: Intense sociability, social altruism, awareness of norms and traditions, ability to organize and support groups, sensitivity to others' needs.",
+            'ISTP': "The Virtuoso: Daring, practical experimenter and master of tools. ISTPs enjoy exploring the world through action and observation.\n- Signs and symptoms: Technical skill, practical curiosity, preference for action over theory, independence, flexibility in problem solving.",
+            'ISFP': "The Adventurer: Flexible, charming artist always ready to experiment and explore. ISFPs live in a richly sensory world and appreciate beauty around them.\n- Signs and symptoms: Aesthetic sensitivity, spontaneity, practical creativity, discreet empathy, ability to live in the present moment.",
+            'ESTP': "The Entrepreneur: Smart, energetic, and perceptive. ESTPs love action, risk, and being at the center of attention.\n- Signs and symptoms: Social boldness, rapid reactivity, practical savvy, sensation-seeking, direct charisma.",
+            'ESFP': "The Entertainer/Performer: Spontaneous, enthusiastic, and lively. ESFPs live fully in the moment and enjoy entertaining others.\n- Signs and symptoms: High sociability, contagious energy, creativity in action, pursuit of new experiences, great adaptability."
             },
             enneagram: {
-            1: 'The Reformer: Motivated by the need to be good, right, and have integrity. Fears corruption and evil. Can be critical, rigid, and moralistic.',
-            2: 'The Helper: Motivated by the need to be loved and appreciated. Fears being unwanted. Can be possessive, manipulative, and proud.',
-            3: 'The Achiever: Motivated by the need to be valuable and worthwhile. Fears being worthless. Can be overly competitive, vain, and image-obsessed.',
-            4: 'The Individualist: Motivated by the need to be unique and authentic. Fears having no identity. Can be melancholic, self-centered, and moody.',
-            5: 'The Investigator: Motivated by the need to understand and be competent. Fears being useless or incapable. Can be detached, hoarding information, and cynical.',
-            6: 'The Loyalist: Motivated by the need for security and support. Fears being without help. Can be anxious, suspicious, and indecisive.',
-            7: 'The Enthusiast: Motivated by the need to be happy and avoid pain. Fears deprivation and suffering. Can be scattered, impulsive, and hedonistic.',
-            8: 'The Challenger: Motivated by the need to protect themselves and control their own lives. Fears being controlled by others. Can be domineering, confrontational, and insensitive.',
-            9: 'The Peacemaker: Motivated by the need for inner peace and harmony. Fears loss and separation. Can be passive-aggressive, stubborn, and complacent.'
+            1: "The Reformer/Perfectionist: Motivated by the need to be good, right, and maintain integrity. Reformers fight against corruption and error.\n- Signs and symptoms: Moral rigor, high sense of duty, criticism of mistakes, meticulous organization, tendency to frustration with self and others.",
+            2: "The Helper/Giver: Motivated by the need to be loved and appreciated. Helpers fear rejection or being unvalued.\n- Signs and symptoms: Active empathy, tendency to help even at personal cost, subtle manipulation to secure affection, need for validation.",
+            3: "The Achiever/Performer: Motivated by success and recognition. Achievers fear insignificance.\n- Signs and symptoms: Competitiveness, concern for image, strong ambition, social adaptability, difficulty coping with failure.",
+            4: "The Individualist/Romantic: Motivated by uniqueness and authenticity. Individualists fear lack of identity.\n- Signs and symptoms: Intense emotional sensitivity, introspection, artistic expression, melancholy, mood fluctuations.",
+            5: "The Investigator/Observer: Motivated by understanding and competence. Observers fear being useless.\n- Signs and symptoms: Social withdrawal, information hoarding, excessive analysis, emotional detachment, intellectual curiosity.",
+            6: "The Loyalist: Motivated by security and support. Loyalists fear being left alone.\n- Signs and symptoms: Distrust, anxiety, seeking protection, marked loyalty, decision-making hesitation.",
+            7: "The Enthusiast/Epicure: Motivated by pleasure and avoidance of pain. Enthusiasts fear deprivation.\n- Signs and symptoms: Enthusiasm, impulsivity, diversification of experiences, avoidance of negative emotions, mental hyperactivity.",
+            8: "The Challenger/Leader: Motivated by control and self-protection. Challengers fear being dominated by others.\n- Signs and symptoms: Assertiveness, dominance, confrontation, independence, occasional intimidation.",
+            9: "The Peacemaker/Mediator: Motivated by inner peace and harmony. Peacemakers fear separation.\n- Signs and symptoms: Conflict avoidance, passivity, difficulty asserting needs, high tolerance, tendency to procrastinate."
             },
             attachment: {
-            secure: "Secure Style: Positive view of self and others. Ability to be autonomous while being comfortable with intimacy. Manages conflicts well and communicates needs openly. Considered the healthiest style.",
-            anxious_fused: "Anxious/Preoccupied Style: Negative view of self, positive view of others. Seeks high levels of intimacy and fears abandonment. Can be perceived as 'clingy' or demanding. High relationship anxiety.",
-            avoidant_fearful: "Avoidant/Dismissive Style: Positive view of self, negative view of others. Values independence and self-sufficiency. Feels uncomfortable with too much intimacy and may seem distant or cold.",
-            disorganized: "Disorganized/Fearful-Avoidant Style: Negative view of self and others. Desires intimacy but is afraid of it. Contradictory behavior, oscillating between seeking closeness and rejection. Often linked to past trauma experiences."
+            secure: "Secure Style: Positive view of self and others. Able to be autonomous while comfortable with intimacy. Communicates openly and manages conflicts well.\n- Signs and symptoms: Self-confidence, stable relationships, healthy emotional expression, social adaptability, balance between dependence and autonomy.",
+            anxious_fused: "Anxious/Preoccupied Style: Negative view of self, positive view of others. Seeks constant closeness and fears abandonment.\n- Signs and symptoms: Intense attachment, relational anxiety, jealousy, constant need for reassurance, difficulty coping with solitude.",
+            avoidant_fearful: "Avoidant/Dismissive Style: Positive view of self, negative view of others. Values independence and avoids intimacy.\n- Signs and symptoms: Emotional distance, reluctance toward vulnerability, self-reliance, mistrust of others, tendency to avoid deep relationships.",
+            disorganized: "Disorganized/Fearful-Avoidant Style: Negative view of self and others. Desires intimacy but is afraid of it.\n- Signs and symptoms: Contradictory behavior, oscillation between closeness and rejection, fear of abandonment, relational impulsivity, intense anxiety."
             },
-            otroverti: "Otroverti (or Ambivert) Profile: A balance between extraversion and introversion. The ambivert is neither excessively sociable nor excessively solitary. They adapt their social behavior to the context, capable of leading a discussion as well as enjoying solitude. Their energy is not solely dictated by social interactions but fluctuates according to the environment and mood. This profile combines the reflective ability of introverts and the ease of action of extroverts.",
+            otroverti: "Otroverti (Ambivert): A balance between extraversion and introversion, adaptable to social or solitary contexts.\n- Signs and symptoms: Moderate sociability, ability to enjoy solitude, social flexibility, emotional adaptability, balance between reflection and action.",
             antagonistic_traits: {
-            mach: "Machiavellianism: A tendency for manipulation, strategic planning, and exploitation of others to achieve one's goals. A cynical view of human nature and low moral commitment.",
-            narc: "Narcissism: Grandiosity, a need for admiration, and a lack of empathy. A sense of superiority and a preoccupation with success and power. Sensitivity to criticism.",
-            psy: "Psychopathy: Lack of empathy and remorse, impulsivity, and thrill-seeking. Superficial charm masking emotional coldness. A tendency to ignore social norms.",
-            soc: "Sociopathy: Difficulty respecting social norms, marked impulsivity, and emotional and relational instability. A tendency for explosive anger and difficulty maintaining long-term commitments. May feel guilt, unlike psychopathy."
+            mach: "Machiavellianism: Tendency to manipulate and exploit others to achieve personal goals, often via cold, calculated strategies.\n- Presentation: Instrumental behavior treating relationships as means to resources, status, or advantage.\n- Signs and symptoms: Calculated flattery, planned lies or omissions, exploiting others' weaknesses, utilitarian justifications, limited remorse.",
+            narc: "Narcissism: Grandiosity and persistent need for admiration accompanied by heightened sensitivity to criticism. Narcissism involves an inflated self-view and focus on personal image.\n- Presentation: Constant search for recognition and approval, focus on prestige and social appearance.\n- Signs and symptoms: Exaggeration of achievements, expectation of special treatment, tendency to devalue or instrumentalize others, empathy deficits, defensive or aggressive responses to criticism.",
+            psy: "Psychopathy: Traits linked to emotional coldness, impulsivity, and proneness to severe antisocial behaviours.\n- Presentation: Marked difficulty experiencing guilt, empathy, or remorse; superficial charm sometimes used to manipulate.\n- Signs and symptoms: Repeated lying, risky dangerous behavior, indifference to others' suffering, inability to learn from sanctions, persistent antisocial conduct and norm violations.",
+            soc: "Sociopathy: Propensity toward antisocial acts and impulsivity with frequent disregard for social rules and others' rights.\n- Presentation: Unstable behaviour, aggressive or hostile attitudes, difficulty maintaining obligations and relationships.\n- Signs and symptoms: Unpredictable violent outbursts, transgressive acts (theft, vandalism, assaults), chronic irresponsibility, tendency to blame others and limited remorse."
             },
             autism: {
-            level1: "Level 1 - 'Requiring support': Noticeable difficulties in social communication that require support.\n- Observable signs: Difficulty initiating social interactions; atypical or unsuccessful responses to social overtures of others; may appear to have decreased interest in social interactions.\n- Restricted/Repetitive Behaviors (RRBs): Cause significant interference in one or more contexts. Difficulty switching between activities. Problems of organization and planning hamper independence.",
-            level2: "Level 2 - 'Requiring substantial support': Marked deficits in verbal and nonverbal social communication skills, even with supports in place.\n- Observable signs: Limited initiation of social interactions; reduced or abnormal responses to social overtures from others. Uses simple sentences, interaction is limited to narrow special interests, and has markedly odd nonverbal communication.\n- RRBs: Are frequent enough to be obvious to the casual observer and interfere with functioning in a variety of contexts. Distress and/or difficulty changing focus or action.",
-            level3: "Level 3 - 'Requiring very substantial support': Severe deficits in verbal and nonverbal social communication skills cause severe impairments in functioning.\n- Observable signs: Very limited initiation of social interactions and minimal response to social overtures from others. A person with few words of intelligible speech who rarely initiates interaction and, when they do, makes unusual approaches to meet needs only.\n- RRBs: Preoccupations, rituals, and/or repetitive behaviors markedly interfere with functioning in all spheres. Marked distress when rituals are interrupted.",
-            with_di: "With associated Intellectual Disability (ID): The presence of an ID can influence how autistic traits manifest. Communication and adaptive skills may be more affected, requiring support strategies tailored to both ASD and ID."
+            level1: "Level 1 - 'Requiring support': Noticeable difficulties in social communication that require support.\n- Observable signs: Difficulty initiating interactions, atypical responses to social approaches, reduced interest in social exchanges.\n- Restricted/repetitive behaviors (RRBs): Interfere in one or more contexts; difficulty switching activities; organizational and planning problems.",
+            level2: "Level 2 - 'Requiring substantial support': Marked deficits in social communication skills even with supports.\n- Observable signs: Limited initiation of social interactions, reduced or abnormal responses, simple speech, narrow special interests.\n- RRBs: Frequent and obvious, interfering across contexts; distress when changes occur.",
+            level3: "Level 3 - 'Requiring very substantial support': Severe deficits in social communication causing major impairments.\n- Observable signs: Minimal initiation of interactions, minimal response to others, very limited intelligible speech, unusual approaches to meet needs.\n- RRBs: Preoccupations and rituals that severely interfere with functioning; marked distress if routines are interrupted.",
+            with_di: "With associated Intellectual Disability (ID): ID can influence how autistic traits present.\n- Signs and symptoms: Even more limited communication, reduced autonomy, need for support strategies tailored to both ASD and ID."
             },
             big_five: {
-                O: "Openness to Experience: Appreciation for art, emotion, adventure, unusual ideas, curiosity, and a preference for variety. High scores suggest imagination, creativity, and intellectual curiosity.",
-                C: "Conscientiousness: Tendency to be organized, reliable, self-disciplined, and goal-oriented. High scores indicate strong planning, dependability, and persistence.",
-                E: "Extraversion: Energy, positive emotions, assertiveness, sociability, and a tendency to seek stimulation in the company of others. High scores reflect a sociable and energetic temperament.",
-                A: "Agreeableness: Tendency to be compassionate, cooperative, and trusting rather than antagonistic or suspicious. Reflects concern for social harmony and others' wellbeing.",
-                N: "Neuroticism (inverse of Emotional Stability): Tendency to experience negative emotions such as anxiety, anger, sadness, and vulnerability. High scores indicate greater emotional reactivity and lower stability."
+            O: "Openness to Experience: Appreciation for art, adventure, unusual ideas, and intellectual curiosity.\n- Signs and symptoms: Imagination, creativity, intellectual curiosity, openness to new experiences, mental flexibility.",
+            C: "Conscientiousness: Organization, reliability, and self-discipline.\n- Signs and symptoms: Planning, persistence, dependability, sense of duty, preference for structured action.",
+            E: "Extraversion: Energy, sociability, and assertiveness.\n- Signs and symptoms: Enthusiasm, social energy, stimulation-seeking, assertiveness, positive affect.",
+            A: "Agreeableness: Compassion and cooperativeness.\n- Signs and symptoms: Tolerance, empathy, cooperative behavior, concern for social harmony, altruism.",
+            N: "Neuroticism: Tendency toward negative emotions and emotional instability.\n- Signs and symptoms: Anxiety, irritability, moodiness, vulnerability to stress, emotional reactivity."
             },
             locus_of_control: {
-                internal: "Internal Locus of Control: Belief that one's own actions, choices, and efforts are the primary drivers of outcomes and rewards in life.",
-                external: "External Locus of Control: Belief that events are determined mainly by outside forces (luck, fate, other people), reducing perceived personal agency."
+            internal: "Internal Locus of Control: Belief that one's own actions and efforts primarily determine outcomes.\n- Signs and symptoms: Taking responsibility, proactive planning, confidence in one's actions, low tendency to externalize failure.",
+            external: "External Locus of Control: Belief that life is governed mainly by external forces.\n- Signs and symptoms: Sense of fatalism, reliance on luck or fate, tendency to blame others, passivity when facing challenges."
             },
-            grit: "Grit (Perseverance and Passion): The tendency to sustain effort and interest toward long-term goals over years. High grit indicates persistence and resilience in the face of setbacks and long-term challenges.",
-            thinking_styles: "Thinking Styles (Cognitive Distortions): Recurrent biased patterns of thought (e.g., catastrophizing, all-or-nothing thinking, mind reading) that can distort perception, maintain emotional difficulties, and affect decision-making. Identifying these patterns is the first step toward reframing them.",
-            alexithymia: "Alexithymia: Difficulty identifying and describing one's own emotions. People with elevated alexithymia often have limited emotional awareness, concrete thinking about feelings, and trouble communicating internal emotional states to others."
+            grit: "Grit: Sustained effort and interest toward long-term goals.\n- Signs and symptoms: Perseverance despite setbacks, patience, self-discipline, sustained motivation, resilience.",
+            thinking_styles: "Thinking Styles (Cognitive Distortions): Irrational thinking patterns that affect perception of reality.\n- Signs and symptoms: All-or-nothing thinking, overgeneralization, catastrophizing, self-devaluation, biased reasoning.",
+            alexithymia: "Alexithymia: Difficulty identifying and describing one's emotions.\n- Signs and symptoms: Emotional confusion, trouble understanding others' feelings, concrete outward-focused thinking, limited emotional communication."
         };
 
 
@@ -1198,6 +1198,43 @@
             // Add Otroverti profile section (was previously only in the indicators table)
             if (allResults.otroverti) {
             addSection("Otroverti (Ambivert) Profile", `Score: ${allResults.otroverti.percentage != null ? allResults.otroverti.percentage + '%' : 'N/A'}\n${DESCRIPTIONS.otroverti || ''}`);
+            }
+
+            if (allResults.antagonistic_traits) {
+                const at = allResults.antagonistic_traits;
+                const machPct = (at.mach != null) ? `${at.mach}%` : 'N/A';
+                const narcPct = (at.narc != null) ? `${at.narc}%` : 'N/A';
+                const psyPct  = (at.psy  != null) ? `${at.psy}%`  : 'N/A';
+                const socPct  = (at.soc  != null) ? `${at.soc}%`  : 'N/A';
+
+                // Build descriptive block using DESCRIPTIONS if available
+                const descr = [];
+                if (DESCRIPTIONS.antagonistic_traits) {
+                    if (DESCRIPTIONS.antagonistic_traits.mach) descr.push(`Machiavellianism: ${DESCRIPTIONS.antagonistic_traits.mach}`);
+                    if (DESCRIPTIONS.antagonistic_traits.narc) descr.push(`Narcissism: ${DESCRIPTIONS.antagonistic_traits.narc}`);
+                    if (DESCRIPTIONS.antagonistic_traits.psy)  descr.push(`Psychopathy: ${DESCRIPTIONS.antagonistic_traits.psy}`);
+                    if (DESCRIPTIONS.antagonistic_traits.soc)  descr.push(`Sociopathy: ${DESCRIPTIONS.antagonistic_traits.soc}`);
+                }
+
+                const body = `Machiavellianism: ${machPct}\nNarcissism: ${narcPct}\nPsychopathy: ${psyPct}\nSociopathy: ${socPct}\n\n${descr.join('\n\n')}`;
+
+                addSection('Dark Tetrad', body);
+
+                // Also add a small table summarizing the four trait percentages for easier reading in the PDF
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.autoTable({
+                    startY: y,
+                    head: [['Trait', 'Percentage']],
+                    body: [
+                        ['Machiavellianism', machPct],
+                        ['Narcissism', narcPct],
+                        ['Psychopathy', psyPct],
+                        ['Sociopathy', socPct]
+                    ],
+                    theme: 'grid',
+                    headStyles: { fillColor: [44, 62, 80] }
+                });
+                y = doc.autoTable.previous.finalY + 10;
             }
 
             // --- Table for quantitative results ---

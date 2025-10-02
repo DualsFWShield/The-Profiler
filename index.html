@@ -311,10 +311,10 @@
             attachment: {
                 title: "Style d'attachement",
                 items: [
-                    { id: 'att_secure', val: 'secure', text: 'Attachement Sécure (≈50-60%) : Je suis à l\'aise avec l\'intimité et l\'indépendance, et je fais confiance aux autres.' },
-                    { id: 'att_anxious', val: 'anxious_fused', text: 'Attachement Anxieux/Fusionnel (≈20%) : Je désire une grande proximité mais je crains l\'abandon et l\'inconstance de l\'autre.' },
-                    { id: 'att_avoidant', val: 'avoidant_fearful', text: 'Attachement Évitant/Craintif (≈25%) : Je préfère l\'indépendance, je me méfie de l\'intimité et garde mes distances émotionnelles.' },
-                    { id: 'att_disorganized', val: 'disorganized', text: 'Attachement Désorganisé/Chaotique (≈5%) : Je veux être proche mais j\'ai peur d\'être blessé(e) ; mes relations sont souvent intenses et instables.' }
+                    { id: 'att_secure', val: 'secure', text: 'Attachement Sécure : Je suis à l\'aise avec l\'intimité et l\'indépendance, et je fais confiance aux autres.' },
+                    { id: 'att_anxious', val: 'anxious_fused', text: 'Attachement Anxieux/Fusionnel : Je désire une grande proximité mais je crains l\'abandon et l\'inconstance de l\'autre.' },
+                    { id: 'att_avoidant', val: 'avoidant_fearful', text: 'Attachement Évitant/Craintif : Je préfère l\'indépendance, je me méfie de l\'intimité et garde mes distances émotionnelles.' },
+                    { id: 'att_disorganized', val: 'disorganized', text: 'Attachement Désorganisé/Chaotique : Je veux être proche mais j\'ai peur d\'être blessé(e) ; mes relations sont souvent intenses et instables.' }
                 ]
             },
             otroverti: {
@@ -341,15 +341,15 @@
                 prevalence: "Environ 1 à 2% de la population.",
                 scaleText: FREQUENCY_SCALE_TEXT,
                 items: [
-                    { id: 'aut1', text: "Difficulté à initier ou à soutenir une conversation (réciprocité sociale)." },
-                    { id: 'aut2', text: "Comportements non verbaux atypiques (contact visuel fuyant, expressions faciales limitées)." },
-                    { id: 'aut3', text: "Difficulté à comprendre les relations, les signaux sociaux ou le langage non littéral (ironie)." },
-                    { id: 'aut4', text: "Mouvements, utilisation d'objets ou langage stéréotypés ou répétitifs (stéréotypies, écholalie)." },
-                    { id: 'aut5', text: "Adhésion inflexible à des routines, ou rituels ; détresse face aux petits changements." },
-                    { id: 'aut6', text: "Intérêts très restreints et fixes, anormaux dans leur intensité ou leur but." },
-                    { id: 'aut7', text: "Hyper- ou hyporéactivité aux stimuli sensoriels (indifférence à la douleur, fascination pour des lumières, aversion pour certains sons ou textures)." },
-                    { id: 'aut8', text: "Mes difficultés sociales nécessitent un soutien notable pour fonctionner au quotidien (ex: aide pour les courses, le travail)." },
-                    { id: 'aut9', text: "Mes routines sont si rigides que tout changement provoque une détresse majeure, m'empêchant de fonctionner." },
+                    { id: 'aut1', text: "J'ai des difficultés à initier ou à soutenir une conversation (réciprocité sociale)." },
+                    { id: 'aut2', text: "J'ai des comportements non verbaux atypiques (contact visuel fuyant, expressions faciales limitées)." },
+                    { id: 'aut3', text: "J'ai des difficultés à comprendre les relations, les signaux sociaux ou le langage non littéral (ironie)." },
+                    { id: 'aut4', text: "J'ai des mouvements, une utilisation d'objets ou un langage stéréotypés ou répétitifs (stéréotypies, écholalie)." },
+                    { id: 'aut5', text: "J'ai une adhésion inflexible à des routines ou rituels ; je ressens de la détresse face aux petits changements." },
+                    { id: 'aut6', text: "J'ai des intérêts très restreints et fixes, anormaux dans leur intensité ou leur but." },
+                    { id: 'aut7', text: "J'ai une hyper- ou hyporéactivité aux stimuli sensoriels (indifférence à la douleur, fascination pour des lumières, aversion pour certains sons ou textures)." },
+                    { id: 'aut8', text: "J'ai besoin d'un soutien notable pour mes difficultés sociales afin de fonctionner au quotidien (ex: aide pour les courses, le travail)." },
+                    { id: 'aut9', text: "J'ai des routines si rigides que tout changement provoque une détresse majeure et m'empêche de fonctionner." },
                     { id: 'aut10', text: "J'ai besoin d'une aide verbale ou non-verbale significative pour communiquer mes besoins essentiels." }
                 ],
                 extra: { id: 'aut_di', text: "Le profil concerne une personne avec une déficience intellectuelle (DI) associée." }
@@ -440,68 +440,69 @@
 
         const DESCRIPTIONS = {
             mbti: {
-                'INTJ': 'L\'Architecte : Penseur stratégique et imaginatif. Les INTJ ont un plan pour tout. Ils aiment la connaissance, sont très logiques et ont de hautes exigences de performance pour eux-mêmes et les autres.',
-                'INTP': 'Le Logicien : Inventeur innovant avec une soif de connaissance inépuisable. Les INTP sont des penseurs abstraits, fiers de leur point de vue unique et de leur intellect vif.',
-                'ENTJ': 'Le Commandant : Leader audacieux, imaginatif et doté d\'une forte volonté. Les ENTJ trouvent toujours un moyen d\'arriver à leurs fins. Ils sont charismatiques et confiants.',
-                'ENTP': 'L\'Innovateur : Penseur astucieux et curieux qui ne peut résister à un défi intellectuel. Les ENTP sont audacieux et créatifs, déconstruisant et reconstruisant les idées pour le plaisir.',
-                'INFJ': 'L\'Avocat : Idéaliste calme et mystique, mais très inspirant et infatigable. Les INFJ ont un sens profond de l\'idéalisme et de la moralité, mais ne sont pas des rêveurs oisifs.',
-                'INFP': 'Le Médiateur : Poétique, gentil et altruiste. Les INFP sont toujours prêts à aider une bonne cause. Ils peuvent sembler calmes, mais ont une flamme intérieure et une passion qui peuvent vraiment briller.',
-                'ENFJ': 'Le Protagoniste : Leader charismatique et inspirant, capable de fasciner son auditoire. Les ENFJ sont pleins de passion et de charisme, et n\'hésitent pas à défendre ce qui est juste.',
-                'ENFP': 'L\'Inspirateur : Esprit libre enthousiaste, créatif et sociable. Les ENFP trouvent toujours une raison de sourire. Ils sont charmants, indépendants, énergiques et compatissants.',
-                'ISTJ': 'Le Logisticien : Individu pratique et factuel, dont la fiabilité est inébranlable. Les ISTJ sont des piliers de la société, appréciés pour leur intégrité et leur dévouement.',
-                'ISFJ': 'Le Défenseur : Protecteur très dévoué et chaleureux, toujours prêt à défendre ses proches. Les ISFJ sont efficaces et responsables, accordant une attention particulière aux détails pratiques.',
-                'ESTJ': 'Le Directeur : Excellent administrateur, inégalé pour gérer les choses ou les gens. Les ESTJ sont des représentants de l\'ordre, de la tradition et de la moralité.',
-                'ESFJ': 'Le Consul : Personne extraordinairement attentionnée, sociable et populaire, toujours prête à aider. Les ESFJ sont des créatures sociales, qui s\'épanouissent en restant au courant de ce que font leurs amis.',
-                'ISTP': 'Le Virtuose : Expérimentateur audacieux et pratique, maître de toutes sortes d\'outils. Les ISTP aiment explorer avec leurs mains et leurs yeux, touchant et examinant le monde qui les entoure.',
-                'ISFP': 'L\'Aventurier : Artiste flexible et charmant, toujours prêt à explorer et à expérimenter quelque chose de nouveau. Les ISFP vivent dans un monde coloré et sensuel, inspiré par les liens avec les gens et les idées.',
-                'ESTP': 'L\'Entrepreneur : Intelligent, énergique et très perspicace. Les ESTP aiment vivre sur le fil du rasoir. Ils aiment être le centre de l\'attention et interagir avec les autres.',
-                'ESFP': 'L\'Amuseur : Spontané, énergique et enthousiaste. La vie n\'est jamais ennuyeuse avec un ESFP. Ils adorent les nouvelles expériences et être le centre de l\'attention.'
+                'INTJ': 'L\'Architecte : Penseur stratégique et imaginatif. Les INTJ ont un plan pour tout et évaluent systématiquement les situations pour atteindre leurs objectifs. Ils sont indépendants, rationnels et préfèrent la logique à l\'émotion. Très exigeants envers eux-mêmes et les autres, ils visent l\'efficacité et l\'excellence.\n- Signes et symptômes : Préférence pour la planification à long terme, analyse approfondie avant d\'agir, tendance à se détacher émotionnellement, confiance en soi solide mais discrète, peu tolérants aux inefficacités.',
+                'INTP': 'Le Logicien : Inventeur innovant avec une soif de connaissance inépuisable. Les INTP sont des penseurs abstraits qui aiment explorer des idées complexes et théoriques. Ils sont curieux, indépendants et souvent non conventionnels dans leur approche intellectuelle.\n- Signes et symptômes : Remise en question constante des idées établies, tendance à réfléchir profondément, expression parfois distante, intérêt marqué pour la logique et la théorie, créativité cognitive.',
+                'ENTJ': 'Le Commandant : Leader audacieux, imaginatif et doté d\'une forte volonté. Les ENTJ trouvent toujours un moyen d\'arriver à leurs fins et inspirent confiance autour d\'eux. Ils sont charismatiques, organisés et orientés résultats.\n- Signes et symptômes : Capacité de leadership naturelle, planification stratégique, assertivité élevée, confiance en soi marquée, peu tolérants aux inefficacités et à la passivité.',
+                'ENTP': 'L\'Innovateur : Penseur astucieux et curieux qui adore relever des défis intellectuels. Les ENTP déconstruisent et reconstruisent les idées pour le plaisir, innovent constamment et aiment explorer les possibilités.\n- Signes et symptômes : Pensée divergente, créativité élevée, enthousiasme pour les débats, tendance à prendre des risques intellectuels, adaptabilité rapide.',
+                'INFJ': 'L\'Avocat : Idéaliste calme et mystique, mais très inspirant et infatigable. Les INFJ sont guidés par un sens profond de l\'idéal et de la moralité, avec une vision claire de ce qui est juste. Ils peuvent être réservés mais profondément empathiques.\n- Signes et symptômes : Sensibilité aux émotions des autres, intuition développée, vision à long terme, forte motivation morale, capacité à guider les autres de manière discrète.',
+                'INFP': 'Le Médiateur : Poétique, gentil et altruiste. Les INFP sont motivés par leurs valeurs et leur idéalisme, et cherchent toujours à aider les causes justes. Ils possèdent une vie intérieure riche et une créativité émotionnelle prononcée.\n- Signes et symptômes : Empathie forte, réflexion introspective, créativité artistique ou verbale, tendance à éviter les conflits, passion pour les causes personnelles.',
+                'ENFJ': 'Le Protagoniste : Leader charismatique et inspirant, capable de fasciner son auditoire. Les ENFJ utilisent leur énergie pour aider et motiver les autres, tout en défendant des valeurs morales élevées.\n- Signes et symptômes : Communication persuasive, charisme naturel, souci des autres, capacité à inspirer et organiser, sens aigu de l\'éthique.',
+                'ENFP': 'L\'Inspirateur : Esprit libre enthousiaste, créatif et sociable. Les ENFP sont curieux, charmants et compatissants, capables de s\'adapter à de nombreuses situations sociales et de générer de nouvelles idées avec enthousiasme.\n- Signes et symptômes : Sociabilité élevée, créativité débordante, curiosité insatiable, enthousiasme contagieux, capacité à motiver les autres.',
+                'ISTJ': 'Le Logisticien : Individu pratique, méthodique et fiable, dont la loyauté et la discipline sont inébranlables. Les ISTJ apprécient l’ordre, les règles et la structure.\n- Signes et symptômes : Forte organisation, respect des traditions, sens des responsabilités, attention aux détails, fiabilité constante.',
+                'ISFJ': 'Le Défenseur : Protecteur dévoué et chaleureux, toujours prêt à soutenir ses proches. Les ISFJ combinent sens pratique et empathie, avec un grand sens du devoir.\n- Signes et symptômes : Altruisme concret, mémoire des besoins des autres, tendance à soutenir plutôt que diriger, loyauté et patience, sens aigu du détail.',
+                'ESTJ': 'Le Directeur : Administrateur efficace et organisé, excellent pour gérer les personnes et les tâches. Les ESTJ sont attachés à l’ordre, aux règles et à la responsabilité.\n- Signes et symptômes : Autorité naturelle, sens de l’organisation, prise de décision rapide, respect des règles et de la hiérarchie, pragmatisme élevé.',
+                'ESFJ': 'Le Consul : Personne attentionnée, sociable et populaire. Les ESFJ se soucient profondément des autres et prospèrent dans la coopération sociale.\n- Signes et symptômes : Sociabilité intense, altruisme social, conscience des normes et traditions, capacité à organiser et soutenir les groupes, sensibilité aux besoins des autres.',
+                'ISTP': 'Le Virtuose : Expérimentateur audacieux et pratique, maître de ses mains et de ses outils. Les ISTP aiment explorer le monde par l’action directe.\n- Signes et symptômes : Habileté technique, curiosité pratique, préférence pour l’action sur la théorie, indépendance, flexibilité dans la résolution de problèmes.',
+                'ISFP': 'L\'Aventurier : Artiste flexible et charmant, toujours prêt à expérimenter et explorer. Les ISFP vivent dans un monde sensoriel riche et apprécient la beauté autour d’eux.\n- Signes et symptômes : Sensibilité esthétique, spontanéité, créativité pratique, empathie discrète, capacité à vivre le moment présent.',
+                'ESTP': 'L\'Entrepreneur : Intelligent, énergique et perspicace. Les ESTP aiment l’action, le risque et être au centre de l’attention.\n- Signes et symptômes : Audace sociale, réactivité rapide, esprit pratique et pragmatique, recherche de sensations, charisme direct.',
+                'ESFP': 'L\'Amuseur : Spontané, enthousiaste et dynamique. Les ESFP vivent pleinement le moment et aiment divertir les autres.\n- Signes et symptômes : Sociabilité élevée, énergie contagieuse, créativité dans l’action, recherche de nouvelles expériences, grande adaptabilité.'
             },
             enneagram: {
-                1: 'Le Perfectionniste : Motivé par le besoin d\'être bon, juste et d\'avoir de l\'intégrité. Craint la corruption et le mal. Peut être critique, rigide et moralisateur.',
-                2: 'L\'Altruiste : Motivé par le besoin d\'être aimé et apprécié. Craint d\'être indésirable. Peut être possessif, manipulateur et fier.',
-                3: 'Le Battant : Motivé par le besoin d\'être précieux et estimé. Craint d\'être sans valeur. Peut être trop compétitif, vaniteux et obsédé par l\'image.',
-                4: 'Le Romantique : Motivé par le besoin d\'être unique et authentique. Craint de ne pas avoir d\'identité. Peut être mélancolique, égocentrique et lunatique.',
-                5: 'L\'Observateur : Motivé par le besoin de comprendre et d\'être compétent. Craint d\'être inutile ou incapable. Peut être détaché, avare en informations et cynique.',
-                6: 'Le Loyaliste : Motivé par le besoin de sécurité et de soutien. Craint d\'être sans aide. Peut être anxieux, méfiant et indécis.',
-                7: 'L\'Épicurien : Motivé par le besoin d\'être heureux et d\'éviter la douleur. Craint la privation et la souffrance. Peut être dispersé, impulsif et hédoniste.',
-                8: 'Le Chef : Motivé par le besoin de se protéger et de contrôler sa vie. Craint d\'être contrôlé par les autres. Peut être dominateur, conflictuel et insensible.',
-                9: 'Le Médiateur : Motivé par le besoin de paix intérieure et d\'harmonie. Craint la perte et la séparation. Peut être passif-agressif, obstiné et complaisant.'
+                1: 'Le Perfectionniste : Motivé par le besoin d\'être bon, juste et intègre. Les Perfectionnistes luttent contre le mal et la corruption.\n- Signes et symptômes : Rigueur morale, sens élevé du devoir, critique des erreurs, organisation méticuleuse, tendance à la frustration envers soi et les autres.',
+                2: 'L\'Altruiste : Motivé par le besoin d\'être aimé et reconnu. Les Altruistes craignent d\'être rejetés ou non appréciés.\n- Signes et symptômes : Empathie active, tendance à aider même au détriment de soi, manipulation subtile pour maintenir l\'affection, besoin d\'être valorisé.',
+                3: 'Le Battant : Motivé par le succès et la reconnaissance. Les Battants redoutent l\'insignifiance.\n- Signes et symptômes : Compétitivité, souci de l\'image, ambition marquée, adaptabilité sociale, difficulté à gérer l\'échec.',
+                4: 'Le Romantique : Motivé par l\'individualité et l\'authenticité. Les Romantiques craignent l\'absence d\'identité.\n- Signes et symptômes : Sensibilité émotionnelle intense, introspection, expression artistique, mélancolie, fluctuations d\'humeur.',
+                5: 'L\'Observateur : Motivé par la compréhension et la compétence. Les Observateurs craignent l\'inutilité.\n- Signes et symptômes : Retrait social, accumulation d\'informations, analyse excessive, détachement émotionnel, curiosité intellectuelle.',
+                6: 'Le Loyaliste : Motivé par la sécurité et le soutien. Les Loyalistes craignent d\'être laissés seuls.\n- Signes et symptômes : Méfiance, anxiété, recherche de protection, fidélité marquée, hésitation décisionnelle.',
+                7: 'L\'Épicurien : Motivé par le plaisir et l\'évitement de la douleur. Les Épicuriens craignent la privation.\n- Signes et symptômes : Enthousiasme, impulsivité, diversification des expériences, fuite des émotions négatives, hyperactivité mentale.',
+                8: 'Le Chef : Motivé par le contrôle et la protection. Les Chefs craignent la domination par autrui.\n- Signes et symptômes : Assertivité, domination, confrontation, indépendance, tendance à l\'intimidation.',
+                9: 'Le Médiateur : Motivé par la paix et l\'harmonie. Les Médiateurs craignent la séparation.\n- Signes et symptômes : Évitement des conflits, passivité, difficulté à affirmer ses besoins, tolérance élevée, tendance à la procrastination.'
             },
             attachment: {
-                secure: "Style Sécure : Vision positive de soi et des autres. Capacité à être autonome tout en étant à l'aise avec l'intimité. Gère bien les conflits et communique ouvertement ses besoins. Considéré comme le style le plus sain.",
-                anxious_fused: "Style Anxieux/Fusionnel : Vision négative de soi, positive des autres. Recherche une grande proximité et a peur de l'abandon. Peut être perçu comme 'collant' ou exigeant. L'anxiété relationnelle est élevée.",
-                avoidant_fearful: "Style Évitant/Craintif : Vision positive de soi, négative des autres. Valorise l'indépendance et l'autosuffisance. Se sent mal à l'aise avec trop d'intimité et peut sembler distant ou froid.",
-                disorganized: "Style Désorganisé/Chaotique : Vision négative de soi et des autres. Désire l'intimité mais en a peur. Comportement contradictoire, oscillant entre la recherche de proximité et le rejet. Souvent lié à des expériences passées de trauma."
+                secure: "Style Sécure : Vision positive de soi et des autres. Capacité à être autonome tout en étant à l'aise avec l'intimité. Communique ouvertement et gère bien les conflits.\n- Signes et symptômes : Confiance en soi, relations stables, expression émotionnelle saine, adaptabilité sociale, équilibre entre dépendance et autonomie.",
+                anxious_fused: "Style Anxieux/Fusionnel : Vision négative de soi, positive des autres. Recherche de proximité constante et peur de l'abandon.\n- Signes et symptômes : Attachement intense, anxiété relationnelle, jalousie, besoin constant de réassurance, difficulté à gérer la solitude.",
+                avoidant_fearful: "Style Évitant/Craintif : Vision positive de soi, négative des autres. Valorise l'indépendance et évite l'intimité.\n- Signes et symptômes : Distance émotionnelle, réticence à la vulnérabilité, autosuffisance, méfiance envers autrui, tendance à fuir les relations profondes.",
+                disorganized: "Style Désorganisé/Chaotique : Vision négative de soi et des autres. Désire l'intimité mais en a peur.\n- Signes et symptômes : Comportement contradictoire, oscillation entre rapprochement et rejet, peur de l'abandon, impulsivité relationnelle, anxiété intense."
             },
-            otroverti: "Profil Otroverti (ou Ambiverti) : Un équilibre entre l'extraversion et l'introversion. L'otroverti n'est ni excessivement sociable, ni excessivement solitaire. Il adapte son comportement social au contexte, capable d'animer une discussion comme d'apprécier la solitude. Son énergie n'est pas uniquement dictée par les interactions sociales mais fluctue selon l'environnement et l'humeur. Ce profil combine la capacité de réflexion des introvertis et l'aisance à l'action des extravertis.",
+            otroverti: "Équilibre entre extraversion et introversion. Adaptable aux contextes sociaux ou solitaires.\n- Signes et symptômes : Sociabilité modérée, capacité à profiter de la solitude, flexibilité sociale, adaptabilité émotionnelle, équilibre entre réflexion et action.",
             antagonistic_traits: {
-                mach: "Machiavélisme : Tendance à la manipulation, à la planification stratégique et à l'exploitation des autres pour atteindre ses objectifs. Vision cynique de la nature humaine et faible engagement moral.",
-                narc: "Narcissisme : Grandiosité, besoin d'admiration, et manque d'empathie. Sentiment de supériorité et préoccupation pour le succès et le pouvoir. Sensibilité à la critique.",
-                psy: "Psychopathie : Manque d'empathie et de remords, impulsivité, et recherche de sensations fortes. Charme superficiel masquant une froideur émotionnelle. Tendance à ignorer les normes sociales.",
-                soc: "Sociopathie : Difficulté à respecter les normes sociales, impulsivité marquée, et instabilité émotionnelle et relationnelle. Tendance aux colères explosives et difficulté à maintenir des engagements à long terme. Peut ressentir de la culpabilité, contrairement à la psychopathie."
+                mach: "Tendance à manipuler et exploiter les autres pour atteindre des objectifs personnels, souvent via des stratégies froides et calculées.\n- Présentation : Comportement instrumental où les relations sont vues comme des moyens d'obtenir des ressources, du statut ou des avantages.\n- Signes et symptômes : Flatterie intéressée, mensonges ou omissions planifiées, exploitation des faiblesses d'autrui, justification utilitariste des actions, faible expression de remords ou rationalisation après avoir nui.",
+                narc: "Grandiosité et besoin persistant d'admiration accompagnés d'une sensibilité marquée à la critique. Le narcissisme implique une surestimation de soi et un centrage sur l'image personnelle.\n- Présentation : Recherche constante de reconnaissance et d'approbation, focalisation sur le prestige et l'apparence sociale.\n- Signes et symptômes : Exagération des réussites, attente de traitement préférentiel, tendance à dévaloriser ou instrumentaliser autrui pour maintenir l'image, déficits empathiques, réactions défensives ou agressives face aux critiques.",
+                psy: "Traits associés à une insensibilité émotionnelle et à une propension à l'impulsivité et aux comportements antisociaux graves.\n- Présentation : Difficulté marquée à éprouver culpabilité, empathie ou remords ; charme superficiel parfois utilisé pour manipuler.\n- Signes et symptômes : Mensonges répétés, tendance à prendre des risques dangereux, indifférence aux souffrances d'autrui, incapacité à tirer des leçons des sanctions, comportement antisocial persistant et violation répétée des normes.",
+                soc: "Propension aux actes antisociaux et à l'impulsivité avec un mépris fréquent des règles sociales et des droits d'autrui.\n- Présentation : Comportement instable, attitudes agressives ou hostiles, difficultés soutenues à maintenir obligations et relations.\n- Signes et symptômes : Accès de colère violents ou imprévisibles, comportements transgressifs (vols, vandalisme, agressions), irresponsabilité chronique, tendances à blâmer les autres et remords limités."
             },
             autism: {
-                level1: "Niveau 1 - 'Nécessitant un soutien' : Difficultés notables dans la communication sociale qui nécessitent un soutien.\n- Signes observables : Difficulté à initier des interactions sociales ; réponses atypiques ou échouées aux avances sociales des autres ; peut sembler avoir un intérêt diminué pour les interactions sociales.\n- Comportements restreints/répétitifs (RRB) : Causent une interférence significative dans un ou plusieurs contextes. Difficulté à alterner entre les activités. Problèmes d'organisation et de planification qui entravent l'autonomie.",
-                level2: "Niveau 2 - 'Nécessitant un soutien substantiel' : Déficits marqués dans la communication sociale verbale et non verbale, même avec un soutien en place.\n- Signes observables : Initiation limitée des interactions sociales ; réponse réduite ou anormale aux avances sociales des autres. Utilise des phrases simples, interaction limitée à des intérêts spéciaux restreints, et communication non verbale nettement étrange.\n- RRB : Sont suffisamment fréquents pour être évidents à l'observateur occasionnel et interfèrent avec le fonctionnement dans une variété de contextes. Détresse et/ou difficulté à changer de focus ou d'action.",
-                level3: "Niveau 3 - 'Nécessitant un soutien très substantiel' : Déficits sévères dans la communication sociale verbale et non verbale causant des altérations graves du fonctionnement.\n- Signes observables : Initiation très limitée des interactions sociales et réponse minimale aux avances sociales des autres. Une personne avec peu de mots intelligibles qui initie rarement l'interaction et, quand elle le fait, utilise des approches inhabituelles pour répondre à ses besoins uniquement.\n- RRB : Préoccupations, rituels et/ou comportements répétitifs qui interfèrent de manière marquée avec le fonctionnement dans tous les domaines. Détresse marquée lorsque les rituels sont interrompus.",
-                with_di: "Avec Déficience Intellectuelle (DI) associée : La présence d'une DI peut influencer la manière dont les traits autistiques se manifestent. La communication et les capacités d'adaptation peuvent être davantage affectées, nécessitant des stratégies de soutien adaptées à la fois au TSA et à la DI."
+                level1: "Niveau 1 - 'Nécessitant un soutien' : Difficultés notables dans la communication sociale nécessitant un soutien.\n- Signes observables : Difficulté à initier des interactions, réponses atypiques aux tentatives sociales, intérêt réduit pour les interactions.\n- Comportements restreints/répétitifs : Interfèrent dans un ou plusieurs contextes, difficulté à changer d'activité, problèmes d'organisation.",
+                level2: "Niveau 2 - 'Nécessitant un soutien substantiel' : Déficits marqués dans la communication sociale, même avec soutien.\n- Signes observables : Initiation limitée aux interactions sociales, réponses réduites ou anormales, langage simple, intérêt restreint pour des sujets spécifiques.\n- RRB : Fréquents et visibles, interfèrent dans plusieurs contextes, détresse en cas de changement.",
+                level3: "Niveau 3 - 'Nécessitant un soutien très substantiel' : Déficits sévères dans la communication sociale.\n- Signes observables : Initiation minimale des interactions, réponses limitées aux autres, langage très réduit, méthodes inhabituelles pour satisfaire ses besoins.\n- RRB : Interfèrent gravement avec le fonctionnement, détresse marquée si interrompus.",
+                with_di: "Avec Déficience Intellectuelle (DI) associée : La DI influence l'expression des traits autistiques.\n- Signes et symptômes : Communication encore plus limitée, autonomie réduite, besoin de stratégies de soutien adaptées pour TSA et DI."
             },
             big_five: {
-                O: "Ouverture à l'expérience : Appréciation de l'art, de l'émotion, de l'aventure, des idées inhabituelles, de la curiosité et de la variété des expériences. Un score élevé suggère une grande imagination et créativité.",
-                C: "Conscienciosité : Tendance à être organisé et fiable, à faire preuve d'autodiscipline, à agir consciencieusement, à viser la réussite et à préférer un comportement planifié plutôt que spontané.",
-                E: "Extraversion : Énergie, émotions positives, assertivité, sociabilité et tendance à rechercher la stimulation en compagnie des autres. Un score élevé indique une nature sociable et énergique.",
-                A: "Agréabilité : Tendance à être compatissant et coopératif plutôt que méfiant et antagoniste envers les autres. Reflète des préoccupations pour l'harmonie sociale.",
-                N: "Névrosisme (ou Stabilité Émotionnelle inverse) : Tendance à éprouver facilement des émotions désagréables telles que la colère, l'anxiété, la dépression et la vulnérabilité. Un score élevé indique une instabilité émotionnelle."
+                O: "Ouverture à l'expérience : Appréciation de l'art, de l'aventure, des idées inhabituelles et de la curiosité.\n- Signes et symptômes : Imagination, créativité, curiosité intellectuelle, ouverture aux nouvelles expériences, flexibilité mentale.",
+                C: "Conscienciosité : Organisation, fiabilité et autodiscipline.\n- Signes et symptômes : Planification, persévérance, fiabilité, sens du devoir, préférence pour les actions planifiées.",
+                E: "Extraversion : Énergie, sociabilité et assertivité.\n- Signes et symptômes : Enthousiasme, énergie sociale, recherche de stimulation, assertivité, positivité émotionnelle.",
+                A: "Agréabilité : Compassion et coopération.\n- Signes et symptômes : Tolérance, empathie, comportement coopératif, souci de l'harmonie sociale, altruisme.",
+                N: "Névrosisme : Tendance aux émotions négatives et à l'instabilité émotionnelle.\n- Signes et symptômes : Anxiété, irritabilité, dépression, vulnérabilité émotionnelle, sensibilité au stress."
             },
             locus_of_control: {
-                internal: "Locus de Contrôle Interne : Croyance qu'une personne est maîtresse de sa propre vie et de son destin. Les individus avec un locus interne élevé pensent que leurs propres actions déterminent les récompenses qu'ils obtiennent.",
-                external: "Locus de Contrôle Externe : Croyance que la vie est contrôlée par des facteurs extérieurs que l'individu ne peut influencer, comme la chance, le destin ou le pouvoir des autres."
+                internal: "Locus de Contrôle Interne : Croyance en la maîtrise de sa vie.\n- Signes et symptômes : Prise de responsabilité, planification proactive, confiance en ses actions, faible externalisation des échecs.",
+                external: "Locus de Contrôle Externe : Croyance que la vie est contrôlée par des facteurs externes.\n- Signes et symptômes : Sentiment de fatalité, dépendance à la chance ou au destin, tendance à blâmer les autres, passivité face aux défis."
             },
-            grit: "Grit (Persévérance et Passion) : Le 'grit' est défini comme la persévérance et la passion pour des objectifs à long terme. Il s'agit de la capacité à maintenir l'effort et l'intérêt sur des années malgré les échecs, l'adversité et les plateaux de progression. Un score élevé suggère une forte ténacité.",
-            thinking_styles: "Styles de Pensée (Distorsions Cognitives) : Les distorsions cognitives sont des schémas de pensée exagérés ou irrationnels qui peuvent causer une perception inexacte de la réalité et maintenir des difficultés psychologiques. Identifier ces schémas est la première étape pour les remettre en question.",
-            alexithymia: "Alexithymie : Trait de personnalité caractérisé par une difficulté subclinique à identifier et à décrire ses propres émotions. Les personnes concernées ont du mal à distinguer et à apprécier les émotions des autres, et sont sujettes à une pensée orientée vers l'extérieur et concrète."
+            grit: "Maintien de l'effort et de l'intérêt pour des objectifs à long terme.\n- Signes et symptômes : Persévérance malgré les échecs, patience, discipline personnelle, motivation soutenue, résilience.",
+            thinking_styles: "Schémas de pensée irrationnels affectant la perception de la réalité.\n- Signes et symptômes : Pensée tout ou rien, généralisation excessive, catastrophisme, auto-dévalorisation, raisonnement biaisé.",
+            alexithymia: "Difficulté à identifier et décrire ses émotions.\n- Signes et symptômes : Confusion émotionnelle, difficulté à comprendre les sentiments des autres, pensée concrète et orientée vers l'extérieur, communication émotionnelle limitée."
         };
+
 
 
         /* ==================================== */
@@ -1196,6 +1197,43 @@
             // Ajouter la section Otroverti (Ambiverti)
             if (allResults.otroverti) {
             addSection("Profil Otroverti (Ambiverti)", `Score: ${allResults.otroverti.percentage != null ? allResults.otroverti.percentage + '%' : 'N/A'}\n${DESCRIPTIONS.otroverti || ''}`);
+            }
+
+            if (allResults.antagonistic_traits) {
+                const at = allResults.antagonistic_traits;
+                const machPct = (at.mach != null) ? `${at.mach}%` : 'N/A';
+                const narcPct = (at.narc != null) ? `${at.narc}%` : 'N/A';
+                const psyPct  = (at.psy  != null) ? `${at.psy}%`  : 'N/A';
+                const socPct  = (at.soc  != null) ? `${at.soc}%`  : 'N/A';
+
+                // Build descriptive block using DESCRIPTIONS if available
+                const descr = [];
+                if (DESCRIPTIONS.antagonistic_traits) {
+                    if (DESCRIPTIONS.antagonistic_traits.mach) descr.push(`Machiavélisme : ${DESCRIPTIONS.antagonistic_traits.mach}`);
+                    if (DESCRIPTIONS.antagonistic_traits.narc) descr.push(`Narcissisme : ${DESCRIPTIONS.antagonistic_traits.narc}`);
+                    if (DESCRIPTIONS.antagonistic_traits.psy)  descr.push(`Psychopathie : ${DESCRIPTIONS.antagonistic_traits.psy}`);
+                    if (DESCRIPTIONS.antagonistic_traits.soc)  descr.push(`Sociopathie : ${DESCRIPTIONS.antagonistic_traits.soc}`);
+                }
+
+                const body = `Machiavélisme: ${machPct}\nNarcissisme: ${narcPct}\nPsychopathie: ${psyPct}\nSociopathie: ${socPct}\n\n${descr.join('\n\n')}`;
+
+                addSection('Tétrade Sombre (Dark Tetrad)', body);
+
+                // Also add a small table summarizing the four trait percentages for easier reading in the PDF
+                if (y > 240) { doc.addPage(); y = 20; }
+                doc.autoTable({
+                    startY: y,
+                    head: [['Trait', 'Pourcentage']],
+                    body: [
+                        ['Machiavélisme', machPct],
+                        ['Narcissisme', narcPct],
+                        ['Psychopathie', psyPct],
+                        ['Sociopathie', socPct]
+                    ],
+                    theme: 'grid',
+                    headStyles: { fillColor: [44, 62, 80] }
+                });
+                y = doc.autoTable.previous.finalY + 10;
             }
 
             // --- Tableau des résultats quantitatifs ---
