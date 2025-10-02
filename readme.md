@@ -23,16 +23,17 @@ The core principles of this project are:
 
 *   **Modular Questionnaires**: The tool is organized into modules (e.g., "Base Personality Profile", "Behavioral Disorders (Adult)"). Users can enable or disable modules to customize their assessment.
 *   **Diverse Psychological Models**:
-    *   **Personality**: MBTI, Enneagram.
-    *   **Behavioral Traits**: Dark Triad (Machiavellianism, Narcissism, Psychopathy).
-    *   **Attachment Style**: Secure, Anxious, Avoidant, Fearful-Avoidant.
-    *   **Screening Indicators**: Questionnaires inspired by criteria for ADHD, Oppositional Defiant Disorder (ODD), Conduct Disorder, BPD, Autism Spectrum, and more.
+    *   **Personality**: MBTI, Enneagram, Big Five (OCEAN), Locus of Control.
+    *   **Behavioral Traits**: Dark Tetrad (Machiavellianism, Narcissism, Psychopathy, and antisocial traits), Grit (Perseverance), Alexithymia.
+    *   **Attachment Style**: Secure, Anxious, Avoidant, and Disorganized styles.
+    *   **Cognitive Styles**: Analysis of common cognitive distortions.
+    *   **Screening Indicators**: Questionnaires inspired by criteria for ADHD, Autism Spectrum, Oppositional Defiant Disorder (ODD), Conduct Disorder, Borderline Personality Disorder (BPD), OCD, and various other behavioral and personality disorders for adults and children.
 *   **Dynamic Report Generation**: An instant, detailed report is generated in the sidebar upon analysis, summarizing the key findings.
 *   **Data Portability**:
     *   **PDF Export**: Generate and download a clean, formatted PDF of the report.
     *   **JSON Export/Import**: Export the raw results as a `.json` file for archival or sharing. Previously exported JSON files can be imported to view the report again.
 *   **"Fill Example" Feature**: A button to automatically fill out all questionnaires with sample data to demonstrate the application's full reporting capabilities.
-*   **Multi-language Support**: The interface includes a language switcher to navigate between different versions of the application (e.g., French, English, Dutch).
+*   **Multi-language Support**: The interface includes a language switcher to navigate between different versions of the application (e.g., French, English).
 
 ---
 
@@ -142,16 +143,17 @@ Les principes fondamentaux de ce projet sont :
 
 *   **Questionnaires Modulaires**: L'outil est organisé en modules (ex: "Profil de Personnalité", "Troubles du Comportement (Adulte)"). Les utilisateurs peuvent activer ou désactiver des modules pour personnaliser leur évaluation.
 *   **Modèles Psychologiques Variés**:
-    *   **Personnalité**: MBTI, Ennéagramme.
-    *   **Traits Comportementaux**: Triade Noire (Machiavélisme, Narcissisme, Psychopathie).
-    *   **Style d'Attachement**: Sécure, Anxieux, Évitant, Craintif-évitant.
-    *   **Indicateurs de Dépistage**: Questionnaires inspirés des critères pour le TDA/H, le Trouble Oppositionnel avec Provocation (TOP), le Trouble des Conduites, la personnalité borderline, le spectre de l'autisme, et plus encore.
+    *   **Personnalité**: MBTI, Ennéagramme, Big Five (OCEAN), Locus de Contrôle.
+    *   **Traits Comportementaux**: Tétrade Noire (Machiavélisme, Narcissisme, Psychopathie et traits antisociaux), 'Grit' (Persévérance), Alexithymie.
+    *   **Style d'Attachement**: Styles Sécure, Anxieux, Évitant et Désorganisé.
+    *   **Styles Cognitifs**: Analyse des distorsions cognitives courantes.
+    *   **Indicateurs de Dépistage**: Questionnaires inspirés des critères pour le TDA/H, le spectre de l'autisme, le Trouble Oppositionnel avec Provocation (TOP), le Trouble des Conduites, la personnalité borderline, le TOC, et divers autres troubles du comportement et de la personnalité pour adultes et enfants.
 *   **Génération de Rapport Dynamique**: Un rapport détaillé et instantané est généré dans la barre latérale après l'analyse, résumant les principaux résultats.
 *   **Portabilité des Données**:
     *   **Export PDF**: Générez et téléchargez une version PDF claire et formatée du rapport.
     *   **Export/Import JSON**: Exportez les résultats bruts sous forme de fichier `.json` pour archivage ou partage. Les fichiers JSON précédemment exportés peuvent être importés pour afficher à nouveau le rapport.
 *   **Fonction "Exemple"**: Un bouton pour remplir automatiquement tous les questionnaires avec des données fictives afin de démontrer toutes les capacités de reporting de l'application.
-*   **Support Multilingue**: L'interface inclut un sélecteur de langue pour naviguer entre différentes versions de l'application (ex: Français, Anglais, Néerlandais).
+*   **Support Multilingue**: L'interface inclut un sélecteur de langue pour naviguer entre différentes versions de l'application (ex: Français, Anglais).
 
 ---
 
